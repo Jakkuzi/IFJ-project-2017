@@ -16,7 +16,7 @@ Makefile        - "make" a "make clean"
 
 
 ///// Pouziti /////
-- Po prelozeni a spusteni se vygeneruje a zobrazi strom s nahodnymi nazvy promennych (aby bylo videt podle ceho se radi - strcmp())
+- Po prelozeni a spusteni se vygeneruje a zobrazi strom s nahodnymy nazvy promennych (aby bylo videt podle ceho se radi - strcmp())
         a hned se zase smaze.
 
 - v symbol_table.c uplne dole je funkce main() ,kde jde upravit pocet generovanych polozek etc.
