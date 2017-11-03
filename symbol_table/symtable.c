@@ -3,12 +3,12 @@
 /*	pomoci binarniho vyhledavaciho stromu a vsech funkci		*/
 /*	potrebnych k manipulaci s timto stromem.			*/
 /*									*/
-/*	V souboru symbol_table.h jsou definice datovych typu		*/
+/*	V souboru symtable.h jsou definice datovych typu		*/
 /*	a prototypy funkci pouzivanych v tomto souboru.			*/
 /************************************************************************/
 
 
-#include "symbol_table.h"
+#include "symtable.h"
 
 ///////////////////////////////////////////////
 ///////		Chybova hlaseni		///////
