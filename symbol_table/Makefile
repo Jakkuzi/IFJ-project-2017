@@ -1,5 +1,5 @@
 
-NAME=symbol_table
+NAME=symtable
 CC=gcc
 CFLAGS=-Wall -std=c99 -pedantic -lm
 
@@ -8,4 +8,4 @@ $(NAME): $(NAME).c
 
 clean:
 	rm -f *.o *.out $(NAME)
-#
+
