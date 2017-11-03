@@ -1,5 +1,5 @@
 /************************************************************************/
-/*      Toto je header pro soubor symbol_table.c	 	        */
+/*      Toto je header pro soubor symtable.c	 	        	*/
 /*      Zde budou includovany knihovny, definice datovych typu		*/
 /*	a prototypy funkci pro praci s binarnim vyhledavacim 		*/
 /*	stromem.							*/
