@@ -4,8 +4,8 @@ Pozn.: Asi by to pak chtelo predelat z binarniho vyhledavaciho stromu na AVL str
 
 
 ///// Soubory //////
-symbol_table.h  - definice datovych typu, struktur, prototypy funkci
-symbol_table.c  - definice funkci
+symtable.h      - definice datovych typu, struktur, prototypy funkci
+symtable.c      - definice funkci
 Makefile        - "make" a "make clean"
 
 
