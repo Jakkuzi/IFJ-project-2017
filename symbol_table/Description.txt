@@ -1,1 +1,24 @@
-...
+Zkusil jsem vytvorit nejaky zaklad tabulky symbolu - binarni vyhledavaci strom.
+Je to inspirovany 2. domacim ukolem do IAL, kterej jsem delal vcera.
+Pozn.: Asi by to pak chtelo predelat z binarniho vyhledavaciho stromu na AVL strom (vyvazeny), aby byl efektivnejsi
+
+
+///// Soubory //////
+symbol_table.h  - definice datovych typu, struktur, prototypy funkci
+symbol_table.c  - definice funkci
+Makefile        - "make" a "make clean"
+
+
+///// Struktura /////
+- Binarni vyhledavaci strom je implementovan nerekurzivne (rekurzivni pristup by byl narocny na pamet pri velkem mnozstvi polozek).
+- Zasobnik ukazatelu je tam pro smazani celeho stromu taky nerekurzivne.
+- Testovaci funkce se pak smazou, jsou tam jen aby bylo videt, co to dela.
+
+
+///// Pouziti /////
+- Po prelozeni a spusteni se vygeneruje a zobrazi strom s nahodnymi nazvy promennych (aby bylo videt podle ceho se radi - strcmp())
+        a hned se zase smaze.
+
+- v symbol_table.c uplne dole je funkce main() ,kde jde upravit pocet generovanych polozek etc.
+
+--- Psal a zkousel jsem to na merlinovi, ale melo by to snad fungovat vsude ---
