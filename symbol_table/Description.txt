@@ -1,6 +1,4 @@
-Zkusil jsem vytvorit nejaky zaklad tabulky symbolu - binarni vyhledavaci strom.
-Je to inspirovany 2. domacim ukolem do IAL, kterej jsem delal vcera.
-Pozn.: Asi by to pak chtelo predelat z binarniho vyhledavaciho stromu na AVL strom (vyvazeny), aby byl efektivnejsi
+Update 11.11. - upravena tabulka symbolu, pridany funkce, PDF dokument s popisem struktur, funkci a priklady pouziti
 
 
 ///// Soubory //////
@@ -10,15 +8,16 @@ Makefile        - "make" a "make clean"
 
 
 ///// Struktura /////
+- Pouze jeden typ binarniho stromu pro promenne i funkce (kdyby byly dva, hodne funkci by bylo podobnych nebo stejnych). Rozliseni mezi funkci a promennou udava promenna itemType
 - Binarni vyhledavaci strom je implementovan nerekurzivne (rekurzivni pristup by byl narocny na pamet pri velkem mnozstvi polozek).
 - Zasobnik ukazatelu je tam pro smazani celeho stromu taky nerekurzivne.
 - Testovaci funkce se pak smazou, jsou tam jen aby bylo videt, co to dela.
 
 
-///// Pouziti /////
-- Po prelozeni a spusteni se vygeneruje a zobrazi strom s nahodnymy nazvy promennych (aby bylo videt podle ceho se radi - strcmp())
-        a hned se zase smaze.
+///// Pouziti testovacich funkci /////
+- Po prelozeni a spusteni se vygeneruje a zobrazi 3 stromy (dva pro promenne, jeden pro funkce) s nahodnymy nazvy promennych (aby bylo videt podle ceho se radi - strcmp()),
+pokusi se vyhledat polozka podle identifikatoru. Vlozi se funkce do stromu funkci. Pote se vsechno smaze
 
 - v symbol_table.c uplne dole je funkce main() ,kde jde upravit pocet generovanych polozek etc.
 
---- Psal a zkousel jsem to na merlinovi, ale melo by to snad fungovat vsude ---
+--- Psal a zkousel jsem to na merlinovi a Ubuntu, ale melo by to snad fungovat vsude ---
