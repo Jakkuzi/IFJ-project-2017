@@ -8,58 +8,56 @@
 #define T_SYN 2		//navr. hodnota chyby v syntakticke analyze
 #define T_ALLOCATION 1	//chyba alokace
 
-/*dvojrozmerne pole se znamenky pro praci se zasobnikem*/
-char prec [15] [15] = {
-		/*stack   +    -    *    /    \    <    >    <=    >=    =    <>    (    )    i    $*/
-		/*index   0    1    2    3    4    5    6    7     8     9    10    11   12   13   14*/
+/*dvojrozmerne pole se znamenky pro praci s prioritami znamenek*/
+char prec [11] [11] = {
+		/*stack   +     -     *     /     \     <     >     <=     >=     =     <>*/
+		/*index   0     1     2     3     4     5     6     7      8      9     10*/
 
-	/* + */ /* 0 */  '>'  '>'  '<'  '<'  '<'  '>'  '>'   '>'   '>'  '>'   '>'  '<'  '>'  '<'  '>'
-	/* - */ /* 1 */  '>'  '>'  '<'  '<'  '<'  '>'  '>'   '>'   '>'  '>'   '>'  '<'  '>'  '<'  '>'
-	/* * */ /* 2 */  '>'  '>'  '>'  '>'  '>'  '>'  '>'   '>'   '>'  '>'   '>'  '<'  '>'  '<'  '>'
-	/* / */ /* 3 */  '>'  '>'  '>'  '>'  '>'  '>'  '>'   '>'   '>'  '>'   '>'  '<'  '>'  '<'  '>'
-	/* \ */ /* 4 */  '>'  '>'  '<'  '<'  '>'  '>'  '>'   '>'   '>'  '>'   '>'  '<'  '>'  '<'  '>'
-	/* < */ /* 5 */  '<'  '<'  '<'  '<'  '<'  '='  '='   '='   '='  '='   '='  '<'  '>'  '<'  '>'
-	/* > */ /* 6 */  '<'  '<'  '<'  '<'  '<'  '='  '='   '='   '='  '='   '='  '<'  '>'  '<'  '>'
-	/* <=*/ /* 7 */  '<'  '<'  '<'  '<'  '<'  '='  '='   '='   '='  '='   '='  '<'  '>'  '<'  '>'
-	/* >=*/ /* 8 */  '<'  '<'  '<'  '<'  '<'  '='  '='   '='   '='  '='   '='  '<'  '>'  '<'  '>'
-	/* = */ /* 9 */  '<'  '<'  '<'  '<'  '<'  '='  '='   '='   '='  '='   '='  '<'  '>'  '<'  '>'
-	/* <>*/ /* 10*/  '<'  '<'  '<'  '<'  '<'  '='  '='   '='   '='  '='   '='  '<'  '>'  '<'  '>'
-	/* ( */ /* 11*/  '<'  '<'  '<'  '<'  '<'  '<'  '<'   '<'   '<'  '<'   '<'  '<'  '='  '>'  ' '
-	/* ) */ /* 12*/  '>'  '>'  '>'  '>'  '>'  '>'  '>'   '>'   '>'  '>'   '>'  ' '  '>'  ' '  '>'
-	/* i */ /* 13*/  '>'  '>'  '>'  '>'  '>'  '>'  '>'   '>'   '>'  '>'   '>'  ' '  '>'  ' '  '>'
-	/* $ */ /* 14*/  '<'  '<'  '<'  '<'  '<'  '<'  '<'   '<'   '<'  '<'   '<'  '<'  ' '  '<'  ' '
+	/* + */ /* 0 */  '>',  '>',  '<',  '<',  '<',  '>',  '>',   '>',   '>',  '>',   '>',
+	/* - */ /* 1 */  '>',  '>',  '<',  '<',  '<',  '>',  '>',   '>',   '>',  '>',   '>',
+	/* * */ /* 2 */  '>',  '>',  '>',  '>',  '>',  '>',  '>',   '>',   '>',  '>',   '>',
+	/* / */ /* 3 */  '>',  '>',  '>',  '>',  '>',  '>',  '>',   '>',   '>',  '>',   '>',
+	/* \ */ /* 4 */  '>',  '>',  '<',  '<',  '>',  '>',  '>',   '>',   '>',  '>',   '>',
+	/* < */ /* 5 */  '<',  '<',  '<',  '<',  '<',  '=',  '=',   '=',   '=',  '=',   '=',
+	/* > */ /* 6 */  '<',  '<',  '<',  '<',  '<',  '=',  '=',   '=',   '=',  '=',   '=',
+	/* <=*/ /* 7 */  '<',  '<',  '<',  '<',  '<',  '=',  '=',   '=',   '=',  '=',   '=',
+	/* >=*/ /* 8 */  '<',  '<',  '<',  '<',  '<',  '=',  '=',   '=',   '=',  '=',   '=', 
+	/* = */ /* 9 */  '<',  '<',  '<',  '<',  '<',  '=',  '=',   '=',   '=',  '=',   '=',
+	/* <>*/ /* 10*/  '<',  '<',  '<',  '<',  '<',  '=',  '=',   '=',   '=',  '=',   '='
 };
 
-char prec_pom [15] [15] = {
-		/*stack   +    -    *    /    \    <    >    <=    >=    =    <>    (    )    i    $*/
-		/*index   0    1    2    3    4    5    6    7     8     9    10    11   12   13   14*/
+/*dvojrozmerne pole se znamenky pro praci se zasobnikem*/
+char prec_pom [16] [15] = { 
+		/*stack   +     -     *     /     \     <     >     <=     >=     =     <>     (     )     i     $ */
+		/*index   0     1     2     3     4     5     6     7      8      9     10     11    12    13    14*/
 
-	/* + */ /* 0 */  ' '  ' '  ' '  ' '  ' '  ' '  ' '   ' '   ' '  ' '   ' '  '<'  ' '  '<'  ' '
-	/* - */ /* 1 */  ' '  ' '  ' '  ' '  ' '  ' '  ' '   ' '   ' '  ' '   ' '  '<'  ' '  '<'  ' '
-	/* * */ /* 2 */  ' '  ' '  ' '  ' '  ' '  ' '  ' '   ' '   ' '  ' '   ' '  '<'  ' '  '<'  ' '
-	/* / */ /* 3 */  ' '  ' '  ' '  ' '  ' '  ' '  ' '   ' '   ' '  ' '   ' '  '<'  ' '  '<'  ' '
-	/* \ */ /* 4 */  ' '  ' '  ' '  ' '  ' '  ' '  ' '   ' '   ' '  ' '   ' '  '<'  ' '  '<'  ' '
-	/* < */ /* 5 */  ' '  ' '  ' '  ' '  ' '  ' '  ' '   ' '   ' '  ' '   ' '  '<'  ' '  '<'  ' '
-	/* > */ /* 6 */  ' '  ' '  ' '  ' '  ' '  ' '  ' '   ' '   ' '  ' '   ' '  '<'  ' '  '<'  ' '
-	/* <=*/ /* 7 */  ' '  ' '  ' '  ' '  ' '  ' '  ' '   ' '   ' '  ' '   ' '  '<'  ' '  '<'  ' '
-	/* >=*/ /* 8 */  ' '  ' '  ' '  ' '  ' '  ' '  ' '   ' '   ' '  ' '   ' '  '<'  ' '  '<'  ' '
-	/* = */ /* 9 */  ' '  ' '  ' '  ' '  ' '  ' '  ' '   ' '   ' '  ' '   ' '  '<'  ' '  '<'  ' '
-	/* <>*/ /* 10*/  ' '  ' '  ' '  ' '  ' '  ' '  ' '   ' '   ' '  ' '   ' '  '<'  ' '  '<'  ' '
-	/* ( */ /* 11*/  ' '  ' '  ' '  ' '  ' '  ' '  ' '   ' '   ' '  ' '   ' '  '<'  ' '  '<'  ' '
-	/* ) */ /* 12*/  '>'  '>'  '>'  '>'  '>'  '>'  '>'   '>'   '>'  '>'   '>'  ' '  '>'  ' '  '>'
-	/* i */ /* 13*/  '>'  '>'  '>'  '>'  '>'  '>'  '>'   '>'   '>'  '>'   '>'  ' '  '>'  ' '  '>'
-	/* $ */ /* 14*/  ' '  ' '  ' '  ' '  ' '  ' '  ' '   ' '   ' '  ' '   ' '  '<'  ' '  '<'  ' '
+	/* + */ /* 0 */  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',   ' ',   ' ',  ' ',   ' ',  '<',  ' ',  '<',  ' ',
+	/* - */ /* 1 */  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',   ' ',   ' ',  ' ',   ' ',  '<',  ' ',  '<',  ' ',
+	/* * */ /* 2 */  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',   ' ',   ' ',  ' ',   ' ',  '<',  ' ',  '<',  ' ',
+	/* / */ /* 3 */  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',   ' ',   ' ',  ' ',   ' ',  '<',  ' ',  '<',  ' ',
+	/* \ */ /* 4 */  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',   ' ',   ' ',  ' ',   ' ',  '<',  ' ',  '<',  ' ',
+	/* < */ /* 5 */  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',   ' ',   ' ',  ' ',   ' ',  '<',  ' ',  '<',  ' ',
+	/* > */ /* 6 */  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',   ' ',   ' ',  ' ',   ' ',  '<',  ' ',  '<',  ' ',
+	/* <=*/ /* 7 */  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',   ' ',   ' ',  ' ',   ' ',  '<',  ' ',  '<',  ' ',
+	/* >=*/ /* 8 */  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',   ' ',   ' ',  ' ',   ' ',  '<',  ' ',  '<',  ' ',
+	/* = */ /* 9 */  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',   ' ',   ' ',  ' ',   ' ',  '<',  ' ',  '<',  ' ',
+	/* <>*/ /* 10*/  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',   ' ',   ' ',  ' ',   ' ',  '<',  ' ',  '<',  ' ',
+	/* ( */ /* 11*/  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',   ' ',   ' ',  ' ',   ' ',  '<',  ' ',  '<',  ' ',
+	/* ) */ /* 12*/  '>',  '>',  '>',  '>',  '>',  '>',  '>',   '>',   '>',  '>',   '>',  ' ',  '>',  ' ',  '>',
+	/* i */ /* 13*/  '>',  '>',  '>',  '>',  '>',  '>',  '>',   '>',   '>',  '>',   '>',  ' ',  '>',  ' ',  '>',
+	/* $ */ /* 14*/  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',   ' ',   ' ',  ' ',   ' ',  '<',  ' ',  '<',  ' ',
+	/* E */ /* 15*/  '<',  '<',  '<',  '<',  '<',  '<',  '<',   '<',   '<',  '<',   '<',  ' ',  '>',  ' ',  '>',
 };
 
 void push(TStack* s, char c)
 {
-		s->stBody[(s->top)] = c;	
-		s->top++;
+	s->stBody[(s->top)] = c;	
+	s->top++;
 }
 
 void pop(TStack* s)
 {
-		s->top--;
+	s->top--;
 }
 
 int t_type(char c)
@@ -81,6 +79,7 @@ int t_type(char c)
     		case ')':	return 12;
     		case 'i':	return 13;
     		case '$':	return 14;
+		case 'E':	return 15;
 		default:	return 100;
     	}
 }
@@ -101,55 +100,55 @@ char cmp_string(char* string)
 {
 	int compare;
 	char c;
-	if((compare = strcmp(string, '<i>')) == 0)
+	if((compare = strcmp(string, '[i]')) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, '<E+E>')) == 0)
+	else if((compare = strcmp(string, '[E+E]')) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, '<E-E>')) == 0)
+	else if((compare = strcmp(string, '[E-E]')) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, '<E*E>')) == 0)
+	else if((compare = strcmp(string, '[E*E]')) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, '<E/E>')) == 0)
+	else if((compare = strcmp(string, '[E/E]')) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, '<E\E>')) == 0)
+	else if((compare = strcmp(string, '[E\E]')) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, '<E<E>')) == 0)
+	else if((compare = strcmp(string, '[E<E]')) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, '<E>E>')) == 0)
+	else if((compare = strcmp(string, '[E>E]')) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, '<ElE>')) == 0)
+	else if((compare = strcmp(string, '[ElE]')) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, '<EmE>')) == 0)
+	else if((compare = strcmp(string, '[EmE]')) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, '<E!E>')) == 0)
+	else if((compare = strcmp(string, '[E!E]')) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, '<E=E>')) == 0)
+	else if((compare = strcmp(string, '[E=E]')) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, '<(E)>')) == 0)
+	else if((compare = strcmp(string, '[(E)]')) == 0)
 	{
 		c = 'E';
 	}
@@ -165,6 +164,7 @@ char cmp_string(char* string)
 
 int prec(char* input)
 {
+/*inicializace potrebnych promennych*/
 	int ret = -1;		//navratova hodnota
 	int pom = 0;		//pomocna promenna pro pole
 	int pomst [15] = {-1};	//pomocne pole pro indexy
@@ -199,6 +199,7 @@ int prec(char* input)
 
 	int len = strlen(input);
 
+/*alokace*/
 	TStack* stack = (TStack*) malloc (sizeof(TStack));
 	if(stack == NULL)
 	{
@@ -214,8 +215,11 @@ int prec(char* input)
 	}
 /**************************************************************************************************************************/
 
-
+/*inicializace zasobniku a vlozeni '$' na zacatek*/
 	stack -> top = 0;
+	push(stack, '$');
+
+/*konverze nekterych znaku v retezci, pro lepsi praci s nimi*/
 	for(int i = 0; i < len; i++)
 	{
 		if(convert(input[i], input[i+1]) != 'X')
@@ -229,99 +233,186 @@ int prec(char* input)
 		}
 	}
 
-	push(stack, '$');
-
+/*inicializace promennych potrebnych v cyklu for*/
+	int j0, j1, j2, j3, k0, k1, k2, k3, l0, l1, l2, l3;
+	char a, b;
 	for(int k = 0; k < len; k++)
 	{
 		if(ret == 0 || ret == 2)
 			break;
+
+/*podle znamenka z tabulky prec_pom zjistime, co dale*/
 		if(prec_pom [t_type(stack -> stBody[top])] [t_type(input[k])] == '<')
 		{
-			if(stack -> stBody[(stack->top)-1] == 'E')
+
+			push(stack, input[k]);
+			a = stack -> stBody[(stack->top)-1];
+			b = stack -> stBody[(stack->top)-3];
+			if(a == '+' || a == '-' || a == '*' || a == '/' || a == '\' || a == '<' || a == '>' || a == 'l' || a == 'm' || a == '=' || a == '!') //porovnani priority znamenek
+			{
+				if(b == '+' || b == '-' || b == '*' || b == '/' || b == '\' || b == '<' || b == '>' || b == 'l' || b == 'm' || b == '=' || b == '!')
+				{
+					if(prec [t_type(b)] [t_type(a)] == '<')	//mensi priorita
+					{
+						pop(stack);
+						push(stack, '[');
+						pomst[pom] = (stack -> top)-1;
+						pom++;
+						push(stack, 'E');
+					}
+
+					else					//vetsi nebo shodna priorita
+					{
+						pop(stack);
+						push(stack, ']');
+						j0 = pomst[pom-1];
+						k0 = stack->top;
+						l0 = 0;
+						for(int x0 = j0; x0 <= (k0-1); x0++)
+						{
+							pomch [l0] = stack -> stBody[x0];
+							l0++;
+						}
+						pomch[l0] = '\0'
+						for(int y0 = k0; y0 > j0; y0--)
+						{
+							pop(stack);
+						}
+						push(stack, cmp_string(pomch));
+						pom--;
+						k--;	
+					}
+				}
+
+				else	//b = '('
+				{
+					pop(stack);
+					push(stack, '[');
+					pomst[pom] = (stack -> top)-1;
+					pom++;
+					push(stack, 'E')
+				}
+			}
+
+			else		//na vstupu je '(' nebo 'i'
 			{
 				pop(stack);
-				push(stack, '<');
+				push(stack, '[');
 				pomst[pom] = (stack -> top)-1;
 				pom++;
-				push(stack, 'E');
+				push(stack, input[k]);
 			}
-			else
-			{
-				push(stack, '<');
-				pomst[pom] = (stack -> top)-1;
-				pom++;
-			}
-			push(stack, input[k]);
 		}
 	
 		else if(prec_pom [t_type(stack -> stBody[top])] [t_type(input[k])] == '>')
 		{
-			push(stack, '>'); 
-			int j = pomst[pom-1];
-			int k = stack->top;
-			int l = 0;
-			int m = 0;
-			for(int x = j; x <= (k-1); x++)
+			push(stack, input[k]);
+			if((stack -> stBody[(stack->top)-1]) == '$')	//test na konec vstupniho retezce
 			{
-				pomch [i] = stack -> stBody[x];
-				i++;
+				if((stack -> stBody[(stack->top)-3]) == '$')
+				{
+					stack -> stBody[stack->top] = '\0';
+					if(pomcmp = strcmp(stack -> stBody, '$E$')
+					{
+						ret = T_OK;
+					}
+					else
+					{
+						ret = T_SYN;
+					}
+				}
+
+				else	//pokud neni retezec jeste uplne zredukovany, redukujeme dale
+				{
+					pop(stack);
+					push(stack, ']');
+					j1 = pomst[pom-1];
+					k1 = stack->top;
+					l1 = 0;
+					for(int x1 = j1; x1 <= (k1-1); x1++)
+					{
+						pomch [l1] = stack -> stBody[x1];
+						l1++;
+					}
+					pomch[l1] = '\0'
+					for(int y1 = k1; y1 > j1; y1--)
+					{
+						pop(stack);
+					}
+					push(stack, cmp_string(pomch));
+					pom--;
+					k--;
+				}
 			}
-			pomch[i] = '\0'
-			for(int y = k; y > j; y--)
+
+			else if((stack -> stBody[(stack->top)-1]) == ')')	//test na pravidlo se zavorkami
+			{
+				if((stack -> stBody[(stack->top)-3]) == '(')
+				{
+					break;
+				}
+
+				else	//opet, pokud v zavorkach lze jeste neco redukovat, redukujeme
+				{
+					pop(stack);
+					push(stack, ']'); 
+					j2 = pomst[pom-1];
+					k2 = stack->top;
+					l2 = 0;
+					for(int x2 = j2; x2 <= (k2-1); x2++)
+					{
+						pomch [l2] = stack -> stBody[x2];
+						l2++;
+					}
+					pomch[l2] = '\0'
+					for(int y2 = k2; y2 > j2; y2--)
+					{
+						pop(stack);
+					}
+					push(stack, cmp_string(pomch));
+					pom--;
+					k--;
+				}
+			}
+
+			else	//ostatni znaky, krome '$' a ')'
 			{
 				pop(stack);
-			}
-			push(stack, cmp_string(pomch));
-			i = 0;
-			push(stack, input[k]);
-			
-			if((stack -> stBody[(stack->top)-1]) == '$')
-			{
-				stack -> stBody[stack->top] = '\0';
-				if(pomcmp = strcmp(stack -> stBody, '$E$')
+				push(stack, ']'); 
+				j3 = pomst[pom-1];
+				k3 = stack->top;
+				l3 = 0;
+				for(int x3 = j3; x3 <= (k3-1); x3++)
 				{
-					ret = T_OK;
+					pomch [l3] = stack -> stBody[x3];
+					l3++;
 				}
-				else
+				pomch[l3] = '\0'
+				for(int y3 = k3; y3 > j3; y3--)
 				{
-					ret = T_SYN;
+					pop(stack);
 				}
+				push(stack, cmp_string(pomch));
+				pom--;
+				k--;
 			}
+
 		}
 
-		else if(prec_pom [t_type(stack -> stBody[top])] [t_type(input[k])] == ' ')
+		else if(prec_pom [t_type(stack -> stBody[top])] [t_type(input[k])] == ' ')	//chybny vstup
 		{
 			ret = T_SYN;
 		}
-
-		/*else if(prec_pom [t_type(stack -> stBody[top])] [t_type(input[k])] == '=')
-		{
-			push(stack, input[k]);
-			stack -> stBody[stack->top] = '\0';
-			if(pomcmp = strcmp(stack -> stBody, '$E$')
-			{
-				ret = T_OK;
-			}
-			else
-			{
-				ret = T_SYN;
-			}
-			break;
-		}*/
 
 		else
 		{
 			ret = T_SYN;
 		}
 	}
-	
 
-
+/*uvolneni alokaci*/
 	free(stack -> stackBody);
 	free(stack);
-	free(token -> myString);
-	free(token);
-	free(input);
 
 	return ret;
 
