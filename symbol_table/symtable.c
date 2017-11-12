@@ -326,6 +326,7 @@ void BTDispose(BTNodePtr *BTRoot)
 		{
 			///////////////////////////////////////////
 			// TEMPORARY // VYPIS // POTOM ODSTRANIT //
+			/*
 			if((*BTRoot)->item.itemType == item_type_variable)
 			{
 				if((*BTRoot)->item.varData->type == var_integer)
@@ -348,6 +349,7 @@ void BTDispose(BTNodePtr *BTRoot)
 				}
 				printf(" %s(parametry nelze jednoduse zobrazit)\n",(*BTRoot)->item.itemID);
 			}
+			*/
 			// 		TEMPORARY END		 //
 			///////////////////////////////////////////
 
