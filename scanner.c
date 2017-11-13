@@ -74,6 +74,8 @@ int getNextToken(TString* token){
                   return Semicolon;
           else if (i==EOF)
                   return EndOfFile;
+          else if (i==EOL)
+                  return EndOfLine;
           else
                   return ErrorInLexicalAnalyzer;
         break;
