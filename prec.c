@@ -58,6 +58,7 @@ void push(TStack* s, char c)
 void pop(TStack* s)
 {
 	s->top--;
+	s->stBody[(s->top)] = '\0';
 }
 
 int t_type(char c)
@@ -68,7 +69,7 @@ int t_type(char c)
     		case '-':	return 1;
     		case '*':	return 2;
     		case '/':	return 3;
-    		case '\':	return 4;
+    		case '\\':	return 4;
     		case '<':	return 5;
     		case '>':	return 6;
     		case 'l':	return 7;
@@ -100,55 +101,55 @@ char cmp_string(char* string)
 {
 	int compare;
 	char c;
-	if((compare = strcmp(string, '[i]')) == 0)
+	if((compare = strcmp(string, "[i]")) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, '[E+E]')) == 0)
+	else if((compare = strcmp(string, "[E+E]")) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, '[E-E]')) == 0)
+	else if((compare = strcmp(string, "[E-E]")) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, '[E*E]')) == 0)
+	else if((compare = strcmp(string, "[E*E]")) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, '[E/E]')) == 0)
+	else if((compare = strcmp(string, "[E/E]")) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, '[E\E]')) == 0)
+	else if((compare = strcmp(string, "[E\E]")) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, '[E<E]')) == 0)
+	else if((compare = strcmp(string, "[E<E]")) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, '[E>E]')) == 0)
+	else if((compare = strcmp(string, "[E>E]")) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, '[ElE]')) == 0)
+	else if((compare = strcmp(string, "[ElE]")) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, '[EmE]')) == 0)
+	else if((compare = strcmp(string, "[EmE]")) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, '[E!E]')) == 0)
+	else if((compare = strcmp(string, "[E!E]")) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, '[E=E]')) == 0)
+	else if((compare = strcmp(string, "[E=E]")) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, '[(E)]')) == 0)
+	else if((compare = strcmp(string, "[(E)]")) == 0)
 	{
 		c = 'E';
 	}
@@ -162,7 +163,7 @@ char cmp_string(char* string)
 }
 
 
-int prec(char* input)
+int precedencni(char* input)
 {
 /*inicializace potrebnych promennych*/
 	int ret = -1;		//navratova hodnota
@@ -192,9 +193,6 @@ int prec(char* input)
 		return ret;
 	}*/
 
-
-
-	input = getInput();
 	input = strcat(input,"$");
 
 	int len = strlen(input);
@@ -208,7 +206,7 @@ int prec(char* input)
 	}
 
 	stack -> stBody = (char*) malloc (sizeof(char)*len);
-	if(stack -> stackBody == NULL)
+	if(stack -> stBody == NULL)
 	{
 		ret = T_ALLOCATION;
 		return ret;
@@ -238,33 +236,41 @@ int prec(char* input)
 	char a, b;
 	for(int k = 0; k < len; k++)
 	{
+printf("%d\n", k);
 		if(ret == 0 || ret == 2)
 			break;
 
 /*podle znamenka z tabulky prec_pom zjistime, co dale*/
-		if(prec_pom [t_type(stack -> stBody[top])] [t_type(input[k])] == '<')
+		if(prec_pom [t_type(stack -> stBody[(stack->top)-1])] [t_type(input[k])] == '<')
 		{
 
 			push(stack, input[k]);
+
+
+printf("%s\n", stack->stBody);
 			a = stack -> stBody[(stack->top)-1];
 			b = stack -> stBody[(stack->top)-3];
-			if(a == '+' || a == '-' || a == '*' || a == '/' || a == '\' || a == '<' || a == '>' || a == 'l' || a == 'm' || a == '=' || a == '!') //porovnani priority znamenek
+			if(a == '+' || a == '-' || a == '*' || a == '/' || a == '\\' || a == '<' || a == '>' || a == 'l' || a == 'm' || a == '=' || a == '!') //porovnani priority znamenek
 			{
-				if(b == '+' || b == '-' || b == '*' || b == '/' || b == '\' || b == '<' || b == '>' || b == 'l' || b == 'm' || b == '=' || b == '!')
+				if(b == '+' || b == '-' || b == '*' || b == '/' || b == '\\' || b == '<' || b == '>' || b == 'l' || b == 'm' || b == '=' || b == '!')
 				{
 					if(prec [t_type(b)] [t_type(a)] == '<')	//mensi priorita
 					{
+						pop(stack);
 						pop(stack);
 						push(stack, '[');
 						pomst[pom] = (stack -> top)-1;
 						pom++;
 						push(stack, 'E');
+						k--;
+printf("%s\n", stack->stBody);						
 					}
 
 					else					//vetsi nebo shodna priorita
 					{
 						pop(stack);
 						push(stack, ']');
+printf("%s\n", stack->stBody);
 						j0 = pomst[pom-1];
 						k0 = stack->top;
 						l0 = 0;
@@ -273,46 +279,53 @@ int prec(char* input)
 							pomch [l0] = stack -> stBody[x0];
 							l0++;
 						}
-						pomch[l0] = '\0'
+						pomch[l0] = '\0';
 						for(int y0 = k0; y0 > j0; y0--)
 						{
 							pop(stack);
 						}
 						push(stack, cmp_string(pomch));
+printf("%s\n", stack->stBody);						
 						pom--;
 						k--;	
 					}
 				}
 
-				else	//b = '('
+				
+				else if(b != '[')	//b = '('
 				{
 					pop(stack);
-					push(stack, '[');
+					pop(stack);
+					push(stack, '[');					
 					pomst[pom] = (stack -> top)-1;
 					pom++;
-					push(stack, 'E')
+					push(stack, 'E');
+					k--;
+printf("%s\n", stack->stBody);					
 				}
 			}
 
 			else		//na vstupu je '(' nebo 'i'
 			{
 				pop(stack);
-				push(stack, '[');
+				push(stack, '[');				
 				pomst[pom] = (stack -> top)-1;
 				pom++;
 				push(stack, input[k]);
+printf("%s\n", stack->stBody);				
 			}
 		}
 	
-		else if(prec_pom [t_type(stack -> stBody[top])] [t_type(input[k])] == '>')
+		else if(prec_pom [t_type(stack -> stBody[(stack->top)-1])] [t_type(input[k])] == '>')
 		{
 			push(stack, input[k]);
+printf("%s\n", stack->stBody);			
 			if((stack -> stBody[(stack->top)-1]) == '$')	//test na konec vstupniho retezce
 			{
 				if((stack -> stBody[(stack->top)-3]) == '$')
 				{
 					stack -> stBody[stack->top] = '\0';
-					if(pomcmp = strcmp(stack -> stBody, '$E$')
+					if(pomcmp = strcmp(stack -> stBody, "$E$") == 0)
 					{
 						ret = T_OK;
 					}
@@ -326,6 +339,7 @@ int prec(char* input)
 				{
 					pop(stack);
 					push(stack, ']');
+printf("%s\n", stack->stBody);					
 					j1 = pomst[pom-1];
 					k1 = stack->top;
 					l1 = 0;
@@ -334,12 +348,13 @@ int prec(char* input)
 						pomch [l1] = stack -> stBody[x1];
 						l1++;
 					}
-					pomch[l1] = '\0'
+					pomch[l1] = '\0';
 					for(int y1 = k1; y1 > j1; y1--)
 					{
 						pop(stack);
 					}
 					push(stack, cmp_string(pomch));
+printf("%s\n", stack->stBody);					
 					pom--;
 					k--;
 				}
@@ -347,15 +362,16 @@ int prec(char* input)
 
 			else if((stack -> stBody[(stack->top)-1]) == ')')	//test na pravidlo se zavorkami
 			{
-				if((stack -> stBody[(stack->top)-3]) == '(')
+			/*	if((stack -> stBody[(stack->top)-3]) == '(')
 				{
 					break;
-				}
+				}*/
 
-				else	//opet, pokud v zavorkach lze jeste neco redukovat, redukujeme
+				if((stack -> stBody[(stack->top)-3]) != '(')	//opet, pokud v zavorkach lze jeste neco redukovat, redukujeme
 				{
 					pop(stack);
-					push(stack, ']'); 
+					push(stack, ']');
+printf("%s\n", stack->stBody);				       	
 					j2 = pomst[pom-1];
 					k2 = stack->top;
 					l2 = 0;
@@ -364,12 +380,13 @@ int prec(char* input)
 						pomch [l2] = stack -> stBody[x2];
 						l2++;
 					}
-					pomch[l2] = '\0'
+					pomch[l2] = '\0';
 					for(int y2 = k2; y2 > j2; y2--)
 					{
 						pop(stack);
 					}
 					push(stack, cmp_string(pomch));
+printf("%s\n", stack->stBody);					
 					pom--;
 					k--;
 				}
@@ -378,7 +395,8 @@ int prec(char* input)
 			else	//ostatni znaky, krome '$' a ')'
 			{
 				pop(stack);
-				push(stack, ']'); 
+				push(stack, ']');
+printf("%s\n", stack->stBody);				
 				j3 = pomst[pom-1];
 				k3 = stack->top;
 				l3 = 0;
@@ -387,19 +405,21 @@ int prec(char* input)
 					pomch [l3] = stack -> stBody[x3];
 					l3++;
 				}
-				pomch[l3] = '\0'
+				pomch[l3] = '\0';
 				for(int y3 = k3; y3 > j3; y3--)
 				{
 					pop(stack);
-				}
+				}				
+
 				push(stack, cmp_string(pomch));
+printf("%s\n", stack->stBody);				
 				pom--;
 				k--;
 			}
 
 		}
 
-		else if(prec_pom [t_type(stack -> stBody[top])] [t_type(input[k])] == ' ')	//chybny vstup
+		else if(prec_pom [t_type(stack -> stBody[(stack->top)-1])] [t_type(input[k])] == ' ')	//chybny vstup
 		{
 			ret = T_SYN;
 		}
@@ -411,11 +431,20 @@ int prec(char* input)
 	}
 
 /*uvolneni alokaci*/
-	free(stack -> stackBody);
+	free(stack -> stBody);
 	free(stack);
 
 	return ret;
-
 }
 
 
+/****Testovaci funkce*****************************************************/
+int main()
+{
+	char input [50] = "(i+i*i+i)*i=i<i+i";
+	int ret;
+	ret = precedencni(input);
+	printf("%d\n", ret);
+	return 0;
+}
+/*************************************************************************/
