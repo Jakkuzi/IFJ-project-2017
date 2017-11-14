@@ -69,7 +69,7 @@ int t_type(char c)
     		case '-':	return 1;
     		case '*':	return 2;
     		case '/':	return 3;
-    		case '\\':	return 4;
+    		case '\'':	return 4;
     		case '<':	return 5;
     		case '>':	return 6;
     		case 'l':	return 7;
@@ -121,7 +121,7 @@ char cmp_string(char* string)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, "[E\E]")) == 0)
+	else if((compare = strcmp(string, "[E\'E]")) == 0)
 	{
 		c = 'E';
 	}
@@ -246,13 +246,11 @@ printf("%d\n", k);
 
 			push(stack, input[k]);
 
-
-printf("%s\n", stack->stBody);
 			a = stack -> stBody[(stack->top)-1];
 			b = stack -> stBody[(stack->top)-3];
-			if(a == '+' || a == '-' || a == '*' || a == '/' || a == '\\' || a == '<' || a == '>' || a == 'l' || a == 'm' || a == '=' || a == '!') //porovnani priority znamenek
+			if(a == '+' || a == '-' || a == '*' || a == '/' || a == '\'' || a == '<' || a == '>' || a == 'l' || a == 'm' || a == '=' || a == '!') //porovnani priority znamenek
 			{
-				if(b == '+' || b == '-' || b == '*' || b == '/' || b == '\\' || b == '<' || b == '>' || b == 'l' || b == 'm' || b == '=' || b == '!')
+				if(b == '+' || b == '-' || b == '*' || b == '/' || b == '\'' || b == '<' || b == '>' || b == 'l' || b == 'm' || b == '=' || b == '!')
 				{
 					if(prec [t_type(b)] [t_type(a)] == '<')	//mensi priorita
 					{
@@ -319,7 +317,7 @@ printf("%s\n", stack->stBody);
 		else if(prec_pom [t_type(stack -> stBody[(stack->top)-1])] [t_type(input[k])] == '>')
 		{
 			push(stack, input[k]);
-printf("%s\n", stack->stBody);			
+			
 			if((stack -> stBody[(stack->top)-1]) == '$')	//test na konec vstupniho retezce
 			{
 				if((stack -> stBody[(stack->top)-3]) == '$')
@@ -362,10 +360,6 @@ printf("%s\n", stack->stBody);
 
 			else if((stack -> stBody[(stack->top)-1]) == ')')	//test na pravidlo se zavorkami
 			{
-			/*	if((stack -> stBody[(stack->top)-3]) == '(')
-				{
-					break;
-				}*/
 
 				if((stack -> stBody[(stack->top)-3]) != '(')	//opet, pokud v zavorkach lze jeste neco redukovat, redukujeme
 				{
@@ -441,7 +435,7 @@ printf("%s\n", stack->stBody);
 /****Testovaci funkce*****************************************************/
 int main()
 {
-	char input [50] = "(i+i*i+i)*i=i<i+i";
+	char input [50] = "i=i+i\'i";
 	int ret;
 	ret = precedencni(input);
 	printf("%d\n", ret);
