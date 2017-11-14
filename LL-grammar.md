@@ -14,7 +14,7 @@
 * __Tělo__               →   __Input__ eol __Tělo__
 * __Tělo__               →   print __Print_param__ eol __Tělo__
 * __Tělo__               →   __Přiřazení__ eol __Tělo__
-* __Tělo__               →   e
+* __Tělo__               →   ε
 * __Input__              →   __Výraz__
 * __Přiřazení__          →   id = id_funkce __Parametry__
 * __Print_param__        →   __Param_p__ __Param_next__
