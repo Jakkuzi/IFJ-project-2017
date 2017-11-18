@@ -10,6 +10,8 @@
 /* default function called from main */
 int main();
 
+typedef struct tLine tLine; // deklarace pred pouzitim v tCode
+
 /* list containing all lines from stdin */
 typedef struct tCode {
     struct tLine *lineData;
