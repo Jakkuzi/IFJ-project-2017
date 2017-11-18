@@ -5,6 +5,8 @@
 
 #include "parser.h"
 
+#include <stdio.h>
+
 int syntax_analysis(tCodePtr *);
 
 typedef struct {
@@ -12,6 +14,7 @@ typedef struct {
     int top;
 }tStack;
 
+/* operations with stack */
 void stackInit(tStack *);
 int stackEmpty(tStack *);
 void sPush(tStack *, int);
