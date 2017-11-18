@@ -5,7 +5,8 @@
 /*	stromy.								*/
 /************************************************************************/
 
-
+#ifndef SYMTABLE_H
+#define SYMTABLE_H
 
 #include<stdlib.h>
 #include<stdio.h>
@@ -97,3 +98,6 @@ bool BTInsertFunc(BTNodePtr *, varDataType, char *, BTNodePtr *);	// vlozi funkc
 
 void BTDispose(BTNodePtr *);			// nerekurzivne zrusi cely strom (uvolni alokovanou pamet)
 						// vyuziva zasobniku ukazatelu BTStack
+
+
+#endif SYMTABLE_H
