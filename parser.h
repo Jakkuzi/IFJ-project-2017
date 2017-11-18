@@ -2,32 +2,35 @@
 #define PARSER_H
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "syntax_check.h"
 #include "strings.h"
 
 /* default function called from main */
-int parser();
+int main();
 
 /* list containing all lines from stdin */
 typedef struct tCode {
-    struct line;
+    struct tLine *lineData;
     struct tCode *next;
 } *tCodePtr;
 
 /* struct for keeping one line of code */
 typedef struct tLine {
-    struct TString *line;
+    TString *token;
     struct tLine *next;
 } *tLinePtr;
 
-void tCodeInit(tCodePtr *);
-void tCodeInsert(tCodePtr *);
-void tCodeDispose(tCodePtr *);
+typedef struct {
+    tCodePtr first;
+    tCodePtr last;
+} tCodeList;
 
-void tLineInit(tLinePtr *);
-void tLineInsert(tLinePtr *);
-void tLineDispose(tLinePtr *);
+void tCodeInit(tCodeList *);
+int tCodeCreateNewLine(tCodeList *);
+void tCodeInsertToken(tCodeList *, TString);
+
 
 
 #endif PARSER_H
