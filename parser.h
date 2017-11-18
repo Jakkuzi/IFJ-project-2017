@@ -9,9 +9,11 @@
 /* default function called from main */
 int parser();
 
+typedef struct tLine tLine; // deklarace pred pouzitim v tCode
+
 /* list containing all lines from stdin */
 typedef struct tCode {
-    struct line;
+    struct tLine *line;
     struct tCode *next;
 } *tCodePtr;
 
