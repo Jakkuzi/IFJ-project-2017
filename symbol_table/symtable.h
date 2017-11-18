@@ -100,4 +100,4 @@ void BTDispose(BTNodePtr *);			// nerekurzivne zrusi cely strom (uvolni alokovan
 						// vyuziva zasobniku ukazatelu BTStack
 
 
-#endif SYMTABLE_H
+#endif
