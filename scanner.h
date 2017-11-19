@@ -8,6 +8,7 @@
 #define valueOfInteger          12
 #define valueOfDouble           13
 #define valueOfDoubleWithExp    14
+#define valueOfString           15
 // klucove slova
 
 #define  As                     21
