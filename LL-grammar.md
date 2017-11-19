@@ -78,13 +78,13 @@
 70. __Přiřazení__			→	= __Přiřazení2__ eol
 71. __Přiřazení__			→ 	eol
 72. __Přiřazení2__			→	id __Id_as__
-73. __Přiřazení2__			→	valueOfxxx -- (eol)
+73. __Přiřazení2__			→	funkce před precedenční analýzou -- (eol)
 74. __Id_as__				→	( __Parametr_fce__ (eol)
-75. __Id_as__				→	{operátor} -- výraz (eol)
+75. __Id_as__				→	funkce před precedenční analýzou -- (eol)
 76. __Parametr_fce__ 		→	id __Parametr_fce_next__
 77. __Parametr_fce_next__	→	, __Parametr_funkce__
 78. __Parametr_fce_next__	→	)
-79. __Výraz__				→	id - EOL, ;
+79. __Výraz__				→	id __Id_as__ -- EOL, ;
 80. __Výraz__				→	valueOfxxx - EOL, ;
 81. __Výraz_if__			→	id - (then)
 82. __Výraz_if__			→	valueOfxxx - (then)

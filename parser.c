@@ -1,12 +1,16 @@
 #include "parser.h"
 
+
+
 int main(){
     tCodeList sCode;
 
     tCodeInit(&sCode);
-
-    if(syntax_analysis(&sCode) != 0)
+    int syntax = syntax_analysis(&sCode);
+    if(syntax == 2)
         return 2;
+    if(syntax == 99)
+        return 99;
 
 }
 
