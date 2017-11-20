@@ -8,10 +8,10 @@
 #include "scanner.h"
 #include "strings.h"
 
-FILE  *files;
-void setSourceFile (FILE *f){
+  FILE  *stdin;
+  void setSourceFile (FILE *f){
 
-  files=f;
+       stdin=f;
 
 }
 
@@ -25,7 +25,7 @@ int getNextToken(TString* token){
 
   while (1) {
 
-    i=getc(files);
+    i=getchar();
 
       switch(stateOfAutomat){
 
@@ -57,7 +57,7 @@ int getNextToken(TString* token){
           else if (i=='*')
                   return Mul;
           else if (i=='\'')
-                  return Backslash;
+                  return IntDiv;
           else if (i=='=')
                   return Equal;
           else if (i=='(')
@@ -74,28 +74,28 @@ int getNextToken(TString* token){
                   return Semicolon;
           else if (i==EOF)
                   return EndOfFile;
-          else if (i==EOL)
-                  return EndOfLine;
+          //else if (i==EOL)
+                 // return EndOfLine;
           else
                   return ErrorInLexicalAnalyzer;
         break;
 
         case 1:
-          if(i=='\'')
+          if(i=='/')
             stateOfAutomat=2;
           else{
-            ungetc(i,files);
+            ungetc(i,stdin);
             return Div;
           }
          break;
 
         case 2:           //blokovy komentar
-          if (i=='\''){
-            i=getc(files);
+          if (i=='/'){
+            i=getchar();
             if (i=='/')
               stateOfAutomat=0;
             else
-              ungetc(i,files);
+              ungetc(i,stdin);
            }
           else if (i==EOF)
             return ErrorInLexicalAnalyzer;
@@ -105,7 +105,7 @@ int getNextToken(TString* token){
           if (isalnum(i) || (i=='_')) //identifikator
             addToString(token,i);
           else{
-            ungetc(i,files);
+            ungetc(i,stdin);
             if (compareStringAndString(token,"As")== 0)  //rezervovane slova
                 return As;
             else if (compareStringAndString(token,"Asc")== 0)
@@ -188,7 +188,7 @@ int getNextToken(TString* token){
 
         case 5:
            if (i=='"'){
-             i=getc(files);
+             i=getchar();
              if (i<=001 || i>=255)
                 return ErrorInLexicalAnalyzer;
                else if(i=='"')
@@ -202,10 +202,10 @@ int getNextToken(TString* token){
                else if (isdigit(i)){
                       {aux=i;
                       addToString(token,aux);}
-                    if (isdigit(i=getc(files))){
+                    if (isdigit(i=getchar())){
                         {aux=aux*10+i;
                         addToString(token,aux);}
-                        if (isdigit(i=getc(files)))
+                        if (isdigit(i=getchar()))
                             {aux=aux*10+i;
                             addToString(token,aux);}
                             else if (i==EOF)
@@ -237,7 +237,7 @@ int getNextToken(TString* token){
                    stateOfAutomat=8;
            }
            else{
-                ungetc(i,files);
+                ungetc(i,stdin);
                 return valueOfInteger;
            }
         break;
@@ -248,7 +248,7 @@ int getNextToken(TString* token){
               stateOfAutomat=8;
           }
           else{
-              ungetc(i,files);
+              ungetc(i,stdin);
               return ErrorInLexicalAnalyzer;
           }
         break;
@@ -261,7 +261,7 @@ int getNextToken(TString* token){
               stateOfAutomat=9;
           }
           else{
-              ungetc(i,files);
+              ungetc(i,stdin);
               return valueOfDouble;
           }
         break;
@@ -287,7 +287,7 @@ int getNextToken(TString* token){
            else if (i== '=')
               return LowerOrEqual;
            else{
-            ungetc(i,files);
+            ungetc(i,stdin);
             return Lower;
            }
         break;
@@ -296,7 +296,7 @@ int getNextToken(TString* token){
           if(i=='=')
              return GreaterOrEqual;
           else{
-            ungetc(i,files);
+            ungetc(i,stdin);
             return Greater;
            }
         break;

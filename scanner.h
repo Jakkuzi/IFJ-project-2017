@@ -2,6 +2,7 @@
 #define scanner_h
 
 #include <stdio.h>
+#include "strings.h"
 
 
 #define ID                      11
@@ -57,7 +58,7 @@
 #define  Minus                  82  // -
 #define  Div                    83  // /
 #define  Mul                    84  // '*'
-#define  Backslash              85  // '\'
+#define  IntDiv                 85  // '\'
 #define  Equal                  86  // =
 #define  LowerGreater           87  // <>
 #define  Lower                  88  // <
@@ -71,7 +72,7 @@
 #define RightParenthes          101 // )
 #define LeftBrace               102 // {
 #define RightBrace              103 // }
-#define SemiColon               104 //;
+#define Semicolon               104 // ;
 #define Comma                   105 // ,
 #define Exclamation             106 // !
 
