@@ -177,7 +177,14 @@ int syntax_analysis(tCodeList *C){
                     return 2;
                 }
             } // insert new rules to stack
-
+            else{
+                if(sTop(s) == t)
+                    sPop(s);
+                else{
+                    freeThisCycle(token, s);
+                    return 2;
+                }
+            }
             //TODO: pošéfovat id
 
             //TODO: tady bude asi switch??

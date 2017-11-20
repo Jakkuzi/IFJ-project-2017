@@ -12,6 +12,11 @@ int main(){
     if(syntax == 99)
         return 99;
 
+
+    
+    printf("Syntaktická analýza OK\n");
+
+    return 0;
 }
 
 void tCodeInit(tCodeList *sCode){
