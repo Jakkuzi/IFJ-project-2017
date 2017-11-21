@@ -1,6 +1,7 @@
 #include "parser.h"
 
 int main(){
+    //freopen("program.txt","r",stdin);
     tCodeList sCode;
 
     tCodeInit(&sCode);
