@@ -15,6 +15,8 @@ int getNextToken(TString* token){
       switch(stateOfAutomat){
 
         case 0:
+          if (i==EOL)
+            return EndOfLine;
           if (isspace(i)) // zistuje biele znaky
           stateOfAutomat=0;
           else if (i=='/')  // komentar alebo delenie
@@ -59,8 +61,6 @@ int getNextToken(TString* token){
                   return Semicolon;
           else if (i==EOF)
                   return EndOfFile;
-          else if (i==EOL)
-                  return EndOfLine;
           else
                   return ErrorInLexicalAnalyzer;
         break;
