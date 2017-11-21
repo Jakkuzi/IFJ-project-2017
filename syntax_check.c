@@ -125,6 +125,7 @@ int syntax_analysis(tCodeList *C){
     int eol_loaded = 0;
 
     do{
+        //TODO: EOL check
         TString *token = malloc(sizeof(TString));
         if(token == NULL)
             return 99;

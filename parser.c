@@ -11,9 +11,6 @@ int main(){
         return 2;
     if(syntax == 99)
         return 99;
-
-
-    
     printf("Syntaktická analýza OK\n");
 
     return 0;
