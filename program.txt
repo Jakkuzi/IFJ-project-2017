@@ -1,13 +1,8 @@
 
-Declare Function id () As Double
-
-Function id (id As Integer) As String
-    Input id
-
-
-End Function
+    
+    
 
 Scope
-	Dim prom As Integer
+	print id;
 End Scope
 

@@ -10,27 +10,27 @@
 #define MAX_STACK 1000000
 
 /* definitions of LL non-terminals */
-#define S                    0     //201    index in ll array
-//      Head                 1     //202    use index-201 to get
-//      Parameters           2     //203    position in array
-//      ParameterNext        3     //204
-//      BodyFunction         4     //205
-//      BodyIF1              5     //206
-//      BodyIF2              6     //207
-//      BodyWhile            7     //208
-//      ScopeBody            8     //209
-//      ScopeWhile           9     //210
-//      ScopeIF1            10     //211
-//      ScopeIF2            11     //212
-//      Assignment          12     //213
-//      Assignment2         13     //214
-//      IdAs                14     //215
-//      ParameterFce        15     //216
-//      ParameterFceNext    16     //217
-//      Expr                17     //218
-//      ExprIF              18     //219
-//      DataType            19     //220
-//      PrintP              20     //221
+#define S                    0     // 201    index in ll array
+//      Head                 1     // 202    use index-201 to get
+//      Parameters           2     // 203    position in array
+//      ParameterNext        3     // 204
+//      BodyFunction         4     // 205
+//      BodyIF1              5     // 206
+//      BodyIF2              6     // 207
+//      BodyWhile            7     // 208
+//      ScopeBody            8     // 209
+//      ScopeWhile           9     // 210
+//      ScopeIF1            10     // 211
+//      ScopeIF2            11     // 212
+//      Assignment          12     // 213
+//      Assignment2         13     // 214
+//      IdAs                14     // 215
+//      ParameterFce        15     // 216
+//      ParameterFceNext    16     // 217
+//      Expr                17     // 218
+//      ExprIF              18     // 219
+//      DataType            19     // 220
+//      PrintP              20     // 221
 
 typedef struct {
     int value[MAX_STACK];
