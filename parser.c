@@ -1,16 +1,16 @@
 #include "parser.h"
 
-
-
 int main(){
+    //freopen("program.txt","r",stdin);
     tCodeList sCode;
 
     tCodeInit(&sCode);
     int syntax = syntax_analysis(&sCode);
-    if(syntax == 2)
-        return 2;
-    if(syntax == 99)
-        return 99;
+    if(syntax != 0){
+        // TODO: uvolnit struktury
+        return syntax;
+    }
+
     printf("Syntaktická analýza OK\n");
 
     return 0;
@@ -22,8 +22,8 @@ void tCodeInit(tCodeList *sCode){
 }
 
 int tCodeCreateNewLine(tCodeList *sCode){
-    tCodePtr line = (struct tCode *) malloc(sizeof(struct tCode)); //new line of code
-    tLinePtr data = (struct tLine *) malloc(sizeof(struct tLine)); //new place tokens in line
+    tCodePtr line = (struct tCode *) malloc(sizeof(struct tCode));
+    tLinePtr data = (struct tLine *) malloc(sizeof(struct tLine));
     if(line == NULL || data == NULL)
         return 99;
     if(sCode->first == NULL)
