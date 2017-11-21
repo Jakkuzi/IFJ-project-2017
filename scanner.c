@@ -9,9 +9,9 @@ int getNextToken(TString* token){
 
   while (1) {
 
-    i=tolower(i);
     i=getchar();
-
+    i=tolower(i);
+    
       switch(stateOfAutomat){
 
         case 0:
