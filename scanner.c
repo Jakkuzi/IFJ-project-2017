@@ -8,17 +8,15 @@ int getNextToken(TString* token){
   stringClean(token);
 
   while (1) {
-    
+
     i=tolower(i);
     i=getchar();
 
       switch(stateOfAutomat){
 
         case 0:
-          if (i==EOL)) // zistuje biele znaky
-           return EndOfLine;
-          else if (isspace(i))
-            stateOfAutomat=0;
+          if (isspace(i)) // zistuje biele znaky
+          stateOfAutomat=0;
           else if (i=='/')  // komentar alebo delenie
                stateOfAutomat=1;
           else if (isalpha(i) || (i=='_')) {// identifikator,klucove slovo alebo rezervovane klucove slovo
@@ -61,6 +59,8 @@ int getNextToken(TString* token){
                   return Semicolon;
           else if (i==EOF)
                   return EndOfFile;
+          else if (i==EOL)
+                  return EndOfLine;
           else
                   return ErrorInLexicalAnalyzer;
         break;
@@ -91,75 +91,75 @@ int getNextToken(TString* token){
             addToString(token,i);
           else{
             ungetc(i,stdin);
-            if (compareStringAndString(token,"As")== 0)  //rezervovane slova
+            if (compareStringAndString(token,"as")== 0)  //rezervovane slova
                 return As;
-            else if (compareStringAndString(token,"Asc")== 0)
+            else if (compareStringAndString(token,"asc")== 0)
                 return Asc;
-            else if (compareStringAndString(token,"Declare")== 0)
+            else if (compareStringAndString(token,"declare")== 0)
                 return Declare;
-            else if (compareStringAndString(token,"Dim")== 0)
+            else if (compareStringAndString(token,"dim")== 0)
                 return Dim;
-            else if (compareStringAndString(token,"Do")== 0)
+            else if (compareStringAndString(token,"do")== 0)
                 return Do;
-            else if (compareStringAndString(token,"Double")== 0)
+            else if (compareStringAndString(token,"double")== 0)
                 return Double;
-            else if (compareStringAndString(token,"Else")== 0)
+            else if (compareStringAndString(token,"else")== 0)
                 return Else;
-            else if (compareStringAndString(token,"End")== 0)
+            else if (compareStringAndString(token,"end")== 0)
                 return End;
-            else if (compareStringAndString(token,"Chr")== 0)
+            else if (compareStringAndString(token,"chr")== 0)
                 return Chr;
-            else if (compareStringAndString(token,"Function")== 0)
+            else if (compareStringAndString(token,"function")== 0)
                 return Function;
-            else if (compareStringAndString(token,"If")== 0)
+            else if (compareStringAndString(token,"if")== 0)
                 return If;
-            else if (compareStringAndString(token,"Input")== 0)
+            else if (compareStringAndString(token,"input")== 0)
                 return Input;
-            else if (compareStringAndString(token,"Integer")== 0)
+            else if (compareStringAndString(token,"integer")== 0)
                 return Integer;
-            else if (compareStringAndString(token,"Length")== 0)
+            else if (compareStringAndString(token,"length")== 0)
                 return Length;
-            else if (compareStringAndString(token,"Loop")== 0)
+            else if (compareStringAndString(token,"loop")== 0)
                 return Loop;
-            else if (compareStringAndString(token,"Print")== 0)
+            else if (compareStringAndString(token,"print")== 0)
                 return Print;
-            else if (compareStringAndString(token,"Return")== 0)
+            else if (compareStringAndString(token,"return")== 0)
                 return Return;
-            else if (compareStringAndString(token,"Scope")== 0)
+            else if (compareStringAndString(token,"scope")== 0)
                 return Scope;
-            else if (compareStringAndString(token,"String")== 0)
+            else if (compareStringAndString(token,"string")== 0)
                 return String;
-            else if (compareStringAndString(token,"SubStr")== 0)
+            else if (compareStringAndString(token,"substr")== 0)
                 return SubStr;
-            else if (compareStringAndString(token,"Then")== 0)
+            else if (compareStringAndString(token,"then")== 0)
                 return Then;
-            else if (compareStringAndString(token,"While")== 0)
+            else if (compareStringAndString(token,"while")== 0)
                 return While;
-            else if (compareStringAndString(token,"And")== 0)    //rezervovane klucove slova
+            else if (compareStringAndString(token,"and")== 0)    //rezervovane klucove slova
                 return And;
-            else if (compareStringAndString(token,"Boolean")== 0)
+            else if (compareStringAndString(token,"boolean")== 0)
                 return Boolean;
-            else if (compareStringAndString(token,"Continue")== 0)
+            else if (compareStringAndString(token,"continue")== 0)
                 return Continue;
-            else if (compareStringAndString(token,"Elseif")== 0)
+            else if (compareStringAndString(token,"elseif")== 0)
                 return Elseif;
-            else if (compareStringAndString(token,"Exit")== 0)
+            else if (compareStringAndString(token,"exit")== 0)
                 return Exit;
-            else if (compareStringAndString(token,"False")== 0)
+            else if (compareStringAndString(token,"false")== 0)
                 return False;
-            else if (compareStringAndString(token,"For")== 0)
+            else if (compareStringAndString(token,"for")== 0)
                 return For;
-            else if (compareStringAndString(token,"Next")== 0)
+            else if (compareStringAndString(token,"next")== 0)
                 return Next;
-            else if (compareStringAndString(token,"Not")== 0)
+            else if (compareStringAndString(token,"not")== 0)
                 return Not;
-            else if (compareStringAndString(token,"Or")== 0)
+            else if (compareStringAndString(token,"or")== 0)
                 return Or;
-            else if (compareStringAndString(token,"Shared")== 0)
+            else if (compareStringAndString(token,"shared")== 0)
                 return Shared;
-            else if (compareStringAndString(token,"Static")== 0)
+            else if (compareStringAndString(token,"static")== 0)
                 return Static;
-            else if (compareStringAndString(token,"True")== 0)
+            else if (compareStringAndString(token,"true")== 0)
                 return True;
             else
                 return ID;
