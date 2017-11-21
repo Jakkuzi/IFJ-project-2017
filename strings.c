@@ -39,7 +39,7 @@ int addToString (TString *s, char c ){
 
  if (s->length + 1 >= s->sizeOfAllocation){
 
-   if ((s->myString = (char*) realloc(s->myString, s->length + StringLength)) == NULL)
+   if ((s->myString = (char*) realloc(s->myString, s->length + StringLength * sizeof(char))) == NULL)
      return StringError;
    s->sizeOfAllocation = s->length + StringLength ;
    }

@@ -1,22 +1,10 @@
-#ifndef PARSER_H
-#define PARSER_H
+#ifndef parser_h
+#define parser_h
 
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "syntax_check.h"
 #include "strings.h"
-
-/* default function called from main */
-int main();
-
-typedef struct tLine tLine; // deklarace pred pouzitim v tCode
-
-/* list containing all lines from stdin */
-typedef struct tCode {
-    struct tLine *lineData;
-    struct tCode *next;
-} *tCodePtr;
 
 /* struct for keeping one line of code */
 typedef struct tLine {
@@ -24,15 +12,26 @@ typedef struct tLine {
     struct tLine *next;
 } *tLinePtr;
 
+
+/* list containing all lines from stdin */
+typedef struct tCode {
+    struct tLine *lineData;
+    struct tCode *next;
+} *tCodePtr;
+
 typedef struct {
     tCodePtr first;
     tCodePtr last;
 } tCodeList;
 
+int main();
+
 void tCodeInit(tCodeList *);
+
 int tCodeCreateNewLine(tCodeList *);
 void tCodeInsertToken(tCodeList *, TString);
 
+#include "syntax_check.h"
 
 
-#endif PARSER_H
+#endif
