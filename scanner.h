@@ -1,9 +1,12 @@
 #ifndef scanner_h
 #define scanner_h
 
+#include <stdlib.h>
 #include <stdio.h>
+#include <ctype.h>
 #include "strings.h"
 
+#define EOL                     '\n'
 
 #define ID                      11
 #define valueOfInteger          12
@@ -81,7 +84,6 @@
 #define EndOfLine               122
 #define ErrorInLexicalAnalyzer  1
 
-void setSourceFile(FILE *f);
 int getNextToken(TString* token);
 
 #endif

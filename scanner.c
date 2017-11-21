@@ -1,20 +1,4 @@
-
-
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <ctype.h>
-
 #include "scanner.h"
-#include "strings.h"
-
-  FILE  *stdin;
-  void setSourceFile (FILE *f){
-
-       stdin=f;
-
-}
-
 
 int getNextToken(TString* token){
 
@@ -74,8 +58,8 @@ int getNextToken(TString* token){
                   return Semicolon;
           else if (i==EOF)
                   return EndOfFile;
-          //else if (i==EOL)
-                 // return EndOfLine;
+          else if (i==EOL)
+                  return EndOfLine;
           else
                   return ErrorInLexicalAnalyzer;
         break;
