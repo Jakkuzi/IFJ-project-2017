@@ -15,8 +15,10 @@ int getNextToken(TString* token){
       switch(stateOfAutomat){
 
         case 0:
-          if (isspace(i)) // zistuje biele znaky
-          stateOfAutomat=0;
+          if (i==EOL)) // zistuje biele znaky
+           return EndOfLine;
+          else if (isspace(i))
+            stateOfAutomat=0;
           else if (i=='/')  // komentar alebo delenie
                stateOfAutomat=1;
           else if (isalpha(i) || (i=='_')) {// identifikator,klucove slovo alebo rezervovane klucove slovo
@@ -59,8 +61,6 @@ int getNextToken(TString* token){
                   return Semicolon;
           else if (i==EOF)
                   return EndOfFile;
-          else if (i==EOL)
-                  return EndOfLine;
           else
                   return ErrorInLexicalAnalyzer;
         break;
