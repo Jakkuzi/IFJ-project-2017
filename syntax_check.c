@@ -1,11 +1,12 @@
 #include "syntax_check.h"
+#include "strings.h"
 
 /* LL table converted to id of tokens */
 int ll[21][8][8] = {
     //S
-    {{23, 	30,		202,	122, 	201,	0,		0,		0},
-    {30, 	202,	122,	205, 	30 ,	122,	201,	0},
-    {38, 	122,	209,	38, 	0,		0,		0,		0},},
+    {{23, 	30,		202,	122, 	201,	0,		0,		0},     // declare
+    {30, 	202,	122,	205, 	30 ,	122,	201,	0},     // function
+    {38, 	122,	209,	38,     0,		0,		0,		0},},   // scope
     //Head
     {{11, 	100,	203,	21,		220, 	0,		0,		0},},
     //Parameters
@@ -120,25 +121,38 @@ int syntax_analysis(tCodeList *C){
         return 99;
     stackInit(s);
     int i, found; // iteration and auxiliary variables
-    int t; // token id
+    int t = 0; // token id
     int first_token = 1; // check start of code
-    int eol_loaded = 0;
 
     do{
-        //TODO: EOL check
         TString *token = malloc(sizeof(TString));
-        if(token == NULL)
+        if(token == NULL){
+            free(s);
             return 99;
-        stringInit(token);
-        t = getNextToken(token);
-        if(t == 122)
-            eol_loaded = 1;
-        if(eol_loaded && sTop(s) != 122){ // remove all empty lines unless they are on stack
-            stringFree(token);
-            stringInit(token);
-            t = getNextToken(token);
-            eol_loaded = 0;
         }
+        stringInit(token);
+
+        if(t == 122){ // last token was EOL
+            t = getNextToken(token);
+            if(t == 99 || t == 1)
+                return t;
+            while(t == 122){
+                stringFree(token);
+                stringInit(token);
+                t = getNextToken(token);
+                if(t == 99 || t == 1)
+                    return t;
+            }
+
+        }
+        else{ // read first token
+            t = getNextToken(token);
+            if(t == 99 || t == 1)
+                return t;
+        }
+        //TODO: RM if below
+        if(t == 121)
+            return 0;
         if(first_token){ // code must start with exact commands from set of 3 words
             while(t == 122){ // ignore empty lines on start
                 stringFree(token);
@@ -153,7 +167,7 @@ int syntax_analysis(tCodeList *C){
             }
 
             if(found){
-                applyRule(s, S, i);
+                applyRule(s, S, i-1);
                 sPop(s); // first token already match rule
             }
             else{
@@ -161,24 +175,25 @@ int syntax_analysis(tCodeList *C){
                 return 2;
             }
             first_token = 0;
-            eol_loaded = 0;
         }
         else{
-            if(sTop(s) > 201 && sTop(s) < 250){ // non-terminal to process
+            if(sTop(s) > 200 && sTop(s) < 250){ // non-terminal to process, insert new rules to stack
                 found = 0;
-                for(i = 0; i < 8 && !found; i++){
+                for(i = 0; i < 8 && !found; i++){ // looking for rule based on next token
                     if(t == ll[sTop(s)-201][i][0])
                         found = 1;
                 }
 
-                if(found)
-                    applyRule(s, sPopTop(s)-201, i);
+                if(found){
+                    applyRule(s, sPopTop(s)-201, i-1);
+                    sPop(s);
+                }
                 else{
                     freeThisCycle(token, s);
                     return 2;
                 }
-            } // insert new rules to stack
-            else{
+            }
+            else{ // terminal to process
                 if(sTop(s) == t)
                     sPop(s);
                 else{
@@ -204,7 +219,7 @@ int syntax_analysis(tCodeList *C){
 
 /* auxiliary functions */
 void applyRule(tStack *s,int rule, int section){
-    for(int i = 7; i <= 0; i--){
+    for(int i = 7; i >= 0; i--){
         if(ll[rule][section][i] == 0)
             continue;
         sPush(s, ll[rule][section][i]);
