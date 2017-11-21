@@ -24,7 +24,8 @@ int getNextToken(TString* token){
   stringClean(token);
 
   while (1) {
-
+    
+    i=tolower(i);
     i=getchar();
 
       switch(stateOfAutomat){
