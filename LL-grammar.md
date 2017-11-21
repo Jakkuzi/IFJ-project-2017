@@ -75,24 +75,25 @@
 67. __Scope_if2__			→	print __Print_param__ __Scope_if2__
 68. __Scope_if2__			→	end
 <!-- Zbytek -->
-70. __Přiřazení__			→	= __Přiřazení2__ eol
+70. __Přiřazení__			→	= __Přiřazení2__ 
 71. __Přiřazení__			→ 	eol
 72. __Přiřazení2__			→	id __Id_as__
-73. __Přiřazení2__			→	funkce před precedenční analýzou -- (eol)
+73. __Přiřazení2__			→	funkce před precedenční analýzou -- eol
 74. __Id_as__				→	( __Parametr_fce__ (eol)
-75. __Id_as__				→	funkce před precedenční analýzou -- (eol)
-76. __Parametr_fce__ 		→	id __Parametr_fce_next__
-77. __Parametr_fce_next__	→	, __Parametr_funkce__
-78. __Parametr_fce_next__	→	)
-79. __Výraz__				→	id __Id_as__ -- EOL, ;
-80. __Výraz__				→	valueOfxxx - EOL, ;
-81. __Výraz_if__			→	id - (then)
-82. __Výraz_if__			→	valueOfxxx - (then)
-83. __Datový_typ__			→	integer
-84. __Datový_typ__			→	double
-85. __Datový_typ__			→	string
-86. __Print_param__			→	__Přiřazení2__ ; __Print_param__
-87. __Print_param__			→	eol
+75. __Id_as__				→	funkce před precedenční analýzou -- eol
+76. __Id_as__               →   eol
+77. __Parametr_fce__ 		→	id __Parametr_fce_next__
+78. __Parametr_fce_next__	→	, __Parametr_funkce__
+79. __Parametr_fce_next__	→	)
+80. __Výraz__				→	id __Id_as__ -- EOL, ;
+81. __Výraz__				→	valueOfxxx - EOL, ;
+82. __Výraz_if__			→	id - (then)
+83. __Výraz_if__			→	valueOfxxx - (then)
+84. __Datový_typ__			→	integer
+85. __Datový_typ__			→	double
+86. __Datový_typ__			→	string
+87. __Print_param__			→	__Přiřazení__ ; __Print_param__
+88. __Print_param__			→	eol
 
 
 *	výrazy se pohlcují až po _then_, _eol_ a _;_
