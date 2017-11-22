@@ -55,7 +55,7 @@ int getNextToken(TString* token){
           addToString(token,i);
           return Mul;
       }
-          else if (i=='\') {
+/**/      else if (i=='\\') {
           addToString(token, i);
           return IntDiv;
       }
