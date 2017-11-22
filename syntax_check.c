@@ -91,8 +91,8 @@ int ll[21][8][8] = {
     {299,   0,      0,      0,      0,      0,      0,      0},},
     //IdAs
     {{100,  216,    0,      0,      0,      0,      0,      0},
-    {298,   0,      0,      0,      0,      0,      0,      0},
-    {122,   0,      0,      0,      0,      0,      0,      0}},
+    {122,   0,      0,      0,      0,      0,      0,      0},
+    {298,   0,      0,      0,      0,      0,      0,      0},},
     //ParameterFce
     {{11,   217,    0,      0,      0,      0,      0,      0},},
     //ParameterFceNext
@@ -109,8 +109,8 @@ int ll[21][8][8] = {
     {39,    0,      0,      0,      0,      0,      0,      0},
     {26,    0,      0,      0,      0,      0,      0,      0},},
     //PrintP
-    {{297,  73,     221,    0,      0,      0,      0,      0},
-    {122,   0,      0,      0,      0,      0,      0,      0},},
+    {{122,  0,      0,      0,      0,      0,      0,      0},
+    {297,  73,     221,    0,      0,      0,      0,      0},},
 };
 
 /* syntax analysis top down */
@@ -189,7 +189,9 @@ int syntax_analysis(tCodeList *C){
                     applyRule(s, sPopTop(s)-201, i-1);
                     sPop(s);
                 }
-                else{
+                else if(){
+                  //TODO: print a pravdepodobne dalsi funkce s ID 29x
+                } else{
                     freeThisCycle(token, s);
                     return 2;
                 }
@@ -245,6 +247,8 @@ void sPush(tStack *s, int num){
 }
 
 void sPop(tStack *s){
+    //TODO: smazat tu blbost pro urychleni
+    s->value[s->top] = 0;
     if(!stackEmpty(s))
         s->top--;
 }

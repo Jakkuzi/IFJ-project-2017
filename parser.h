@@ -9,6 +9,7 @@
 /* struct for keeping one line of code */
 typedef struct tLine {
     TString *token;
+    int tokenID;
     struct tLine *next;
 } *tLinePtr;
 
@@ -29,7 +30,7 @@ int main();
 void tCodeInit(tCodeList *);
 
 int tCodeCreateNewLine(tCodeList *);
-void tCodeInsertToken(tCodeList *, TString);
+void tCodeInsertToken(tCodeList *, TString, int);
 
 #include "syntax_check.h"
 
