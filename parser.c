@@ -65,10 +65,9 @@ int tCodeInsertToken(tCodeList *sCode, TString *token, int id){
 
         data->token = token;
         data->next = NULL;
+        data->tokenID = id;
         tmp->next = data;
-
     }
-
 }
 
 // smaže kód a uvolní alokovanou paměť
