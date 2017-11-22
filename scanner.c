@@ -42,28 +42,50 @@ int getNextToken(TString* token){
           else if (i=='<')
                  addToString(token,i);
                  stateOfAutomat=12;
-          else if (i=='+')
-                  return Plus;
-          else if (i=='-')
-                  return Minus;
-          else if (i=='*')
-                  return Mul;
-          else if (i=='\'')
-                  return IntDiv;
-          else if (i=='=')
-                  return Equal;
-          else if (i=='(')
-                  return LeftParenthes;
-          else if (i==')')
-                  return RightParenthes;
-          else if (i=='{')
-                  return LeftBrace;
-          else if (i=='}')
-                  return RightBrace;
-          else if (i==',')
-                  return Comma;
-          else if (i==';')
-                  return Semicolon;
+          else if (i=='+') {
+          addToString(token, i);
+          return Plus;
+      }
+          else if (i=='-') {
+          addToString(token, i);
+          return Minus;
+      }
+          else if (i=='*')  {
+          addToString(token,i);
+          return Mul;
+      }
+          else if (i=='\'') {
+          addToString(token, i);
+          return IntDiv;
+      }
+          else if (i=='=') {
+          addToString(token, i);
+          return Equal;
+      }
+          else if (i=='(') {
+          addToString(token, i);
+          return LeftParenthes;
+      }
+          else if (i==')') {
+          addToString(token, i);
+          return RightParenthes;
+      }
+          else if (i=='{') {
+          addToString(token, i);
+          return LeftBrace;
+      }
+          else if (i=='}') {
+          addToString(token, i);
+          return RightBrace;
+      }
+          else if (i==',') {
+          addToString(token, i);
+          return Comma;
+      }
+          else if (i==';') {
+          addToString(token, i);
+          return Semicolon;
+      }
           else if (i==EOF)
                   return EndOfFile;
           else
