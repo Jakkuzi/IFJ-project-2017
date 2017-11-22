@@ -39,7 +39,7 @@ int getNextToken(TString* token){
           else if (i=='\''){           //jednoriadkovy komentar
                  addToString(token,i);
                  stateOfAutomat=4;}
-          else if (i=='<') {
+          else if (i=='>') {
               addToString(token, i);
               stateOfAutomat = 12;
           }
@@ -55,7 +55,7 @@ int getNextToken(TString* token){
           addToString(token,i);
           return Mul;
       }
-          else if (i=='\'') {
+          else if (i=='\') {
           addToString(token, i);
           return IntDiv;
       }
