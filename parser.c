@@ -23,32 +23,72 @@ void tCodeInit(tCodeList *sCode){
 
 int tCodeCreateNewLine(tCodeList *sCode){
     tCodePtr line = (struct tCode *) malloc(sizeof(struct tCode));
-    tLinePtr data = (struct tLine *) malloc(sizeof(struct tLine));
-    if(line == NULL || data == NULL)
+    if(line == NULL)
         return 99;
+    line->lineData = NULL;
     line->next = NULL;
+
     if(sCode->first == NULL)
+    {
         sCode->first = line;
+	sCode->last = sCode->first;
+    }
     else{
         sCode->last->next = line;
+	sCode->last = sCode->last->next;
     }
-    sCode->last = line;
-
-    line->lineData = data;
     return 0;
 }
 
-void tCodeInsertToken(tCodeList *sCode, TString token, int id){
+
+
+void tCodeInsertToken(tCodeList *sCode, TString inToken, int id){
+
+	TString *token = (TString *) malloc (sizeof(TString));
+	// TODO: needs malloc error return value
+	token->myString = (char *) malloc (sizeof(char) * strlen(inToken.myString));
+	token->myString = strcpy(token->myString, inToken.myString);
+	token->length = inToken.length;
+	token->sizeOfAllocation = inToken.sizeOfAllocation;
+
     if(sCode->last->lineData == NULL){
+	sCode->last->lineData = (struct tLine *) malloc (sizeof(struct tLine));
+	// TODO: needs malloc error return value
         sCode->last->lineData->tokenID = id;
-        *sCode->last->lineData->token = token;
+        sCode->last->lineData->token = token;
+	sCode->last->lineData->next = NULL;
     }
     else{
+
         tLinePtr tmp = sCode->last->lineData;
         while(tmp->next != NULL)
             tmp = tmp->next;
-        *tmp->next->token = token;
-        tmp->next->tokenID = id;
+        tmp->next = (tLinePtr) malloc (sizeof(struct tLine));
+	// TODO: needs malloc error return value
+	tmp->next->next = NULL;
+	tmp->next->tokenID = id;
+	tmp->next->token = token;
     }
 }
 
+
+void tCodeDispose(tCodeList *sCode)
+{
+	tCodeList *tmp = sCode;
+	while(tmp->first != NULL)
+	{
+		tLinePtr tmpLine = tmp->first->lineData;
+		while(tmpLine != NULL)
+		{
+			free(tmpLine->token->myString);
+			free(tmpLine->token);
+			tLinePtr deleteLine = tmpLine;
+			tmpLine = tmpLine->next;
+			free(deleteLine);
+		}
+
+		tCodePtr deleteList = tmp->first;
+		tmp->first = tmp->first->next;
+		free(deleteList);
+	}
+}
