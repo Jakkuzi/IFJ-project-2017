@@ -3,15 +3,16 @@
 int main(){
     freopen("program.txt","r",stdin);
     tCodeList sCode;
-
     tCodeInit(&sCode);
+    tCodeCreateNewLine(&sCode);
+
     int syntax = syntax_analysis(&sCode);
     if(syntax != 0){
         // TODO: uvolnit struktury
         return syntax;
     }
 
-    printf("Syntaktická analýza OK\n");//TODO: smazat
+    printf("Syntakticka analyza OK\n");//TODO: smazat
 
     return 0;
 }
@@ -26,29 +27,39 @@ int tCodeCreateNewLine(tCodeList *sCode){
     tLinePtr data = (struct tLine *) malloc(sizeof(struct tLine));
     if(line == NULL || data == NULL)
         return 99;
+    data->next = NULL;
+    data->token = NULL;
     line->next = NULL;
-    if(sCode->first == NULL)
+    line->lineData = data;
+
+    if(sCode->first == NULL){
         sCode->first = line;
+        sCode->last = sCode->first;
+    }
     else{
         sCode->last->next = line;
+        sCode->last = line;
     }
-    sCode->last = line;
-
-    line->lineData = data;
     return 0;
 }
 
-void tCodeInsertToken(tCodeList *sCode, TString token, int id){
-    if(sCode->last->lineData == NULL){
-        sCode->last->lineData->tokenID = id;
-        *sCode->last->lineData->token = token;
+int tCodeInsertToken(tCodeList *sCode, TString *token, int id){
+    tLinePtr tmp = sCode->last->lineData;
+    while(tmp->next != NULL)
+        tmp = tmp->next;
+    if(tmp->token == NULL){
+        tmp->token = token;
+        tmp->tokenID = id;
     }
     else{
-        tLinePtr tmp = sCode->last->lineData;
-        while(tmp->next != NULL)
-            tmp = tmp->next;
-        *tmp->next->token = token;
-        tmp->next->tokenID = id;
+        tLinePtr data = (struct tLine *) malloc(sizeof(struct tLine));
+        if(data == NULL)
+            return 99;
+
+        data->token = token;
+        data->next = NULL;
+        tmp->next = data;
     }
+
 }
 

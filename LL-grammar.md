@@ -75,7 +75,7 @@
 67. __Scope_if2__			→	print __Print_param__ __Scope_if2__
 68. __Scope_if2__			→	end
 <!-- Zbytek -->
-70. __Přiřazení__			→	= __Přiřazení2__ 
+70. __Přiřazení__			→	= __Přiřazení2__ eol
 71. __Přiřazení__			→ 	eol
 72. __Přiřazení2__			→	id __Id_as__
 73. __Přiřazení2__			→	299
