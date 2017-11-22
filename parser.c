@@ -3,15 +3,16 @@
 int main(){
     freopen("program.txt","r",stdin);
     tCodeList sCode;
-
     tCodeInit(&sCode);
+    tCodeCreateNewLine(&sCode);
+
     int syntax = syntax_analysis(&sCode);
     if(syntax != 0){
         // TODO: uvolnit struktury
         return syntax;
     }
 
-    printf("Syntaktická analýza OK\n");//TODO: smazat
+    printf("Syntakticka analyza OK\n");//TODO: smazat
 
     return 0;
 }
@@ -25,51 +26,49 @@ void tCodeInit(tCodeList *sCode){
 // přidá další řádek kódu
 int tCodeCreateNewLine(tCodeList *sCode){
     tCodePtr line = (struct tCode *) malloc(sizeof(struct tCode));
+    tLinePtr data = (struct tLine *) malloc(sizeof(struct tLine));
     if(line == NULL)
         return 99;
-    line->lineData = NULL;
+    if(data == NULL){
+        free(line);
+        return 99;
+    }
+    data->next = NULL;
+    data->token = NULL;
     line->next = NULL;
+    line->lineData = data;
 
-    if(sCode->first == NULL)
-    {
+    if(sCode->first == NULL){
         sCode->first = line;
-	sCode->last = sCode->first;
+        sCode->last = sCode->first;
     }
     else{
         sCode->last->next = line;
-	sCode->last = sCode->last->next;
+        sCode->last = line;
     }
     return 0;
 }
 
 // přidá další položku na řádku kódu
-void tCodeInsertToken(tCodeList *sCode, TString inToken, int id){
-
-	TString *token = (TString *) malloc (sizeof(TString));
-	// TODO: needs malloc error return value
-	token->myString = (char *) malloc (sizeof(char) * strlen(inToken.myString));
-	token->myString = strcpy(token->myString, inToken.myString);
-	token->length = inToken.length;
-	token->sizeOfAllocation = inToken.sizeOfAllocation;
-
-    if(sCode->last->lineData == NULL){
-	sCode->last->lineData = (struct tLine *) malloc (sizeof(struct tLine));
-	// TODO: needs malloc error return value
-        sCode->last->lineData->tokenID = id;
-        sCode->last->lineData->token = token;
-	sCode->last->lineData->next = NULL;
+int tCodeInsertToken(tCodeList *sCode, TString *token, int id){
+    tLinePtr tmp = sCode->last->lineData;
+    while(tmp->next != NULL)
+        tmp = tmp->next;
+    if(tmp->token == NULL){
+        tmp->token = token;
+        tmp->tokenID = id;
     }
     else{
+        tLinePtr data = (struct tLine *) malloc(sizeof(struct tLine));
+        if(data == NULL)
+            return 99;
 
-        tLinePtr tmp = sCode->last->lineData;
-        while(tmp->next != NULL)
-            tmp = tmp->next;
-        tmp->next = (tLinePtr) malloc (sizeof(struct tLine));
-	// TODO: needs malloc error return value
-	tmp->next->next = NULL;
-	tmp->next->tokenID = id;
-	tmp->next->token = token;
+        data->token = token;
+        data->next = NULL;
+        tmp->next = data;
+
     }
+
 }
 
 // smaže kód a uvolní alokovanou paměť

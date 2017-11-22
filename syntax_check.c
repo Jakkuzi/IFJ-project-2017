@@ -1,5 +1,6 @@
 #include "syntax_check.h"
 #include "strings.h"
+#include "parser.h"
 
 /* LL table converted to id of tokens */
 int ll[21][8][8] = {
@@ -84,7 +85,7 @@ int ll[21][8][8] = {
     {36,    221,    212,    0,      0,      0,      0,      0},
     {28,    0,      0,      0,      0,      0,      0,      0},},
     //Assignment
-    {{86,   214,    0,      0,      0,      0,      0,      0},
+    {{86,   214,    122,    0,      0,      0,      0,      0},
     {122,   0,      0,      0,      0,      0,      0,      0},},
     //Assignment2
     {{11,   215,    0,      0,      0,      0,      0,      0},
@@ -115,18 +116,17 @@ int ll[21][8][8] = {
 
 /* syntax analysis top down */
 int syntax_analysis(tCodeList *C){
-    C->first = NULL;
     tStack *s;
     s = (tStack *) malloc(sizeof(tStack));
     if(s == NULL)
         return 99;
     stackInit(s);
-    int i, found; // iteration and auxiliary variables
+    int i, found, top = 0, result; // iteration and auxiliary variables
     int t = 0; // token id
     int first_token = 1; // check start of code
 
     do{
-        TString *token = malloc(sizeof(TString));
+        TString *token = (TString *) malloc(sizeof(TString));
         if(token == NULL){
             free(s);
             return 99;
@@ -151,7 +151,7 @@ int syntax_analysis(tCodeList *C){
             if(t == 99 || t == 1)
                 return t;
         }
-        //TODO: RM if below
+        //TODO: RM if below, check this on another place
         if(t == 121)
             return 0;
         if(first_token){ // code must start with exact commands from set of 3 words
@@ -189,12 +189,37 @@ int syntax_analysis(tCodeList *C){
                     applyRule(s, sPopTop(s)-201, i-1);
                     sPop(s);
                 }
-                else if(){
-                  //TODO: print a pravdepodobne dalsi funkce s ID 29x
-                } else{
+                else if((top = (sTop(s))) == 221 || top == 219 || // exception for some expressions
+                        top == 218 || top == 215 || top == 214){
+                    int result;
+                    switch(sTop(s)){
+                        case 221:
+                            result = process_expr(0, 104, PrintP, 297, C);//297
+                            break;
+                        case 219:
+                            result = process_expr(0, 41, ExprIF, 296, C);//296
+                            break;
+                        case 218:
+                            result = process_expr(1, 122, Expr, 298, C);//298
+                            break;
+                        case 215:
+                            result = process_expr(1, 122,  IdAs, 298, C);//298
+                            break;
+                        case 214:
+                            result = process_expr(0, 122, Assignment2, 299, C);//299
+                            break;
+                        default:
+                            return 2;
+                    }
+                    if(result != 0)
+                        return result;
+                    sPopTop(s);
+                }
+                else{
                     freeThisCycle(token, s);
                     return 2;
                 }
+
             }
             else{ // terminal to process
                 if(sTop(s) == t)
@@ -204,14 +229,17 @@ int syntax_analysis(tCodeList *C){
                     return 2;
                 }
             }
-            //TODO: pošéfovat id
-
-            //TODO: tady bude asi switch??
-
 
         }
 
-    //TODO: save token to struct from here
+        //TODO: save token to struct from here
+        if(t == 122){
+            result = tCodeCreateNewLine(C);
+            if(result != 0)
+                return result;
+        }
+        else
+            tCodeInsertToken(C, token, t);
     }while(!stackEmpty(s));
 
 
@@ -219,6 +247,28 @@ int syntax_analysis(tCodeList *C){
     return 0;
 }
 /* END of main function */
+
+/* functions to process expression */
+
+/* function to process expression */
+int process_expr(int id_processed, int separator, int rule_num, int first, tCodeList *C){
+    printf("neni vyreseno...\n");
+
+    char *prec_str = (char *) malloc(sizeof(char) * STRING_SIZE);
+    if(prec_str == NULL)
+        return 99;
+
+    int len = 0;
+    if(id_processed){
+        int id = C->last->lineData->tokenID;
+        //if(id )
+    }
+
+
+    return 0;
+}
+
+/* END of section */
 
 /* auxiliary functions */
 void applyRule(tStack *s,int rule, int section){

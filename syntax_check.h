@@ -4,10 +4,12 @@
 #include "parser.h"
 #include "scanner.h"
 
+
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX_STACK 1000000
+#define MAX_STACK 10000000
+#define STRING_SIZE 20
 
 /* definitions of LL non-terminals */
 #define S                    0     // 201    index in ll array
@@ -23,14 +25,14 @@
 //      ScopeIF1            10     // 211
 //      ScopeIF2            11     // 212
 //      Assignment          12     // 213
-//      Assignment2         13     // 214
-//      IdAs                14     // 215
+#define Assignment2         13     // 214
+#define IdAs                14     // 215
 //      ParameterFce        15     // 216
 //      ParameterFceNext    16     // 217
-//      Expr                17     // 218
-//      ExprIF              18     // 219
+#define Expr                17     // 218
+#define ExprIF              18     // 219
 //      DataType            19     // 220
-//      PrintP              20     // 221
+#define PrintP              20     // 221
 
 typedef struct {
     int value[MAX_STACK];
@@ -62,5 +64,6 @@ void sPop(tStack *);
 int sTop(tStack *);
 int sPopTop(tStack *);
 
-
+/* function to process expression */
+int process_expr(int, int, int, int, tCodeList *);
 #endif
