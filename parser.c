@@ -25,8 +25,12 @@ void tCodeInit(tCodeList *sCode){
 int tCodeCreateNewLine(tCodeList *sCode){
     tCodePtr line = (struct tCode *) malloc(sizeof(struct tCode));
     tLinePtr data = (struct tLine *) malloc(sizeof(struct tLine));
-    if(line == NULL || data == NULL)
+    if(line == NULL)
         return 99;
+    if(data == NULL){
+        free(line);
+        return 99;
+    }
     data->next = NULL;
     data->token = NULL;
     line->next = NULL;
