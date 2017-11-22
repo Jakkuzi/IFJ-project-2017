@@ -32,6 +32,7 @@ void tCodeInit(tCodeList *);
 
 int tCodeCreateNewLine(tCodeList *);
 void tCodeInsertToken(tCodeList *, TString, int);
+void tCodeDispose(tCodeList *)
 
 #include "syntax_check.h"
 
