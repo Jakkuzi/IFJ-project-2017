@@ -11,7 +11,7 @@ int main(){
         return syntax;
     }
 
-    printf("Syntaktická analýza OK\n");
+    printf("Syntaktická analýza OK\n");//TODO: smazat
 
     return 0;
 }
@@ -26,6 +26,7 @@ int tCodeCreateNewLine(tCodeList *sCode){
     tLinePtr data = (struct tLine *) malloc(sizeof(struct tLine));
     if(line == NULL || data == NULL)
         return 99;
+    line->next = NULL;
     if(sCode->first == NULL)
         sCode->first = line;
     else{
@@ -37,14 +38,17 @@ int tCodeCreateNewLine(tCodeList *sCode){
     return 0;
 }
 
-void tCodeInsertToken(tCodeList *sCode, TString token){
-    if(sCode->last->lineData == NULL)
+void tCodeInsertToken(tCodeList *sCode, TString token, int id){
+    if(sCode->last->lineData == NULL){
+        sCode->last->lineData->tokenID = id;
         *sCode->last->lineData->token = token;
+    }
     else{
         tLinePtr tmp = sCode->last->lineData;
         while(tmp->next != NULL)
             tmp = tmp->next;
         *tmp->next->token = token;
+        tmp->next->tokenID = id;
     }
 }
 
