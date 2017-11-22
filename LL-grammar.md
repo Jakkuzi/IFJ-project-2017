@@ -94,6 +94,7 @@
 86. __Datový_typ__			→	string
 87. __Print_param__			→	297 ; __Print_param__
 88. __Print_param__			→	eol
+89.	__Parametr_fce__ 		→	)
 
 *	výrazy se pohlcují až po _then_, _eol_ a _;_
 *	(eol) - nepushuje se na stack

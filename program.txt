@@ -3,6 +3,6 @@
     
 
 Scope
-	print id;
+
 End Scope
 
