@@ -18,9 +18,10 @@ int getNextToken(TString* token){
           if (i==EOL)
             return EndOfLine;
           if (isspace(i)) // zistuje biele znaky
-          stateOfAutomat=0;
-          else if (i=='/')  // komentar alebo delenie
-               stateOfAutomat=1;
+              stateOfAutomat=0;
+          else if (i=='/'){  // komentar alebo delenie
+               addToString(token,i);
+               stateOfAutomat=1;}
           else if (isalpha(i) || (i=='_')) {// identifikator,klucove slovo alebo rezervovane klucove slovo
                addToString(token,i);
                stateOfAutomat=3;
@@ -29,13 +30,17 @@ int getNextToken(TString* token){
                  addToString(token,i);
                  stateOfAutomat=6;
           }
-          else if (i=='!')             //retazcovy literal
-                 stateOfAutomat=5;
+          else if (i=='!'){             //retazcovy literal
+                 addToString(token,i);
+                 stateOfAutomat=5;}
+          else if (i=='<'){
+                 addToString(token,i);
+                 stateOfAutomat=11;}
+          else if (i=='\''){           //jednoriadkovy komentar
+                 addToString(token,i);
+                 stateOfAutomat=4;}
           else if (i=='<')
-                 stateOfAutomat=11;
-          else if (i=='\'')            //jednoriadkovy komentar
-                 stateOfAutomat=4;
-          else if (i=='<')
+                 addToString(token,i);
                  stateOfAutomat=12;
           else if (i=='+')
                   return Plus;

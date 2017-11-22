@@ -17,11 +17,13 @@ int main(){
     return 0;
 }
 
+// inicializace kódu na prázdnou strukturu
 void tCodeInit(tCodeList *sCode){
     sCode->first = NULL;
     sCode->last = NULL;
 }
 
+// přidá další řádek kódu
 int tCodeCreateNewLine(tCodeList *sCode){
     tCodePtr line = (struct tCode *) malloc(sizeof(struct tCode));
     tLinePtr data = (struct tLine *) malloc(sizeof(struct tLine));
@@ -47,6 +49,7 @@ int tCodeCreateNewLine(tCodeList *sCode){
     return 0;
 }
 
+// přidá další položku na řádku kódu
 int tCodeInsertToken(tCodeList *sCode, TString *token, int id){
     tLinePtr tmp = sCode->last->lineData;
     while(tmp->next != NULL)
@@ -63,7 +66,29 @@ int tCodeInsertToken(tCodeList *sCode, TString *token, int id){
         data->token = token;
         data->next = NULL;
         tmp->next = data;
+
     }
 
 }
 
+// smaže kód a uvolní alokovanou paměť
+void tCodeDispose(tCodeList *sCode)
+{
+	tCodeList *tmp = sCode;
+	while(tmp->first != NULL)
+	{
+		tLinePtr tmpLine = tmp->first->lineData;
+		while(tmpLine != NULL)
+		{
+			free(tmpLine->token->myString);
+			free(tmpLine->token);
+			tLinePtr deleteLine = tmpLine;
+			tmpLine = tmpLine->next;
+			free(deleteLine);
+		}
+
+		tCodePtr deleteList = tmp->first;
+		tmp->first = tmp->first->next;
+		free(deleteList);
+	}
+}
