@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "strings.h"
+#include "prec.h"
 
 /* struct for keeping one line of code */
 typedef struct tLine {

@@ -2,6 +2,8 @@
 #define prec_h
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 typedef struct {		//struktura zasobniku
 	char* stBody;

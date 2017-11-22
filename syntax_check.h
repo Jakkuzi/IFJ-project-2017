@@ -4,7 +4,6 @@
 #include "parser.h"
 #include "scanner.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -65,5 +64,6 @@ int sTop(tStack *);
 int sPopTop(tStack *);
 
 /* function to process expression */
-int process_expr(int, int, int, int, tCodeList *);
+int process_expr(int, int, int, tCodeList *, int, TString *);
+
 #endif
