@@ -235,7 +235,7 @@ int precedencni(char* input)
 	char a, b;
 	for(int k = 0; k < len; k++)
 	{
-printf("%d\n", k);
+//printf("%d\n", k);
 		if(ret == 0 || ret == 2)
 			break;
 
@@ -260,14 +260,14 @@ printf("%d\n", k);
 						pom++;
 						push(stack, 'E');
 						k--;
-printf("%s\n", stack->stBody);						
+//printf("%s\n", stack->stBody);
 					}
 
 					else					//vetsi nebo shodna priorita
 					{
 						pop(stack);
 						push(stack, ']');
-printf("%s\n", stack->stBody);
+//printf("%s\n", stack->stBody);
 						j0 = pomst[pom-1];
 						k0 = stack->top;
 						l0 = 0;
@@ -282,7 +282,7 @@ printf("%s\n", stack->stBody);
 							pop(stack);
 						}
 						push(stack, cmp_string(pomch));
-printf("%s\n", stack->stBody);						
+//printf("%s\n", stack->stBody);
 						pom--;
 						k--;	
 					}
@@ -298,7 +298,7 @@ printf("%s\n", stack->stBody);
 					pom++;
 					push(stack, 'E');
 					k--;
-printf("%s\n", stack->stBody);					
+//printf("%s\n", stack->stBody);
 				}
 			}
 
@@ -309,7 +309,7 @@ printf("%s\n", stack->stBody);
 				pomst[pom] = (stack -> top)-1;
 				pom++;
 				push(stack, input[k]);
-printf("%s\n", stack->stBody);				
+//printf("%s\n", stack->stBody);
 			}
 		}
 	
@@ -336,7 +336,7 @@ printf("%s\n", stack->stBody);
 				{
 					pop(stack);
 					push(stack, ']');
-printf("%s\n", stack->stBody);					
+//printf("%s\n", stack->stBody);
 					j1 = pomst[pom-1];
 					k1 = stack->top;
 					l1 = 0;
@@ -351,7 +351,7 @@ printf("%s\n", stack->stBody);
 						pop(stack);
 					}
 					push(stack, cmp_string(pomch));
-printf("%s\n", stack->stBody);					
+//printf("%s\n", stack->stBody);
 					pom--;
 					k--;
 				}
@@ -364,7 +364,7 @@ printf("%s\n", stack->stBody);
 				{
 					pop(stack);
 					push(stack, ']');
-printf("%s\n", stack->stBody);				       	
+//printf("%s\n", stack->stBody);
 					j2 = pomst[pom-1];
 					k2 = stack->top;
 					l2 = 0;
@@ -379,7 +379,7 @@ printf("%s\n", stack->stBody);
 						pop(stack);
 					}
 					push(stack, cmp_string(pomch));
-printf("%s\n", stack->stBody);					
+//printf("%s\n", stack->stBody);
 					pom--;
 					k--;
 				}
@@ -389,7 +389,7 @@ printf("%s\n", stack->stBody);
 			{
 				pop(stack);
 				push(stack, ']');
-printf("%s\n", stack->stBody);				
+//printf("%s\n", stack->stBody);
 				j3 = pomst[pom-1];
 				k3 = stack->top;
 				l3 = 0;
@@ -405,7 +405,7 @@ printf("%s\n", stack->stBody);
 				}				
 
 				push(stack, cmp_string(pomch));
-printf("%s\n", stack->stBody);				
+//printf("%s\n", stack->stBody);
 				pom--;
 				k--;
 			}
@@ -431,13 +431,13 @@ printf("%s\n", stack->stBody);
 }
 
 
-/****Testovaci funkce*****************************************************/
-int main()
-{
-	char input [50] = "i=i+i\\i";
-	int ret;
-	ret = precedencni(input);
-	printf("%d\n", ret);
-	return 0;
-}
-/*************************************************************************/
+///****Testovaci funkce*****************************************************/
+//int main()
+//{
+//	char input [50] = "i=i+i\\i";
+//	int ret;
+//	ret = precedencni(input);
+//	printf("%d\n", ret);
+//	return 0;
+//}
+///*************************************************************************/
