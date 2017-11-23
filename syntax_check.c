@@ -111,7 +111,7 @@ int ll[21][8][8] = {
     {26,    0,      0,      0,      0,      0,      0,      0},},
     //PrintP
     {{122,  0,      0,      0,      0,      0,      0,      0},
-    {297,  73,     221,    0,      0,      0,      0,      0},},
+    {297,  104,      221,    0,      0,      0,      0,      0},},
 };
 
 /* syntax analysis top down */
@@ -120,8 +120,8 @@ int syntax_analysis(tCodeList *C){
     s = (tStack *) malloc(sizeof(tStack));
     if(s == NULL)
         return 99;
+    int i, found, top = 0, result, print_expanded = 0, skip_insert = 0; // iteration and auxiliary variables
     stackInit(s);
-    int i, found, top = 0, result; // iteration and auxiliary variables
     int t = 0; // token id
     int first_token = 1; // check start of code
 
@@ -131,38 +131,71 @@ int syntax_analysis(tCodeList *C){
             free(s);
             return 99;
         }
-        stringInit(token);
-
+        result = stringInit(token);
+        if(result != 0){
+            freeThisCycle(token, s);
+            return result;
+        }
         if(t == EndOfLine){ // last token was EOL
             t = getNextToken(token);
-            if(t == 99 || t == 1)
+            if(t == 99 || t == 1){
+                freeThisCycle(token, s);
                 return t;
+            }
             while(t == EndOfLine){
                 stringFree(token);
-                stringInit(token);
+                result = stringInit(token);
+                if(result != 0){
+                    freeThisCycle(token, s);
+                    return result;
+                }
                 t = getNextToken(token);
-                if(t == 99 || t == 1)
+                if(t == 99 || t == 1){
+                    freeThisCycle(token, s);
                     return t;
+                }
             }
 
         }
-        else if(t == Print){
+        else if(t == Print || print_expanded){
             t = getNextToken(token);
-            // TODO: osetrit ten print
+            if(t == 1 || t == 99){
+                freeThisCycle(token, s);
+                return t;
+            }
+            if(!print_expanded){
+                sPop(s);
+                applyRule(s, PrintP, 1);
+                print_expanded = 1;
+            }
+            else if(t != EndOfLine){
+                sPop(s);
+                applyRule(s, PrintP, 1);
+            }
+            else
+                print_expanded = 0;
         }
         else{ // read first token
             t = getNextToken(token);
-            if(t == 99 || t == 1)
+            if(t == 99 || t == 1){
+                freeThisCycle(token, s);
                 return t;
+            }
         }
-        //TODO: RM if below, check this on another place
-        if(t == 121)
-            return 0;
+
         if(first_token){ // code must start with exact commands from set of 3 words
             while(t == EndOfLine){ // ignore empty lines on start
                 stringFree(token);
-                stringInit(token);
+                result = stringInit(token);
+                if(result != 0){
+                    freeThisCycle(token, s);
+                    return result;
+                }
                 t = getNextToken(token);
+                if(t == 1 || t == 99){
+                    freeThisCycle(token, s);
+                    return t;
+                }
             }
 
             found = 0;
@@ -182,9 +215,11 @@ int syntax_analysis(tCodeList *C){
             first_token = 0;
         }
         else{
-            if(sTop(s) > 200 && sTop(s) < 250){ // non-terminal to process, insert new rules to stack
+            if(sTop(s) > 200 && (sTop(s) < 250 || sTop(s) == 297)){ // non-terminal to process, insert new rules to stack
                 found = 0;
-                for(i = 0; i < 8 && !found; i++){ // looking for rule based on next token
+                // looking for rule based on next token
+                // if print was loaded in previous step, sTop() expand will be skipped, print have another function
+                for(i = 0; i < 8 && !found && !print_expanded; i++){
                     if(t == ll[sTop(s)-201][i][0])
                         found = 1;
                 }
@@ -194,31 +229,37 @@ int syntax_analysis(tCodeList *C){
                     sPop(s);
                 }
                 else if((top = (sTop(s))) == PrintP+201 || top == ExprIF+201 || // exception for some expressions
-                        top == Expr+201 || top == IdAs+201 || top == Assignment2+201){
-                    int result;
-                    // TODO: pravdepodobne to bude ukladat zase do struktury
+                        top == Expr+201 || top == IdAs+201 || top == Assignment2+201
+                        || top == 297){ // 297 is special case for print
                     switch(sTop(s)){
                         case 221:
-                            result = process_expr(0, PrintP, 297, C, t, token);//297
+                            result = process_expr(0, C, t, token, s);//297
                             break;
                         case 219:
-                            result = process_expr(0, ExprIF, 296, C, t, token);//296
+                            result = process_expr(0,  C, t, token, s);//296
                             break;
                         case 218:
-                            result = process_expr(1, Expr, 298, C, t, token);//298
+                            result = process_expr(1, C, t, token, s);//298
                             break;
                         case 215:
-                            result = process_expr(1,  IdAs, 298, C, t, token);//298
+                            result = process_expr(1, C, t, token, s);//298
                             break;
                         case 214:
-                            result = process_expr(0, Assignment2, 299, C, t, token);//299
+                            result = process_expr(0, C, t, token, s);//299
+                            break;
+                        case 297:
+                            result = process_expr(0, C, t, token, s);//special case for print
                             break;
                         default:
+                            freeThisCycle(token, s);
                             return 2;
                     }
+                    skip_insert = 1;
                     sPop(s);
-                    if(result == 2 || result == 99)
+                    if(result == 2 || result == 99){
+                        freeThisCycle(token, s);
                         return result;
+                    }
                     if((t = result) == sTop(s))
                         sPop(s);
                 }
@@ -238,24 +279,58 @@ int syntax_analysis(tCodeList *C){
             }
 
         }
-
-        if(t == EndOfLine){
-            result = tCodeCreateNewLine(C);
-            if(result != 0)
-                return result;
+        if(skip_insert){
+            skip_insert = 0;
         }
-        else
-            tCodeInsertToken(C, token, t);
+        else{
+            if(t == EndOfLine){
+                result = tCodeCreateNewLine(C);
+                if(result != 0){
+                    freeThisCycle(token, s);
+                    return result;
+                }
+            }
+            else{
+                result = tCodeInsertToken(C, token, t);
+                if(result != 0){
+                    freeThisCycle(token, s);
+                    return result;
+                }
+            }
+        }
     }while(!stackEmpty(s));
 
+    TString *token = (TString *) malloc(sizeof(TString));
+    if(token == NULL){
+        free(s);
+        return 99;
+    }
+    do{ // check if there is any command after 'end scope'
+        result = stringInit(token);
+        if(result != 0){
+            freeThisCycle(token, s);
+            return result;
+        }
+        t = getNextToken(token);
+        if(t == 1 || t == 99){
+            freeThisCycle(token, s);
+            return t;
+        }
+        stringFree(token);
+    }while(t == EndOfLine);
+    freeThisCycle(token, s);
 
-    free(s);
+    if(t != EndOfFile)
+        return 2;
     return 0;
 }
 /* END of main function */
 
 /* function to process expression */
-int process_expr(int id_processed, int rule_num, int first, tCodeList *C, int t, TString *token){
+int process_expr(int id_processed, tCodeList *C, int t, TString *token, tStack *s){
+    int print_to_process = 0;
+    if(sTop(s) == 297) // Special case for print
+        print_to_process = 1;
     char *prec_str = (char *) malloc(sizeof(char) * STRING_SIZE);
     if(prec_str == NULL)
         return 99;
@@ -263,7 +338,7 @@ int process_expr(int id_processed, int rule_num, int first, tCodeList *C, int t,
     int id, allocated = 1, skip = 0, result;
 
     int len = 0;
-    if(id_processed){
+    if(id_processed){ // take last token from code and add it to prec_str to check expression
         tLinePtr last = C->last->lineData;
         while(last->next != NULL)
             last = last->next;
@@ -276,7 +351,7 @@ int process_expr(int id_processed, int rule_num, int first, tCodeList *C, int t,
             len += last->token->length;
             while(len > STRING_SIZE * allocated){
                 allocated++;
-                prec_str = (char *) realloc(prec_str, len * sizeof(char));
+                prec_str = (char *) realloc(prec_str, STRING_SIZE * allocated * sizeof(char));
                 if(prec_str == NULL)
                     return 99;
             }
@@ -284,15 +359,20 @@ int process_expr(int id_processed, int rule_num, int first, tCodeList *C, int t,
         }
     }
 
-    /* add loaded token from main */
-    tCodeInsertToken(C, token, t);
-
-    if(t == EndOfLine || t == Semicolon || t == Then)
+    // save loaded token from main
+    result = tCodeInsertToken(C, token, t);
+    if(result != 0){
+        free(prec_str);
+        return result;
+    }
+    if(!print_to_process && (t == EndOfLine || t == Semicolon || t == Then))
+        skip = 1;
+    else if(print_to_process && t == Semicolon)
         skip = 1;
     len += token->length;
     while(len > STRING_SIZE * allocated){
         allocated++;
-        prec_str = (char *) realloc(prec_str, len * sizeof(char));
+        prec_str = (char *) realloc(prec_str, STRING_SIZE * allocated * sizeof(char));
         if(prec_str == NULL)
             return 99;
     }
@@ -301,19 +381,39 @@ int process_expr(int id_processed, int rule_num, int first, tCodeList *C, int t,
     else
         strcat(prec_str, token->myString);
 
-
     while(!skip){
-        TString *token = (TString *) malloc(sizeof(TString));
+        token = (TString *) malloc(sizeof(TString));
         if(token == NULL){
             free(prec_str);
             return 99;
         }
-        stringInit(token);
+        result = stringInit(token);
+        if(result != 0){
+            free(token);
+            free(prec_str);
+            return result;
+        }
         t = getNextToken(token);
-        if(t == EndOfLine || t == Semicolon || t == Then)
+        if(t == 99 || t == 1){
+            free(token);
+            free(prec_str);
+            return t;
+        }
+        result = tCodeInsertToken(C, token, t);
+        if(result != 0){
+            free(token);
+            free(prec_str);
+            return result;
+        }
+        if(print_to_process && t == Semicolon)
             break;
-        if(t == EndOfFile)
+        else if(!print_to_process && (t == EndOfLine || t == Semicolon || t == Then))
+            break;
+        if(t == EndOfFile){
+            free(token);
+            free(prec_str);
             return 2;
+        }
         if(t >= ID && t <= valueOfString){ // transform number or id to 'i'
             strcat(prec_str, "i");
             len++;
@@ -322,22 +422,23 @@ int process_expr(int id_processed, int rule_num, int first, tCodeList *C, int t,
             len += token->length;
             while(len > STRING_SIZE * allocated){
                 allocated++;
-                prec_str = (char *) realloc(prec_str, len * sizeof(char));
-                if(prec_str == NULL)
+                prec_str = (char *) realloc(prec_str, STRING_SIZE * allocated * sizeof(char));
+                if(prec_str == NULL){
+                    free(token);
                     return 99;
+                }
             }
             strcat(prec_str, token->myString);
         }
-
-        tCodeInsertToken(C, token, t);
     }
 
     result = precedencni(prec_str);
+    free(prec_str);
+    free(token);
     if(result == 2 || result == 99)
         return result;
     else
         return t;
-    //return 0;
 }
 
 /* END of section */
