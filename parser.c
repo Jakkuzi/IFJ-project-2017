@@ -26,9 +26,9 @@ void tCodeInit(tCodeList *sCode){
 // přidá další řádek kódu
 int tCodeCreateNewLine(tCodeList *sCode){
     tCodePtr line = (struct tCode *) malloc(sizeof(struct tCode));
-    tLinePtr data = (struct tLine *) malloc(sizeof(struct tLine));
     if(line == NULL)
         return 99;
+    tLinePtr data = (struct tLine *) malloc(sizeof(struct tLine));
     if(data == NULL){
         free(line);
         return 99;
@@ -80,7 +80,6 @@ void tCodeDispose(tCodeList *sCode)
 		while(tmpLine != NULL)
 		{
 			free(tmpLine->token->myString);
-			free(tmpLine->token);
 			tLinePtr deleteLine = tmpLine;
 			tmpLine = tmpLine->next;
 			free(deleteLine);
