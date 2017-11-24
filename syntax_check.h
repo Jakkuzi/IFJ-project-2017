@@ -1,8 +1,10 @@
 #ifndef syntax_check_h
 #define syntax_check_h
 
+
 #include "parser.h"
 #include "scanner.h"
+#include "symtable.h"
 
 #include <stdio.h>
 #include <stdlib.h>

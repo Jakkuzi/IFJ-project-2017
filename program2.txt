@@ -1,4 +1,4 @@
-scope 'Hlavni telo programu
+scope 
 Dim a As Integer
 DIM vysl AS INTEGER
 PrinT !"Zadejte cislo pro vypocet faktorialu";
