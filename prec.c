@@ -6,7 +6,7 @@
 
 #define T_OK 0		//navratova hodnota, kdyz je vse v poradku
 #define T_SYN 2		//navr. hodnota chyby v syntakticke analyze
-#define T_ALLOCATION 1	//chyba alokace
+#define T_ELSE 99	//ostatní chyby
 
 /*dvojrozmerne pole se znamenky pro praci s prioritami znamenek*/
 char prec[11][11]={\
@@ -200,14 +200,14 @@ int precedencni(char* input)
 	TStack* stack = (TStack*) malloc (sizeof(TStack));
 	if(stack == NULL)
 	{
-		ret = T_ALLOCATION;
+		ret = T_ELSE;
 		return ret;
 	}
 
 	stack -> stBody = (char*) malloc (sizeof(char)*len);
 	if(stack -> stBody == NULL)
 	{
-		ret = T_ALLOCATION;
+		ret = T_ELSE;
 		return ret;
 	}
 /**************************************************************************************************************************/
@@ -419,7 +419,7 @@ int precedencni(char* input)
 
 		else
 		{
-			ret = T_SYN;
+			ret = T_ELSE;
 		}
 	}
 
