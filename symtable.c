@@ -94,6 +94,7 @@ int BTInsert(BTNodePtr BTRoot, BTItemPtr *newItem) {
 // najde polozku v BVS (RootPtr) podle identifikatoru (itemID) a vysledek vraci prostrednictvim ukazetele (output)
 // navratova hodnota udava uspech (true) nebo neuspech (false)
 BTItemPtr *BTSearch(BTNodePtr RootPtr, char *searchedID) {
+    //TODO: rekurzivne
     int compare;    // pomocna promenna pro uchovani hodnoty porovnani dvou stringu (identifikatoru)
     // compare = 0          ~ identifikatory jsou stejne
     // compare < 0          ~ hledany identifikator je mensi (pruchod do leveho syna)
@@ -227,6 +228,9 @@ int BTInsertFunc(BTNodePtr RootPtr, varDataType returnType, char *id) {
     }
     newItem->funcData->returnType = returnType;
     newItem->funcData->ParamRootPtr = NULL;
+    newItem->declared = 0;
+    newItem->defined = 0;
+    newItem->paramCount = 0;
 
     if(RootPtr->item == NULL)
         RootPtr->item = newItem;
@@ -239,6 +243,8 @@ int BTInsertFunc(BTNodePtr RootPtr, varDataType returnType, char *id) {
     return 0;
 }
 
+
+//TODO: nazev funkce se neuvolnuje, je ulozen ukazatel z tokenu, ktery se uvolni jinde
 // zrusi cely BVS a korektne uvolni alokovanou pamet
 //void BTDispose(BTNodePtr *BTRoot) {
 //    BTStack stack;        // pomocny zasobnik ukazatelu pro nerekurzivni pruchod BVS

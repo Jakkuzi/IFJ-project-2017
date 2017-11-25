@@ -56,6 +56,7 @@ typedef struct BTItem {
 	funcDataPtr funcData;	// ukazatel na data funkce (pokud je itemType = item_type_function)
     int declared;
     int defined;
+    int paramCount;
 } BTItemPtr;
 
 // jeden uzel binarniho vyhledavaciho stromu (BVS)
