@@ -116,6 +116,10 @@ int ll[21][8][8] = {
 
 /* syntax analysis top down */
 int syntax_analysis(tCodeList *C){
+    //symtable TODO: uvolnit symBTree pri chybe
+    BTNodePtr symBTree = (struct BTNode *) malloc(sizeof(struct BTNode));
+    BTItemPtr *actualFunction;
+
     tStack *s;
     s = (tStack *) malloc(sizeof(tStack));
     if(s == NULL)
@@ -284,6 +288,129 @@ int syntax_analysis(tCodeList *C){
         }
         else{
             if(t == EndOfLine){
+                /* SEMANTIC CHECK
+                 * filling symtable from here
+                 *TODO: než se vloží nový řádek
+                 * načíst aktuální data do symtable --- z C->last
+                 * zkontrolovat symtable, jestli je zatím správně
+                 * symBTree - strom plny ID funkci
+                 *
+                 * */
+                int id = C->last->lineData->tokenID;
+                char *name; // name of function or variable
+                varDataType idReturnType;
+                tLinePtr tmp = C->last->lineData; // iterator to get exact data
+                // create function in symtable
+                if(id == Declare || id == Function || id == Scope){
+                    while(tmp->tokenID != RightParenthes)
+                        tmp = tmp->next;
+                    // first next is As, second is data type, so tmp contains data type now
+                    tmp = tmp->next->next;
+                    switch (tmp->tokenID){
+                        case Double:
+                            idReturnType = var_double;
+                            break;
+                        case Integer:
+                            idReturnType = var_integer;
+                            break;
+                        case String:
+                            idReturnType = var_string;
+                            break;
+                        default:
+                            return 2;
+                    }
+                    switch (id){
+                        case Declare:
+                            name = C->last->lineData->next->next->token->myString;
+
+                            result = BTInsertFunc(symBTree, idReturnType, name);
+                            if(result != 0)//TODO: free some shits
+                                return result;
+                            actualFunction = BTSearch(symBTree, name);
+                            actualFunction->declared += 1;
+                            break;
+                        case Function:
+                            name = C->last->lineData->next->token->myString;
+                            result = BTInsertFunc(symBTree, idReturnType, name);
+                            if(result != 0)//TODO: free some shits
+                                return result;
+                            actualFunction = BTSearch(symBTree, name);
+                            actualFunction->defined += 1;
+                            // definition is also declaration
+                            if(actualFunction->declared == 0)
+                                actualFunction->declared = 1;
+                            break;
+                        case Scope:
+                            name = (char *) malloc(sizeof(char) * 20);
+                            strcmp(name, SCOPE_NAME);
+                            result = BTInsertFunc(symBTree, idReturnType, name);
+                            actualFunction = BTSearch(symBTree, name);
+                            actualFunction->declared = 1;
+                            actualFunction->defined = 1;
+                            break;
+                        default: //should not been reachable
+                            return 2;
+                    }
+                    //insert parameters from function
+                    tmp = C->last->lineData;
+                    while(tmp->tokenID != LeftParenthes || tmp == NULL)
+                        tmp = tmp->next;
+                    //tmp is on ID or ')' position
+                    tmp = tmp->next;
+                    while(tmp->tokenID != RightParenthes){
+                        name = tmp->token->myString;
+                        switch (tmp->next->next->tokenID){
+                            case Double:
+                                idReturnType = var_double;
+                                break;
+                            case Integer:
+                                idReturnType = var_integer;
+                                break;
+                            case String:
+                                idReturnType = var_string;
+                                break;
+                            default:
+                                return 2;
+                        }
+                        //TODO: je potreba vkladat hodnoty???
+                        switch (idReturnType){
+                            case var_integer:
+                                result = BTInsertVarInt(actualFunction->funcData, name, 0);
+                                if(result != 0)
+                                    return result;
+                                break;
+                            case var_string:
+                                result = BTInsertVarString(actualFunction->funcData, name, name);
+                                if(result != 0)
+                                    return result;
+                                break;
+                            case var_double:
+                                result = BTInsertVarDouble(actualFunction->funcData, name, 0.0);
+                                if(result != 0)
+                                    return result;
+                                break;
+                        }
+                        actualFunction->paramCount += 1;
+                        tmp = tmp->next->next->next;
+                    }
+
+                }
+                else{ // insert variables from function to symBTree
+
+
+                }
+
+                /* symtable filled */
+
+                //TODO: zkontroluj kazdy radek, jestli je zatim spravne
+                // symTree je ukazatel na root
+                // actualFunction je funkce, ve ktere preva pracujeme
+                // search je vhodne aplikovat prvne na funkci pak prekontrolovat,
+                // jeslti se promenna nejmenuje jako funkce
+                // GL :-)
+
+
+                /* end of SEMANTIC CHECK */
                 result = tCodeCreateNewLine(C);
                 if(result != 0){
                     freeThisCycle(token, s);
