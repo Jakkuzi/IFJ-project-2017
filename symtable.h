@@ -45,6 +45,7 @@ typedef struct varData {
 // struktura popisujici data funkce
 typedef struct funcData {
     varDataType returnType; // datovy typ navratove hodnoty promenne
+    int *parameterTypes;
     BTNode *ParamRootPtr;	// ukazatel  na koren binarniho stromu parametru funkce
 } *funcDataPtr;
 
@@ -80,12 +81,7 @@ typedef struct {
 /* navratove typy (bool) nekterych nasledujicich funkci slouzi pro zjisteni spravnosti provedeni funkce */
 
 /// Vnitrni funkce ///
-int BTInsert(BTNodePtr, BTItemPtr * );		// vlozeni nove polozky do stromu, predani struktury ukazatelem (efektivnejsi)
-
-void BTStackInit(BTStack *);			// inizializace pomocneho zasobniku ukazatelu
-int BTStackPush(BTStack *, BTNodePtr); 	// vlozeni ukazatele na vrchol zasobniku
-BTNodePtr BTStackPop(BTStack *);		// precteni vrcholu zasobniku a snizeni vrcholu zasobniku
-
+int BTInsert(BTNodePtr, BTItemPtr *);		// vlozeni nove polozky do stromu, predani struktury ukazatelem (efektivnejsi)
 
 /// API rozhrani - funkce, ktere pouzivejte ///
 void BTInit(BTNodePtr);                       // inicializace stromu, parametrem je ukazatel na
@@ -99,7 +95,7 @@ int BTInsertVarString(funcDataPtr , char *, char *);	// vlozi string
 
 int BTInsertFunc(BTNodePtr, varDataType, char *);	// vlozi funkci
 
-void BTDispose(BTNodePtr *);			// nerekurzivne zrusi cely strom (uvolni alokovanou pamet)
+void BTDispose(BTNodePtr);			// nerekurzivne zrusi cely strom (uvolni alokovanou pamet)
 // vyuziva zasobniku ukazatelu BTStack
 
 
