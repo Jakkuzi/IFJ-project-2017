@@ -103,11 +103,19 @@ BTItemPtr *BTSearch(BTNodePtr RootPtr, char *searchedID) {
     if(RootPtr == NULL)
         return NULL;
 
+    BTItemPtr *var;
     BTNodePtr tmp = RootPtr;
     while(tmp != NULL){
+        if(tmp->item != NULL) {
+            if(tmp->item->funcData != NULL)
+                if((var = BTSearch(tmp->item->funcData->ParamRootPtr, searchedID)) != NULL)
+                    return var;
+        }
+        else
+            break;
         compare = strcmp(searchedID, tmp->item->itemID);
         if(compare == 0)
-            return RootPtr->item;
+            return tmp->item;
         else if(compare < 0){
             if(tmp->LPtr != NULL)
                 tmp = tmp->LPtr;
@@ -228,6 +236,7 @@ int BTInsertFunc(BTNodePtr RootPtr, varDataType returnType, char *id) {
     }
     newItem->funcData->returnType = returnType;
     newItem->funcData->ParamRootPtr = NULL;
+    newItem->funcData->parameterTypes = NULL;
     newItem->declared = 0;
     newItem->defined = 0;
     newItem->paramCount = 0;
@@ -280,7 +289,7 @@ int BTInsertFunc(BTNodePtr RootPtr, varDataType returnType, char *id) {
 //    free(BTRoot);    // zruseni ukazatele na koren BVS
 //}
 
-
+//
 ////TODO: check return codes and frees, implement dispose
 //int main(){
 //    BTNodePtr strom = (struct BTNode *) malloc(sizeof(struct BTNode));

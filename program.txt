@@ -1,6 +1,6 @@
 
-function id (param as integer) as integer
-end function
-declare function foo () as string
+declare function foo1 (id1 as integer) as string
+declare function foo2 (id1 as double, id2 as double, id3 as string) as string
+declare function foo3 (id1 as integer, id2 as string, id3 as integer ,id4 as double, id5 as double, id as string) as integer
 scope
 End Scope

@@ -45,6 +45,7 @@ typedef struct varData {
 // struktura popisujici data funkce
 typedef struct funcData {
     varDataType returnType; // datovy typ navratove hodnoty promenne
+    int *parameterTypes;
     BTNode *ParamRootPtr;	// ukazatel  na koren binarniho stromu parametru funkce
 } *funcDataPtr;
 
