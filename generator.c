@@ -124,7 +124,7 @@ gListPtr IFJcode17_toPostfix(tLinePtr *temp)
 	}
 
 	// TODO: pak smazat vypisy
-	printf("\n# -------- TEST VYRAZU --------\n# Vyraz: 10+4*(5-1/2)\n# Prevedeny na postfix: ");
+	printf("\n# -------- TEST VYRAZU --------\n# Vyraz: 10+A*(5-1/2)\n# Prevedeny na postfix: ");
 	gListPrint(gListFirst);
 	while(IFJcode17_exprOptimalize(&gListFirst) == 1);	// optimalizace vyrazu
 	printf("\n# Vyraz po optimalizaci (predpocitani konstant): ");
