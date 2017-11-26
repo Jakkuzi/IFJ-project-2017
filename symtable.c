@@ -122,7 +122,6 @@ BTItemPtr *BTSearch(BTNodePtr RootPtr, char *searchedID) {
         }
     }
 
-    
     return NULL;
 }
 

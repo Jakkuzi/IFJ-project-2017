@@ -1,4 +1,4 @@
-Scope 'Hlavni telo programu
+Scope
 Dim s1 As String
 Dim s2 As String
 Dim s1len As Integer
