@@ -477,8 +477,6 @@ void sPush(tStack *s, int num){
 }
 
 void sPop(tStack *s){
-    //TODO: smazat tu blbost pro urychleni
-    s->value[s->top] = 0;
     if(!stackEmpty(s))
         s->top--;
 }

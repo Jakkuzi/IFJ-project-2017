@@ -1,6 +1,4 @@
-
-#include "parser.h"
-#include "strings.h"
+#include "semantic_check.h"
 
 static BTItemPtr *actualFunction;
 
@@ -78,8 +76,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
             tmp = tmp->next;
         //tmp is on ID or ')' position
         i = 0;
-        TString **tokenArr = (TString **) malloc(sizeof(TString*)*5);
-        //TODO: 99
+        TString **tokenArr = NULL;
         while(tmp->tokenID != RightParenthes){
             tmp = tmp->next;
             if(id == Declare){ // declaration saves only data types
@@ -94,16 +91,17 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                             counter = counter->next->next->next->next;
                     }
                     actualFunction->funcData->parameterTypes = (int *) malloc(sizeof(int) * allocation);
-                    for(int j = 0; j < allocation; j++)
-                        tokenArr[j] = (TString *) malloc(sizeof(TString));
+                    tokenArr = (TString **) malloc(sizeof(TString*) * allocation);
+//                    for(int j = 0; j < allocation; j++)
+//                        tokenArr[j] = (TString *) malloc(sizeof(TString));
                     //TODO:check for 99
                 }
                 actualFunction->funcData->parameterTypes[i] = tmp->next->next->tokenID;
                 i++;
                 actualFunction->paramCount = i;
                 if(i > 1){
-                    for(int j = 0; j < i; j++)
-                        if(strcmp(tokenArr[i]->myString, tmp->token->myString) == 0)
+                    for(int j = 0; j < i-1; j++)
+                        if(strcmp(tokenArr[j]->myString, tmp->token->myString) == 0)
                             return 3;//TODO: asi 3, nwm co je to za error kdyz se 2 parametry jmenuji stejne + free
                     tokenArr[i-1] = tmp->token;
                 }
@@ -112,7 +110,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
             }
             else{ // definition saves parameters as variables
 
-                
+
 //                name = tmp->token->myString;
 //                switch (tmp->next->next->tokenID){
 //                    case Double:

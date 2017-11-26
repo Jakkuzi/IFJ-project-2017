@@ -6,5 +6,4 @@
 
 int semantic_check(tCodeList *, BTNodePtr);
 
-
 #endif
