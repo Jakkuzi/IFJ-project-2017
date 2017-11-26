@@ -90,7 +90,8 @@ BTNodePtr BTStackPop(BTStack *);		// precteni vrcholu zasobniku a snizeni vrchol
 /// API rozhrani - funkce, ktere pouzivejte ///
 void BTInit(BTNodePtr);                       // inicializace stromu, parametrem je ukazatel na
 BTItemPtr *BTSearch(BTNodePtr, char *);	// najde polozku podle identifikatoru (char *)
-// v BVS (BTNodePtr) a vrati ji pres ukazatel (BTItem *)
+						// v BVS (BTNodePtr) a vrati ji pres ukazatel (BTItem *)
+
 int BTInsertVarInt(funcDataPtr, char *, int);		// vlozi integer
 int BTInsertVarDouble(funcDataPtr , char *, double);	// vlozi double
 int BTInsertVarString(funcDataPtr , char *, char *);	// vlozi string
