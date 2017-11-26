@@ -26,8 +26,8 @@ typedef enum {
     var_integer,
     var_double,
     var_string,
-    var_bool,
-    var_void
+//    var_bool,
+//    var_void
 } varDataType;
 
 // typ polozky BVS (promenna nebo funkce)

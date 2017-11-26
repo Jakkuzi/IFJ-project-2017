@@ -3,5 +3,4 @@ function id (param as integer) as integer
 end function
 declare function foo () as string
 scope
-id = id()
 End Scope
