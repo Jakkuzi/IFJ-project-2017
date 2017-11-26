@@ -138,14 +138,16 @@ int BTInsertVarInt(funcDataPtr RootPtr, char *id, int value) {
     BTItemPtr *newData = (struct BTItem *) malloc(sizeof(struct BTItem));
     newData->itemID = id;
     newData->itemType = item_type_variable;
+    newData->funcData = NULL;
     newData->varData = malloc(sizeof(struct varData));
     if (newData->varData == NULL) {
         return 99;
     }
     newData->varData->type = var_integer;
     newData->varData->data = (int *) malloc(sizeof(int));
-    if (newData->varData->data == NULL)
+    if (newData->varData->data == NULL) {
         return 99;
+    }
     *(int *) (newData->varData->data) = value;
 
     if(RootPtr->ParamRootPtr == NULL){
@@ -167,6 +169,7 @@ int BTInsertVarDouble(funcDataPtr  RootPtr, char *id, double value) {
     BTItemPtr *newData = (struct BTItem *) malloc(sizeof(struct BTItem));
     newData->itemID = id;
     newData->itemType = item_type_variable;
+    newData->funcData = NULL;
     newData->varData = malloc(sizeof(struct varData));
     if (newData->varData == NULL) {
         return 99;
@@ -196,6 +199,7 @@ int BTInsertVarString(funcDataPtr RootPtr, char *id, char *value) {
     BTItemPtr *newData = (struct BTItem *) malloc(sizeof(struct BTItem));
     newData->itemID = id;
     newData->itemType = item_type_variable;
+    newData->funcData = NULL;
     newData->varData = malloc(sizeof(struct varData));
     if (newData->varData == NULL) {
         return 99;
@@ -230,6 +234,7 @@ int BTInsertFunc(BTNodePtr RootPtr, varDataType returnType, char *id) {
         return 99;
     newItem->itemID = id;
     newItem->itemType = item_type_function;
+    newItem->varData = NULL;
     newItem->funcData = (struct funcData *) malloc(sizeof(struct funcData));
     if (newItem->funcData == NULL) {
         return 99;
@@ -253,44 +258,51 @@ int BTInsertFunc(BTNodePtr RootPtr, varDataType returnType, char *id) {
 }
 
 
-//TODO: nazev funkce se neuvolnuje, je ulozen ukazatel z tokenu, ktery se uvolni jinde
-// zrusi cely BVS a korektne uvolni alokovanou pamet
-//void BTDispose(BTNodePtr *BTRoot) {
-//    BTStack stack;        // pomocny zasobnik ukazatelu pro nerekurzivni pruchod BVS
-//    BTStackInit(&stack);    // inicializace zasobniku
-//
-//    do {
-//        if ((*BTRoot) == NULL)        // pokud se dojde na konec BVS (list stromu)
-//        {
-//            if (stack.top != 0)    // zasobnik ukazatelu neni prazdny
-//            {
-//                (*BTRoot) = BTStackPop(&stack);
-//            }
-//        } else {
-//            if ((*BTRoot)->RPtr != NULL)    // existuje pravy podstrom
-//            {
-//                BTStackPush(&stack, (*BTRoot)->RPtr);
-//            }
-//            BTNodePtr deletedNode = (*BTRoot);
-//            (*BTRoot) = (*BTRoot)->LPtr;    // pruchod do leveho podstromu
-//
-//            if ((*deletedNode->item)->itemType == item_type_variable) // jedna se o promennou
-//            {
-//                free((*deletedNode->item)->varData->data);
-//                free((*deletedNode->item)->varData);
-//            } else {
-//                free((*deletedNode->item)->funcData);
-//            }
-//
-//            free((*deletedNode->item)->itemID);    // uvolneni alokovane pameti pro itemID
-//            free(deletedNode);        // zruseni uzlu
-//        }
-//    } while ((*BTRoot) != NULL || (stack.top != 0));    // nejsme v listu nebo zasobnik neni prazdny
-//    free(BTRoot);    // zruseni ukazatele na koren BVS
-//}
+void BTDispose(BTNodePtr RootPtr){
+    if(RootPtr == NULL)
+        return;
 
-//
-////TODO: check return codes and frees, implement dispose
+    if(RootPtr->RPtr != NULL)
+        BTDispose(RootPtr->RPtr);
+    if(RootPtr->LPtr != NULL)
+        BTDispose(RootPtr->LPtr);
+
+    if(RootPtr->item != NULL){
+        BTItemPtr *tmp = RootPtr->item;
+        if(tmp->funcData != NULL){
+            if(tmp->funcData->parameterTypes != NULL){
+                if(tmp->funcData->ParamRootPtr != NULL){
+                    BTDispose(tmp->funcData->ParamRootPtr);
+                    tmp->funcData->ParamRootPtr = NULL;
+                }
+                free(tmp->funcData->parameterTypes);
+                tmp->funcData->parameterTypes = NULL;
+            }
+            free(tmp->funcData);
+            tmp->funcData = NULL;
+        }
+        if(tmp->itemID != NULL){
+            free(tmp->itemID);
+            tmp->itemID = NULL;
+        }
+        if(tmp->varData != NULL){
+            if(tmp->varData->data != NULL){
+                free(tmp->varData->data);
+                tmp->varData->data = NULL;
+            }
+            free(tmp->varData);
+            tmp->varData = NULL;
+        }
+        free(RootPtr->item);
+        RootPtr->item = NULL;
+    }
+    free(RootPtr);
+    RootPtr = NULL;
+}
+
+
+
+//TODO: check return codes and frees, implement dispose
 //int main(){
 //    BTNodePtr strom = (struct BTNode *) malloc(sizeof(struct BTNode));
 //    BTInit(strom);

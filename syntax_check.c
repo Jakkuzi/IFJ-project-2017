@@ -117,13 +117,18 @@ int ll[21][8][8] = {
 
 /* syntax analysis top down */
 int syntax_analysis(tCodeList *C){
-    //symtable TODO: uvolnit symBTree pri chybe
-    BTNodePtr symBTree = (struct BTNode *) malloc(sizeof(struct BTNode));
-
     tStack *s;
     s = (tStack *) malloc(sizeof(tStack));
-    if(s == NULL)
+    if(s == NULL) {
         return 99;
+    }
+    BTNodePtr symBTree = (struct BTNode *) malloc(sizeof(struct BTNode));
+    if(symBTree == NULL){
+        free(s);
+        return 99;
+    }
+    BTInit(symBTree);
+
     int i, found, top = 0, result, print_expanded = 0, skip_insert = 0; // iteration and auxiliary variables
     stackInit(s);
     int t = 0; // token id

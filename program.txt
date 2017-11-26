@@ -1,6 +1,16 @@
 
 declare function foo1 (id1 as integer) as string
-declare function foo2 (id1 as double, id2 as double, id3 as string) as string
-declare function foo3 (id1 as integer, id2 as string, id3 as integer ,id4 as double, id5 as double, id as string) as integer
+declare function foo2 (id5 as double, id2 as double, id3 as string) as string
+declare function foo3 (id1 as integer, id2 as string, id3 as integer ,id4 as double, id5 as double) as integer
+declare function foo4 () as double
+
+
+function foo1 (id as integer) as string
+end function
+
+function foo10 () as integer
+end function
+
+
 scope
 End Scope

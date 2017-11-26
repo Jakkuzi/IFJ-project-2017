@@ -12,7 +12,7 @@ int main(){
         return syntax;
     }
 
-    printf("Syntakticka analyza OK\n");//TODO: smazat
+    printf("Obe analyzy OK\n");//TODO: smazat
 
     return 0;
 }

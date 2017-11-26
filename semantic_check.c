@@ -1,4 +1,6 @@
 #include "semantic_check.h"
+#include "strings.h"
+#include "parser.h"
 
 static BTItemPtr *actualFunction;
 
@@ -48,37 +50,37 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                 // second declaration or declaration of defined function
                 if(actualFunction->declared != 0 && actualFunction->defined != 0)
                     return 3;
-                actualFunction->declared += 1;
+                actualFunction->declared++;
                 break;
             case Function:
                 name = C->last->lineData->next->token->myString;
                 if((actualFunction = BTSearch(symBTree, name)) != NULL){ // function has been declared
-                    if(actualFunction->defined != 0){
+                    if(actualFunction->defined != 0) // redefinition
                         return 3;
-                    }
-                    actualFunction->defined += 1;
                 }
-                else{ // definition is also declaration
+                else{
                     result = BTInsertFunc(symBTree, idReturnType, name);
                     if(result != 0)
                         return result;
                     actualFunction = BTSearch(symBTree, name);
-                    actualFunction->defined += 1;
-                    if(actualFunction->declared == 0)
-                        actualFunction->declared = 1;
-
+                }
+                actualFunction->defined = 1;
+                if(actualFunction->declared){
+                    if(actualFunction->funcData->returnType != idReturnType)
+                        return 3;
                 }
                 break;
         }
-        //insert parameters from function
+        // check parameters from function
         tmp = C->last->lineData;
-        while(tmp->tokenID != LeftParenthes || tmp == NULL)
+        while(tmp->tokenID != LeftParenthes)
             tmp = tmp->next;
-        //tmp is on ID or ')' position
         i = 0;
         TString **tokenArr = NULL;
         while(tmp->tokenID != RightParenthes){
-            tmp = tmp->next;
+            tmp = tmp->next; // tmp is on ID or ')' position
+            if(i == 0 && tmp->tokenID == RightParenthes)
+                break;
             if(id == Declare){ // declaration saves only data types
                 if(actualFunction->funcData->parameterTypes == NULL){ //
                     int allocation = 0;
@@ -109,53 +111,80 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                     tokenArr[i-1] = tmp->token;
             }
             else{ // definition saves parameters as variables
+                name = tmp->token->myString;
 
+                if(BTSearch(actualFunction->funcData->ParamRootPtr, name) != NULL)
+                    return 3; //TODO:free
 
-//                name = tmp->token->myString;
-//                switch (tmp->next->next->tokenID){
-//                    case Double:
-//                        idReturnType = var_double;
-//                        break;
-//                    case Integer:
-//                        idReturnType = var_integer;
-//                        break;
-//                    case String:
-//                        idReturnType = var_string;
-//                        break;
-//                    default:
-//                        return 2;
-//                }
-//                //TODO: je potreba vkladat hodnoty???
-//                switch (idReturnType){
-//                    case var_integer:
-//                        result = BTInsertVarInt(actualFunction->funcData, name, 0);
-//                        if(result != 0)
-//                            return result;
-//                        break;
-//                    case var_string:
-//                        result = BTInsertVarString(actualFunction->funcData, name, name);
-//                        if(result != 0)
-//                            return result;
-//                        break;
-//                    case var_double:
-//                        result = BTInsertVarDouble(actualFunction->funcData, name, 0.0);
-//                        if(result != 0)
-//                            return result;
-//                        break;
-//                }
-//                actualFunction->paramCount += 1;//todo: takhle ne
+                // before inserting first variable tree is not allocated
+                if(actualFunction->funcData->ParamRootPtr == NULL){
+                    int params = 0;
+                    tLinePtr counter = tmp;
+                    while(counter->tokenID != RightParenthes){ // get count of parameters for allocation
+                        params++;
+                        if(params == 1) // first token is already id
+                            counter = counter->next->next->next;
+                        else
+                            counter = counter->next->next->next->next;
+                    }
+                    if(actualFunction->declared)
+                        if(params != actualFunction->paramCount)
+                            return 3;
+                }
+
+                switch (tmp->next->next->tokenID){
+                    case Double:
+                        idReturnType = var_double;
+                        break;
+                    case Integer:
+                        idReturnType = var_integer;
+                        break;
+                    case String:
+                        idReturnType = var_string;
+                        break;
+                    default:
+                        return 2;
+                }
+
+                if(actualFunction->declared) // check if parameters from declaration are identical
+                    if(actualFunction->funcData->parameterTypes[i] != tmp->next->next->tokenID)
+                        return 3;
+
+                switch (idReturnType){
+                    case var_integer:
+                        result = BTInsertVarInt(actualFunction->funcData, name, 0);
+                        if(result != 0)
+                            return result;
+                        break;
+                    case var_string:
+                        result = BTInsertVarString(actualFunction->funcData, name, name);
+                        if(result != 0)
+                            return result;
+                        break;
+                    case var_double:
+                        result = BTInsertVarDouble(actualFunction->funcData, name, 0.0);
+                        if(result != 0)
+                            return result;
+                        break;
+                }
+                i++;
             }
             tmp = tmp->next->next->next;
         }
-        for(int j = 0; j < i; j++)
-            free(tokenArr[j]);
+        if(tokenArr != NULL)
+            free(tokenArr);
 
     }
     else if(id == Scope){
         //TODO: zkontrolovat definice
     }
     else{ // insert variables from function to symBTree
-
+        if(id == End && C->last->lineData->next->tokenID == Function){
+            BTDispose(actualFunction->funcData->ParamRootPtr);
+            actualFunction->funcData->ParamRootPtr = NULL;
+            free(actualFunction->funcData);
+            actualFunction->varData = NULL;
+        }
 
     }
 
