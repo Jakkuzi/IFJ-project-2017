@@ -302,7 +302,7 @@ int syntax_analysis(tCodeList *C){
                 varDataType idReturnType;
                 tLinePtr tmp = C->last->lineData; // iterator to get exact data
                 // create function in symtable
-                if(id == Declare || id == Function || id == Scope){
+                if(id == Declare || id == Function){
                     while(tmp->tokenID != RightParenthes)
                         tmp = tmp->next;
                     // first next is As, second is data type, so tmp contains data type now
@@ -341,14 +341,14 @@ int syntax_analysis(tCodeList *C){
                             if(actualFunction->declared == 0)
                                 actualFunction->declared = 1;
                             break;
-                        case Scope:
-                            name = (char *) malloc(sizeof(char) * 20);
-                            strcmp(name, SCOPE_NAME);
-                            result = BTInsertFunc(symBTree, idReturnType, name);
-                            actualFunction = BTSearch(symBTree, name);
-                            actualFunction->declared = 1;
-                            actualFunction->defined = 1;
-                            break;
+//                        case Scope:
+//                            name = (char *) malloc(sizeof(char) * 20);
+//                            strcpy(name, SCOPE_NAME);
+//                            result = BTInsertFunc(symBTree, idReturnType, name);
+//                            actualFunction = BTSearch(symBTree, name);
+//                            actualFunction->declared = 1;
+//                            actualFunction->defined = 1;
+//                            break;
                         default: //should not been reachable
                             return 2;
                     }
@@ -413,6 +413,7 @@ int syntax_analysis(tCodeList *C){
 
                 /* end of SEMANTIC CHECK */
 
+                //TODO: smazat promenne aktualni funkce
                 result = tCodeCreateNewLine(C);
                 if(result != 0){
                     freeThisCycle(token, s);
