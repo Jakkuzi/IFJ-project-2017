@@ -134,6 +134,13 @@ int syntax_analysis(tCodeList *C){
     int t = 0; // token id
     int first_token = 1; // check start of code
 
+    result = addBuiltInFunctions(symBTree);
+    if(result != 0){
+        free(s);
+        free(symBTree);
+        return result;
+    }
+
     do{
         TString *token = (TString *) malloc(sizeof(TString));
         if(token == NULL){

@@ -200,3 +200,115 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
     //TODO: smazat promenne aktualni funkce
     return 0;
 }
+
+int addBuiltInFunctions(BTNodePtr symBTree){
+    char *f1 = (char *) malloc(sizeof(char) * 10); // lenght
+    if(f1 == NULL)
+        return 99;
+    char *f2 = (char *) malloc(sizeof(char) * 10); // substr
+    if(f2 == NULL){
+        free(f1);
+        return 99;
+    }
+    char *f3 = (char *) malloc(sizeof(char) * 10); // asc
+    if(f3 == NULL){
+        multiFree(f1, f2, NULL, NULL);
+        return 99;
+    }
+    char *f4 = (char *) malloc(sizeof(char) * 10); // chr
+    if(f4 == NULL){
+        multiFree(f1, f2, f3, NULL);
+        return 99;
+    }
+    strcpy(f1, "length");
+    strcpy(f2, "substr");
+    strcpy(f3, "asc");
+    strcpy(f4, "chr");
+
+    int result;
+    BTItemPtr *actualF;
+
+    //f1
+    result = BTInsertFunc(symBTree, var_integer, f1);
+    if(result != 0){
+        multiFree(f1, f2, f3, f4);
+        return result;
+    }
+    actualF = BTSearch(symBTree, f1);
+    actualF->funcData->parameterTypes = (int *) malloc(sizeof(int));
+    if(actualF->funcData->parameterTypes == NULL){
+        multiFree(f1, f2, f3, f4);
+        return 99;
+    }
+    actualF->funcData->parameterTypes[0] = String;
+    actualF->paramCount = 1;
+    actualF->defined = 1;
+    actualF->declared = 1;
+
+    //f2
+    result = BTInsertFunc(symBTree, var_string, f2);
+    if(result != 0){
+        multiFree(f1, f2, f3, f4);
+        return result;
+    }
+    actualF = BTSearch(symBTree, f1);
+    actualF->funcData->parameterTypes = (int *) malloc(sizeof(int) * 3);
+    if(actualF->funcData->parameterTypes == NULL){
+        multiFree(f1, f2, f3, f4);
+        return 99;
+    }
+    actualF->funcData->parameterTypes[0] = String;
+    actualF->funcData->parameterTypes[1] = Integer;
+    actualF->funcData->parameterTypes[2] = Integer;
+    actualF->paramCount = 3;
+    actualF->defined = 1;
+    actualF->declared = 1;
+
+    //f3
+    result = BTInsertFunc(symBTree, var_integer, f3);
+    if(result != 0){
+        multiFree(f1, f2, f3, f4);
+        return result;
+    }
+    actualF = BTSearch(symBTree, f1);
+    actualF->funcData->parameterTypes = (int *) malloc(sizeof(int) * 2);
+    if(actualF->funcData->parameterTypes == NULL){
+        multiFree(f1, f2, f3, f4);
+        return 99;
+    }
+    actualF->funcData->parameterTypes[0] = String;
+    actualF->funcData->parameterTypes[1] = Integer;
+    actualF->paramCount = 2;
+    actualF->defined = 1;
+    actualF->declared = 1;
+
+    //f4
+    result = BTInsertFunc(symBTree, var_string, f4);
+    if(result != 0){
+        multiFree(f1, f2, f3, f4);
+        return result;
+    }
+    actualF = BTSearch(symBTree, f1);
+    actualF->funcData->parameterTypes = (int *) malloc(sizeof(int));
+    if(actualF->funcData->parameterTypes == NULL){
+        multiFree(f1, f2, f3, f4);
+        return 99;
+    }
+    actualF->funcData->parameterTypes[0] = Integer;
+    actualF->paramCount = 1;
+    actualF->defined = 1;
+    actualF->declared = 1;
+
+    return 0;
+}
+
+void multiFree(char *s1, char *s2, char *s3, char *s4){
+    if(s1 != NULL)
+        free(s1);
+    if(s2 != NULL)
+        free(s2);
+    if(s3 != NULL)
+        free(s3);
+    if(s4 != NULL)
+        free(s4);
+}

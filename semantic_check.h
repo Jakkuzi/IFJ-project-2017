@@ -6,4 +6,7 @@
 
 int semantic_check(tCodeList *, BTNodePtr);
 
+int addBuiltInFunctions(BTNodePtr);
+void multiFree(char *, char *, char *, char *);
+
 #endif
