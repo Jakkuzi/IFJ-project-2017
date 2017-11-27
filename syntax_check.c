@@ -41,7 +41,7 @@ int ll[21][8][8] = {
     {11,    86 ,    214,    122,    207,    0,      0,      0},
     {32,    11 ,    122,    207,    0,      0,      0,      0},
     {36,    221,    207,    0,      0,      0,      0,      0},
-    {37,    214,    207,    0,    0,      0,      0,      0},
+    {37,    214,    207,    0,      0,      0,      0,      0},
     {28,    0,      0,      0,      0,      0,      0,      },},
     //BodyWhile
     {{24,   11 ,    21 ,    220,    213,    208,    0,      0},
@@ -50,7 +50,7 @@ int ll[21][8][8] = {
     {11,    86 ,    214,    122,    208,    0,      0,      0},
     {32,    11 ,    122,    208,    0,      0,      0,      0},
     {36,    221,    208,    0,      0,      0,      0,      0},
-    {37,    214,    208,    0,    0,      0,      0,      0},
+    {37,    214,    208,    0,      0,      0,      0,      0},
     {35,    0,      0,      0,      0,      0,      0,      0},},
     //ScopeBody
     {{24,   11 ,    21 ,    220,    213,    209,    0,      0},
@@ -138,17 +138,20 @@ int syntax_analysis(tCodeList *C){
         TString *token = (TString *) malloc(sizeof(TString));
         if(token == NULL){
             free(s);
+            free(symBTree);
             return 99;
         }
         result = stringInit(token);
         if(result != 0){
             freeThisCycle(token, s);
+            free(symBTree);
             return result;
         }
         if(t == EndOfLine){ // last token was EOL
             t = getNextToken(token);
             if(t == 99 || t == 1){
                 freeThisCycle(token, s);
+                free(symBTree);
                 return t;
             }
             while(t == EndOfLine){
@@ -156,11 +159,13 @@ int syntax_analysis(tCodeList *C){
                 result = stringInit(token);
                 if(result != 0){
                     freeThisCycle(token, s);
+                    free(symBTree);
                     return result;
                 }
                 t = getNextToken(token);
                 if(t == 99 || t == 1){
                     freeThisCycle(token, s);
+                    free(symBTree);
                     return t;
                 }
             }
@@ -170,6 +175,7 @@ int syntax_analysis(tCodeList *C){
             t = getNextToken(token);
             if(t == 1 || t == 99){
                 freeThisCycle(token, s);
+                free(symBTree);
                 return t;
             }
             if(!print_expanded){
@@ -188,6 +194,7 @@ int syntax_analysis(tCodeList *C){
             t = getNextToken(token);
             if(t == 99 || t == 1){
                 freeThisCycle(token, s);
+                free(symBTree);
                 return t;
             }
         }
@@ -198,11 +205,13 @@ int syntax_analysis(tCodeList *C){
                 result = stringInit(token);
                 if(result != 0){
                     freeThisCycle(token, s);
+                    free(symBTree);
                     return result;
                 }
                 t = getNextToken(token);
                 if(t == 1 || t == 99){
                     freeThisCycle(token, s);
+                    free(symBTree);
                     return t;
                 }
             }
@@ -219,6 +228,7 @@ int syntax_analysis(tCodeList *C){
             }
             else{
                 freeThisCycle(token, s);
+                free(symBTree);
                 return 2;
             }
             first_token = 0;
@@ -261,12 +271,14 @@ int syntax_analysis(tCodeList *C){
                             break;
                         default:
                             freeThisCycle(token, s);
+                            free(symBTree);
                             return 2;
                     }
                     skip_insert = 1;
                     sPop(s);
                     if(result == 2 || result == 99){
                         freeThisCycle(token, s);
+                        free(symBTree);
                         return result;
                     }
                     if((t = result) == sTop(s))
@@ -274,6 +286,7 @@ int syntax_analysis(tCodeList *C){
                 }
                 else{
                     freeThisCycle(token, s);
+                    free(symBTree);
                     return 2;
                 }
 
@@ -283,6 +296,7 @@ int syntax_analysis(tCodeList *C){
                     sPop(s);
                 else{
                     freeThisCycle(token, s);
+                    free(symBTree);
                     return 2;
                 }
             }
@@ -294,11 +308,15 @@ int syntax_analysis(tCodeList *C){
         else{
             if(t == EndOfLine){
                 result = semantic_check(C, symBTree);
-                if(result != 0)//TODO: uvolnit pamet
+                if(result != 0){
+                    freeThisCycle(token, s);
+                    free(symBTree);
                     return result;
+                }
                 result = tCodeCreateNewLine(C);
                 if(result != 0){
                     freeThisCycle(token, s);
+                    free(symBTree);
                     return result;
                 }
             }
@@ -306,6 +324,7 @@ int syntax_analysis(tCodeList *C){
                 result = tCodeInsertToken(C, token, t);
                 if(result != 0){
                     freeThisCycle(token, s);
+                    free(symBTree);
                     return result;
                 }
             }
@@ -315,22 +334,26 @@ int syntax_analysis(tCodeList *C){
     TString *token = (TString *) malloc(sizeof(TString));
     if(token == NULL){
         free(s);
+        free(symBTree);
         return 99;
     }
     do{ // check if there is any command after 'end scope'
         result = stringInit(token);
         if(result != 0){
             freeThisCycle(token, s);
+            free(symBTree);
             return result;
         }
         t = getNextToken(token);
         if(t == 1 || t == 99){
             freeThisCycle(token, s);
+            free(symBTree);
             return t;
         }
         stringFree(token);
     }while(t == EndOfLine);
     freeThisCycle(token, s);
+    free(symBTree);
 
     if(t != EndOfFile)
         return 2;

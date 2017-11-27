@@ -1,18 +1,17 @@
 #include "semantic_check.h"
-#include "strings.h"
-#include "parser.h"
+
 
 static BTItemPtr *actualFunction;
 
 int semantic_check(tCodeList *C, BTNodePtr symBTree){
     /* SEMANTIC CHECK
- * filling symtable from here
- *TODO: než se vloží nový řádek
- * načíst aktuální data do symtable --- z C->last
- * zkontrolovat symtable, jestli je zatím správně
- * symBTree - strom plny ID funkci
- *
- * */
+     * filling symtable from here
+     *TODO: než se vloží nový řádek
+     * načíst aktuální data do symtable --- z C->last
+     * zkontrolovat symtable, jestli je zatím správně
+     * symBTree - strom plny ID funkci
+     *
+     * */
     int result, i;
     int id = C->last->lineData->tokenID;
     char *name = NULL; // name of function or variable
@@ -93,18 +92,22 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                             counter = counter->next->next->next->next;
                     }
                     actualFunction->funcData->parameterTypes = (int *) malloc(sizeof(int) * allocation);
+                    if(actualFunction->funcData->parameterTypes == NULL)
+                        return 99;
                     tokenArr = (TString **) malloc(sizeof(TString*) * allocation);
-//                    for(int j = 0; j < allocation; j++)
-//                        tokenArr[j] = (TString *) malloc(sizeof(TString));
-                    //TODO:check for 99
+                    if(tokenArr == NULL)
+                        return 99;
                 }
                 actualFunction->funcData->parameterTypes[i] = tmp->next->next->tokenID;
                 i++;
                 actualFunction->paramCount = i;
                 if(i > 1){
                     for(int j = 0; j < i-1; j++)
-                        if(strcmp(tokenArr[j]->myString, tmp->token->myString) == 0)
+                        if(strcmp(tokenArr[j]->myString, tmp->token->myString) == 0){
+                            if(tokenArr != NULL)
+                                free(tokenArr);
                             return 3;//TODO: asi 3, nwm co je to za error kdyz se 2 parametry jmenuji stejne + free
+                        }
                     tokenArr[i-1] = tmp->token;
                 }
                 else
@@ -113,7 +116,8 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
             else{ // definition saves parameters as variables
                 name = tmp->token->myString;
 
-                if(BTSearch(actualFunction->funcData->ParamRootPtr, name) != NULL)
+                // search for parameter duplication or parameter named as function
+                if(BTSearch(symBTree, name) != NULL)
                     return 3; //TODO:free
 
                 // before inserting first variable tree is not allocated
@@ -188,14 +192,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
 
     }
 
-    /* symtable filled */
 
-    //TODO: zkontroluj kazdy radek, jestli je zatim spravne
-    // symTree je ukazatel na root
-    // actualFunction je funkce, ve ktere preva pracujeme
-    // search je vhodne aplikovat prvne na funkci pak prekontrolovat,
-    // jeslti se promenna nejmenuje jako funkce
-    // GL :-)
 
 
     /* end of SEMANTIC CHECK */
