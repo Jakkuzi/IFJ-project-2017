@@ -1,6 +1,5 @@
 #include "semantic_check.h"
-#include "strings.h"
-#include "parser.h"
+
 
 static BTItemPtr *actualFunction;
 
@@ -94,8 +93,6 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                     }
                     actualFunction->funcData->parameterTypes = (int *) malloc(sizeof(int) * allocation);
                     tokenArr = (TString **) malloc(sizeof(TString*) * allocation);
-//                    for(int j = 0; j < allocation; j++)
-//                        tokenArr[j] = (TString *) malloc(sizeof(TString));
                     //TODO:check for 99
                 }
                 actualFunction->funcData->parameterTypes[i] = tmp->next->next->tokenID;
@@ -113,7 +110,8 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
             else{ // definition saves parameters as variables
                 name = tmp->token->myString;
 
-                if(BTSearch(actualFunction->funcData->ParamRootPtr, name) != NULL)
+                // search for parameter duplication or parameter named as function
+                if(BTSearch(symBTree, name) != NULL)
                     return 3; //TODO:free
 
                 // before inserting first variable tree is not allocated
@@ -188,14 +186,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
 
     }
 
-    /* symtable filled */
 
-    //TODO: zkontroluj kazdy radek, jestli je zatim spravne
-    // symTree je ukazatel na root
-    // actualFunction je funkce, ve ktere preva pracujeme
-    // search je vhodne aplikovat prvne na funkci pak prekontrolovat,
-    // jeslti se promenna nejmenuje jako funkce
-    // GL :-)
 
 
     /* end of SEMANTIC CHECK */
