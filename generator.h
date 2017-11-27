@@ -6,6 +6,44 @@
 #include "strings.c"
 
 
+// sLabel beginning
+
+// navesti LABELIF
+// Globalni pocitadlo pro navesti IF
+unsigned int labelIf = 0;
+
+// navesti LABELLOOP
+// Globalni pocitadlo pro navesti LOOP
+unsigned int labelLoop = 0;
+
+#define sLabelMax 10000
+// pomocny zasobnik pro navesti
+typedef struct sLabel{
+	int array[sLabelMax];
+	int top;
+} *sLabelPtr;
+
+void sLabelInit(sLabelPtr stack)
+{
+        stack->top = -1;
+}
+void sLabelPush(sLabelPtr stack, int newLabel)
+{
+        stack->top += 1;
+        stack->array[stack->top] = newLabel;
+}
+int sLabelTop(sLabelPtr stack)
+{
+        return stack->array[stack->top];
+}
+void sLabelPop(sLabelPtr stack)
+{
+	stack->top -= 1;
+}
+
+// sLabel end
+
+
 // list beginning
 // seznam znazornujici vyraz v postfixu (aby se s nim dalo dale pracovat a nebyl pouze vypsan)
 

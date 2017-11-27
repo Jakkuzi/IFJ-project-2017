@@ -2,14 +2,21 @@
 
 #define IFJcode17_ID 0
 
+// globaclni zasobniky navesti pro label if a label loop
+struct sLabel sStrLabelIf;
+sLabelPtr sLabelIf = &sStrLabelIf;
+struct sLabel sStrLabelLoop;
+sLabelPtr sLabelLoop = &sStrLabelLoop;
 
 
-void IFJcode17_evalExprBool(tLinePtr temp)
+
+void IFJcode17_evalExprBool(tLinePtr *temp)
 {
 	// TODO: everything
 }
 
 
+// kalkulace pro optimalizaci vyrazu (predpocitani konstant)
 void IFJcode17_exprOptimalizeExecute(gListPtr first, gListPtr second, int op)
 {
 	double oFirst;
@@ -124,7 +131,7 @@ gListPtr IFJcode17_toPostfix(tLinePtr *temp)
 	}
 
 	// TODO: pak smazat vypisy
-	printf("\n# -------- TEST VYRAZU --------\n# Vyraz: 10+A*(5-1/2)\n# Prevedeny na postfix: ");
+	printf("\n# -------- TEST VYRAZU --------\n# Vyraz: 10+4*(5-1/2)\n# Prevedeny na postfix: ");
 	gListPrint(gListFirst);
 	while(IFJcode17_exprOptimalize(&gListFirst) == 1);	// optimalizace vyrazu
 	printf("\n# Vyraz po optimalizaci (predpocitani konstant): ");
@@ -180,12 +187,73 @@ void IFJcode17_evalExpr(tLinePtr *temp)
 
 
 
-
-void IFJcode17_if(tLinePtr temp)
+// zpracovani prikazu IF
+void IFJcode17_if(tLinePtr *temp)
 {
-	// TODO: everything
+	labelIf += 1;
+	sLabelPush(sLabelIf, labelIf);
+
+	if((*temp)->next != NULL)
+		*temp = (*temp)->next;
+	IFJcode17_evalExprBool(temp);
+	printf("PUSHS bool@true\n");
+	printf("JUMPIFNEQS LABELIF%d", sLabelTop(sLabelIf));
+	while((*temp)->tokenID != Then)
+		*temp = (*temp)->next;
+
+	*temp = (*temp)->next;	// zbaveni se tokenu Then
 }
 
+// zpracovani prikazu ELSE (pouziva navesti z predchoziho IF)
+void IFJcode17_else(tLinePtr *temp)
+{
+	printf("JUMP LABELIFEND%d\n", sLabelTop(sLabelIf));
+	printf("LABEL LABELIF%d", sLabelTop(sLabelIf));
+
+	if((*temp)->next != NULL)
+		*temp = (*temp)->next;	// zbaveni se tokenu Else
+}
+
+// zpracovani sekvence prikazu end if
+void IFJcode_ifend(tLinePtr *temp)
+{
+	printf("LABEL LABELIFEND%d", sLabelTop(sLabelIf));
+	sLabelPop(sLabelIf);
+
+	while((*temp)->next != NULL)
+		*temp = (*temp)->next;  // zbaveni se tokenu (end) if
+}
+
+
+// zpracovani sekvence prikazu DO WHILE
+void IFJcode17_dowhile(tLinePtr *temp)
+{
+
+	labelLoop += 1;
+	sLabelPush(sLabelLoop, labelLoop);
+
+        if((*temp)->next != NULL)
+                *temp = (*temp)->next;  // zbaveni se tokenu DO
+
+	printf("LABEL LABELLOOP%d\n", sLabelTop(sLabelLoop));
+	IFJcode17_evalExprBool(temp);
+	printf("PUSHS bool@true\n");
+	printf("JUMPIFNEQS LABELLOOPEND%d", sLabelTop(sLabelLoop));
+
+	while((*temp)->next != NULL)
+		*temp = (*temp)->next;  // zbaveni se tokenu WHILE
+}
+
+// zpracovani ukoncovaciho prikazu cyklu LOOP
+void IFJcode17_loop(tLinePtr *temp)
+{
+	printf("JUMP LABELLOOP%d\n", sLabelTop(sLabelLoop));
+	printf("LABEL LABELLOOPEND%d", sLabelTop(sLabelLoop));
+	sLabelPop(sLabelLoop);
+
+	while((*temp)->next != NULL)
+		*temp = (*temp)->next;  // zbaveni se tokenu LOOP
+}
 
 
 // pomocna funkce pro generovani instrukce WRITE
@@ -284,8 +352,18 @@ int generateLine(tLinePtr tInput)
 			case Semicolon:
 			    break;
 		 	case End:
-			    printf("CLEARS\n");
-			    printf("POPFRAME");
+			    if(temp->next != NULL)
+			    {
+				if(temp->next->tokenID == Scope)
+			    	{
+					printf("CLEARS\n");
+			    		printf("POPFRAME");
+				}
+				else if(temp->next->tokenID == If)
+				{
+					IFJcode_ifend(&temp);
+				}
+			    }
 			    if(temp->next != NULL)
 				temp = temp->next;
 			    break;
@@ -319,7 +397,16 @@ int generateLine(tLinePtr tInput)
 			    		printf("READ ");
 			    break;
 			case If:
-			    IFJcode17_if(temp);
+			    IFJcode17_if(&temp);
+			    break;
+			case Else:
+			    IFJcode17_else(&temp);
+			    break;
+			case Do:
+			    IFJcode17_dowhile(&temp);
+			    break;
+			case Loop:
+			    IFJcode17_loop(&temp);
 			    break;
 		}
 		if(temp != NULL)
@@ -350,12 +437,13 @@ typedef struct gTest{
 
 
 /*
+
 int main()
 {
 	tCodeList tInput;
 	tCodeInit(&tInput);
 
-	int const numOfTokens = 40;
+	int const numOfTokens = 100;
 	TString token[numOfTokens];
 
 //		Simulace vstupu			//
@@ -386,6 +474,31 @@ int main()
         {";", Semicolon,0},
         {"!", Exclamation,0},
         {"\"druhyString\n\"", valueOfString,1},
+
+	{"if", If,0},
+	{"then", Then,1},
+	{"else", Else,1},
+	{"end", End,0},
+	{"if", If,1},
+
+        {"if", If,0},
+        {"then", Then,1},
+	        {"if", If,0},
+		{"then", Then,1},
+	      	{"else", Else,1},
+	     	{"end", End,0},
+		{"if", If,1},
+        {"else", Else,1},
+        {"end", End,0},
+        {"if", If,1},
+
+        {"do", Do,0},
+        {"while", While,1},
+		{"do", Do,0},
+        	{"while", While,1},
+        	{"LOOP", Loop,1},
+        {"LOOP", Loop,1},
+
 	{"end", End,0},
 	{"scope", Scope, 0}
 	};
@@ -409,6 +522,11 @@ int main()
 
 	printf(".IFJcode17\n"); // hlavicka jazyka IFJcode17
 
+	// inicializace globalnich zasobniku navesti (label if a label loop)
+	sLabelInit(sLabelIf);
+	sLabelInit(sLabelLoop);
+
+
 	tCodePtr tempInput = tInput.first;
 	while(tempInput != NULL)
 	{
@@ -420,7 +538,6 @@ int main()
 		}
 	tempInput = tempInput->next;
 	}
-
         tCodeDispose(&tInput);
 
         for(int i = 0; i<numOfTokens; i++)
@@ -429,4 +546,5 @@ int main()
 
 	return 0;
 }
+
 */
