@@ -11,6 +11,7 @@ int main(){
         // TODO: uvolnit struktury
         return syntax;
     }
+    tCodeDispose(&sCode);
 
     printf("Obe analyzy OK\n");//TODO: smazat
 

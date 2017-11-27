@@ -9,6 +9,7 @@
 #include "prec.h"
 #include "symtable.h"
 
+
 /* struct for keeping one line of code */
 typedef struct tLine {
     TString *token;
@@ -34,6 +35,7 @@ void tCodeInit(tCodeList *);
 
 int tCodeCreateNewLine(tCodeList *);
 int tCodeInsertToken(tCodeList *, TString *, int);
+void tCodeDispose(tCodeList *);
 
 #include "syntax_check.h"
 

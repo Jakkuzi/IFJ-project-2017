@@ -5,13 +5,13 @@ static BTItemPtr *actualFunction;
 
 int semantic_check(tCodeList *C, BTNodePtr symBTree){
     /* SEMANTIC CHECK
- * filling symtable from here
- *TODO: než se vloží nový řádek
- * načíst aktuální data do symtable --- z C->last
- * zkontrolovat symtable, jestli je zatím správně
- * symBTree - strom plny ID funkci
- *
- * */
+     * filling symtable from here
+     *TODO: než se vloží nový řádek
+     * načíst aktuální data do symtable --- z C->last
+     * zkontrolovat symtable, jestli je zatím správně
+     * symBTree - strom plny ID funkci
+     *
+     * */
     int result, i;
     int id = C->last->lineData->tokenID;
     char *name = NULL; // name of function or variable
@@ -92,16 +92,22 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                             counter = counter->next->next->next->next;
                     }
                     actualFunction->funcData->parameterTypes = (int *) malloc(sizeof(int) * allocation);
+                    if(actualFunction->funcData->parameterTypes == NULL)
+                        return 99;
                     tokenArr = (TString **) malloc(sizeof(TString*) * allocation);
-                    //TODO:check for 99
+                    if(tokenArr == NULL)
+                        return 99;
                 }
                 actualFunction->funcData->parameterTypes[i] = tmp->next->next->tokenID;
                 i++;
                 actualFunction->paramCount = i;
                 if(i > 1){
                     for(int j = 0; j < i-1; j++)
-                        if(strcmp(tokenArr[j]->myString, tmp->token->myString) == 0)
+                        if(strcmp(tokenArr[j]->myString, tmp->token->myString) == 0){
+                            if(tokenArr != NULL)
+                                free(tokenArr);
                             return 3;//TODO: asi 3, nwm co je to za error kdyz se 2 parametry jmenuji stejne + free
+                        }
                     tokenArr[i-1] = tmp->token;
                 }
                 else
