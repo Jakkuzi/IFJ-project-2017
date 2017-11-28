@@ -88,13 +88,13 @@ int BTInsert(BTNodePtr BTRoot, BTItemPtr *newItem) {
         activeNodeParent->LPtr = newNode;
     else
         activeNodeParent->RPtr = newNode;
+
     return 0;
 }
 
 // najde polozku v BVS (RootPtr) podle identifikatoru (itemID) a vysledek vraci prostrednictvim ukazetele (output)
 // navratova hodnota udava uspech (true) nebo neuspech (false)
 BTItemPtr *BTSearch(BTNodePtr RootPtr, char *searchedID) {
-    //TODO: rekurzivne
     int compare;    // pomocna promenna pro uchovani hodnoty porovnani dvou stringu (identifikatoru)
     // compare = 0          ~ identifikatory jsou stejne
     // compare < 0          ~ hledany identifikator je mensi (pruchod do leveho syna)
@@ -107,9 +107,12 @@ BTItemPtr *BTSearch(BTNodePtr RootPtr, char *searchedID) {
     BTNodePtr tmp = RootPtr;
     while(tmp != NULL){
         if(tmp->item != NULL) {
-            if(tmp->item->funcData != NULL)
-                if((var = BTSearch(tmp->item->funcData->ParamRootPtr, searchedID)) != NULL)
+            if(tmp->item->ParamRootPtr != NULL)
+                if((var = BTSearch(tmp->item->ParamRootPtr, searchedID)) != NULL)
                     return var;
+//            if(tmp->item->funcData != NULL)
+//                if((var = BTSearch(tmp->item->funcData->ParamRootPtr, searchedID)) != NULL)
+//                    return var;
         }
         else
             break;
@@ -134,11 +137,13 @@ BTItemPtr *BTSearch(BTNodePtr RootPtr, char *searchedID) {
 }
 
 // vlozeni promenne typu integer do BVS
-int BTInsertVarInt(funcDataPtr RootPtr, char *id, int value) {
+int BTInsertVarInt(BTNodePtr RootPtr, char *id, int value) {
     BTItemPtr *newData = (struct BTItem *) malloc(sizeof(struct BTItem));
-    newData->itemID = id;
+    char *newid = (char *) malloc(sizeof(char) * (strlen(id) + 1));
+    strcpy(newid, id);
+    newData->itemID = newid;
     newData->itemType = item_type_variable;
-    newData->funcData = NULL;
+//    newData->funcData = NULL;
     newData->varData = malloc(sizeof(struct varData));
     if (newData->varData == NULL) {
         return 99;
@@ -150,26 +155,24 @@ int BTInsertVarInt(funcDataPtr RootPtr, char *id, int value) {
     }
     *(int *) (newData->varData->data) = value;
 
-    if(RootPtr->ParamRootPtr == NULL){
-        BTNodePtr newItem = (struct BTNode *) malloc(sizeof(struct BTNode));
-        if(newItem == NULL)
-            return 99;
-        newItem->item = newData;
-        RootPtr->ParamRootPtr = newItem;
+    if(RootPtr->item == NULL){
+        RootPtr->item = newData;
     }
     else
-        BTInsert(RootPtr->ParamRootPtr, newData);
+    BTInsert(RootPtr, newData);
 
     return 0;
 }
 
 
 // vlozeni promenne typu double do BVS
-int BTInsertVarDouble(funcDataPtr  RootPtr, char *id, double value) {
+int BTInsertVarDouble(BTNodePtr RootPtr, char *id, double value) {
     BTItemPtr *newData = (struct BTItem *) malloc(sizeof(struct BTItem));
-    newData->itemID = id;
+    char *newid = (char *) malloc(sizeof(char) * (strlen(id) + 1));
+    strcpy(newid, id);
+    newData->itemID = newid;
     newData->itemType = item_type_variable;
-    newData->funcData = NULL;
+//    newData->funcData = NULL;
     newData->varData = malloc(sizeof(struct varData));
     if (newData->varData == NULL) {
         return 99;
@@ -180,30 +183,28 @@ int BTInsertVarDouble(funcDataPtr  RootPtr, char *id, double value) {
         return 99;
     *(double *) (newData->varData->data) = value;
 
-    if(RootPtr->ParamRootPtr == NULL){
-        BTNodePtr newItem = (struct BTNode *) malloc(sizeof(struct BTNode));
-        if(newItem == NULL)
-            return 99;
-        newItem->item = newData;
-        RootPtr->ParamRootPtr = newItem;
+    if(RootPtr->item == NULL){
+        RootPtr->item = newData;
     }
     else
-        BTInsert(RootPtr->ParamRootPtr, newData);
+        BTInsert(RootPtr, newData);
 
     return 0;
 }
 
 
 // vlozeni promenne typu string do BVS
-int BTInsertVarString(funcDataPtr RootPtr, char *id, char *value) {
+int BTInsertVarString(BTNodePtr RootPtr, char *id, char *value) {
     BTItemPtr *newData = (struct BTItem *) malloc(sizeof(struct BTItem));
-    newData->itemID = id;
+    char *newid = (char *) malloc(sizeof(char) * (strlen(id) + 1));
+    strcpy(newid, id);
+    newData->itemID = newid;
     newData->itemType = item_type_variable;
-    newData->funcData = NULL;
+//    newData->funcData = NULL;
     newData->varData = malloc(sizeof(struct varData));
-    if (newData->varData == NULL) {
+    if (newData->varData == NULL)
         return 99;
-    }
+
     newData->varData->type = var_string;
     int len = strlen(value);
     newData->varData->data = (char *) malloc(sizeof(char) * len);
@@ -213,15 +214,10 @@ int BTInsertVarString(funcDataPtr RootPtr, char *id, char *value) {
     for (int i = 0; i < len; i++)
         ((char *) newData->varData->data)[i] = value[i];
 
-    if(RootPtr->ParamRootPtr == NULL){
-        BTNodePtr newItem = (struct BTNode *) malloc(sizeof(struct BTNode));
-        if(newItem == NULL)
-            return 99;
-        newItem->item = newData;
-        RootPtr->ParamRootPtr = newItem;
+    if(RootPtr->item == NULL){
+        RootPtr->item = newData;
     }
-    else
-        BTInsert(RootPtr->ParamRootPtr, newData);
+        BTInsert(RootPtr, newData);
 
     return 0;
 }
@@ -232,27 +228,64 @@ int BTInsertFunc(BTNodePtr RootPtr, varDataType returnType, char *id) {
     BTItemPtr *newItem = (struct BTItem *) malloc(sizeof(struct BTItem));
     if(newItem == NULL)
         return 99;
-    newItem->itemID = id;
-    newItem->itemType = item_type_function;
-    newItem->varData = NULL;
-    newItem->funcData = (struct funcData *) malloc(sizeof(struct funcData));
-    if (newItem->funcData == NULL) {
+    char *newID = (char *) malloc(sizeof(char) * (strlen(id) + 1));
+    if(newID == NULL) {
+        free(newItem);
         return 99;
     }
-    newItem->funcData->returnType = returnType;
-    newItem->funcData->ParamRootPtr = NULL;
-    newItem->funcData->parameterTypes = NULL;
+
+    strcpy(newID, id);
+    newItem->itemID = newID;
     newItem->declared = 0;
     newItem->defined = 0;
     newItem->paramCount = 0;
+    newItem->itemType = item_type_function;
+    newItem->returnType = returnType;
+    newItem->ParamRootPtr = NULL;
+    newItem->parameterTypes = NULL;
+
+    newItem->ParamRootPtr = (struct BTNode *) malloc(sizeof(struct BTNode));
+    newItem->ParamRootPtr->item = NULL;
+    newItem->ParamRootPtr->RPtr = NULL;
+    newItem->ParamRootPtr->LPtr = NULL;
 
     if(RootPtr->item == NULL)
         RootPtr->item = newItem;
     else{
         int result = BTInsert(RootPtr, newItem);
-        if(result != 0)
+        if(result != 0){
+//            free(newItem->funcData);
+            free(newItem);
             return result;
+        }
     }
+    return 0;
+
+//    BTItemPtr *newItem = (struct BTItem *) malloc(sizeof(struct BTItem));
+//    if(newItem == NULL)
+//        return 99;
+//    char *newid = (char *) malloc(sizeof(char) * (strlen(id) + 1));//TODO:99
+//    strcpy(newid, id);
+//    newItem->itemID = newid;
+//    newItem->itemType = item_type_function;
+//    newItem->varData = NULL;
+//    funcDataPtr funcData = (struct funcData *) malloc(sizeof(struct funcData));
+//    if (funcData == NULL)
+//        return 99;
+//    newItem->funcData = funcData;
+//    newItem->funcData->returnType = returnType;
+//    newItem->funcData->ParamRootPtr = NULL;
+//    newItem->funcData->parameterTypes = NULL;
+//    newItem->declared = 0;
+//    newItem->defined = 0;
+//    newItem->paramCount = 0;
+//
+//    if(RootPtr->item == NULL)
+//        RootPtr->item = newItem;
+//    else{
+//        int result = BTInsert(RootPtr, newItem);
+//        if(result != 0)
+//            return result;
 
     return 0;
 }
@@ -262,42 +295,87 @@ void BTDispose(BTNodePtr RootPtr){
     if(RootPtr == NULL)
         return;
 
-    if(RootPtr->RPtr != NULL)
+    if(RootPtr->RPtr != NULL){
         BTDispose(RootPtr->RPtr);
-    if(RootPtr->LPtr != NULL)
+        RootPtr->RPtr = NULL;
+    }
+    if(RootPtr->LPtr != NULL){
         BTDispose(RootPtr->LPtr);
+        RootPtr->LPtr = NULL;
+    }
 
     if(RootPtr->item != NULL){
-        BTItemPtr *tmp = RootPtr->item;
-        if(tmp->funcData != NULL){
-            if(tmp->funcData->parameterTypes != NULL){
-                if(tmp->funcData->ParamRootPtr != NULL){
-                    BTDispose(tmp->funcData->ParamRootPtr);
-                    tmp->funcData->ParamRootPtr = NULL;
-                }
-                free(tmp->funcData->parameterTypes);
-                tmp->funcData->parameterTypes = NULL;
-            }
-            free(tmp->funcData);
-            tmp->funcData = NULL;
+        if(RootPtr->item->ParamRootPtr != NULL){
+            BTDispose(RootPtr->item->ParamRootPtr);
+            RootPtr->item->ParamRootPtr = NULL;
         }
-        if(tmp->itemID != NULL){
-            free(tmp->itemID);
-            tmp->itemID = NULL;
+        if(RootPtr->item->parameterTypes != NULL){
+            free(RootPtr->item->parameterTypes);
+            RootPtr->item->parameterTypes = NULL;
         }
-        if(tmp->varData != NULL){
-            if(tmp->varData->data != NULL){
-                free(tmp->varData->data);
-                tmp->varData->data = NULL;
+//        if(RootPtr->item->funcData != NULL){
+//            if(RootPtr->item->funcData->parameterTypes != NULL){
+//                free(RootPtr->item->funcData->parameterTypes);
+//                RootPtr->item->funcData->parameterTypes = NULL;
+//            }
+//            if(RootPtr->item->funcData->ParamRootPtr != NULL){
+//                BTDispose(RootPtr->item->funcData->ParamRootPtr);
+//                RootPtr->item->funcData->ParamRootPtr = NULL;
+//            }
+//            free(RootPtr->item->funcData);
+//            RootPtr->item->funcData = NULL;
+//        }
+        if(RootPtr->item->itemID != NULL){
+            free(RootPtr->item->itemID);
+            RootPtr->item->itemID = NULL;
+        }
+        if(RootPtr->item->varData != NULL){
+            if(RootPtr->item->varData->data != NULL){
+                free(RootPtr->item->varData->data);
+                RootPtr->item->varData->data = NULL;
             }
-            free(tmp->varData);
-            tmp->varData = NULL;
+            free(RootPtr->item->varData);
+            RootPtr->item->varData = NULL;
         }
         free(RootPtr->item);
         RootPtr->item = NULL;
     }
     free(RootPtr);
-    RootPtr = NULL;
+
+//    if(RootPtr->item != NULL){
+//        BTItemPtr *tmp = RootPtr->item;
+//        if(tmp->funcData != NULL){
+//            if(tmp->funcData->parameterTypes != NULL){
+//                if(tmp->funcData->ParamRootPtr != NULL){
+//                    BTDispose(tmp->funcData->ParamRootPtr);
+//                    tmp->funcData->ParamRootPtr = NULL;
+//                }
+//                free(tmp->funcData->parameterTypes);
+//                tmp->funcData->parameterTypes = NULL;
+//            }
+//            if(tmp->itemID != NULL){
+//                free(tmp->itemID);
+//                tmp->itemID = NULL;
+//            }
+//            free(tmp->funcData);
+//            tmp->funcData = NULL;
+//        }
+//        if(tmp->itemID != NULL){
+//            free(tmp->itemID);
+//            tmp->itemID = NULL;
+//        }
+//        if(tmp->varData != NULL){
+//            if(tmp->varData->data != NULL){
+//                free(tmp->varData->data);
+//                tmp->varData->data = NULL;
+//            }
+//            free(tmp->varData);
+//            tmp->varData = NULL;
+//        }
+//        free(RootPtr->item);
+//        RootPtr->item = NULL;
+//    }
+//    free(RootPtr);
 }
 
 

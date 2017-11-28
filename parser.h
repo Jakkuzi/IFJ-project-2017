@@ -20,7 +20,7 @@ typedef struct tLine {
 
 /* list containing all lines from stdin */
 typedef struct tCode {
-    struct tLine *lineData;
+    tLinePtr lineData;
     struct tCode *next;
 } *tCodePtr;
 
