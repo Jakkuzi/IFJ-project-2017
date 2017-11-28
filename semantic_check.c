@@ -105,8 +105,6 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                 if(i > 1){
                     for(int j = 0; j < i-1; j++)
                         if(strcmp(tokenArr[j]->myString, tmp->token->myString) == 0){
-                            if(tokenArr != NULL)
-                                free(tokenArr);
                             return 3;//TODO: asi 3, nwm co je to za error kdyz se 2 parametry jmenuji stejne + free
                         }
                     tokenArr[i-1] = tmp->token;
@@ -132,6 +130,24 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                     }
                     if(params != actualFunction->paramCount)
                         return 3;
+                }
+                else{
+                    if(i == 0){ //
+                        int allocation = 0;
+                        tLinePtr counter = tmp;
+                        while(counter->tokenID != RightParenthes){ // get count of parameters for allocation
+                            allocation++;
+                            if(allocation == 1) // first token is already id
+                                counter = counter->next->next->next;
+                            else
+                                counter = counter->next->next->next->next;
+                        }
+                        actualFunction->parameterTypes = (int *) malloc(sizeof(int) * allocation);
+                        if(actualFunction->parameterTypes == NULL)
+                            return 99;
+                    }
+                    actualFunction->parameterTypes[i] = tmp->next->next->tokenID;
+                    actualFunction->paramCount = i+1;
                 }
 
                 switch (tmp->next->next->tokenID){
@@ -191,32 +207,18 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
     }
 
 
-
-
     /* end of SEMANTIC CHECK */
-
-    //TODO: smazat promenne aktualni funkce
     return 0;
 }
 
 
 int addBuiltInFunctions(BTNodePtr symBTree){
     char *f1 = (char *) malloc(sizeof(char) * 7); // lenght
-    if(f1 == NULL)
-        return 99;
     char *f2 = (char *) malloc(sizeof(char) * 7); // substr
-    if(f2 == NULL){
-        free(f1);
-        return 99;
-    }
     char *f3 = (char *) malloc(sizeof(char) * 4); // asc
-    if(f3 == NULL){
-        multiFree(f1, f2, NULL, NULL);
-        return 99;
-    }
     char *f4 = (char *) malloc(sizeof(char) * 4); // chr
-    if(f4 == NULL){
-        multiFree(f1, f2, f3, NULL);
+    if(f4 == NULL || f3 == NULL || f2 == NULL || f1 == NULL){
+        multiFree(f1, f2, f3, f4);
         return 99;
     }
     strcpy(f1, "length");
@@ -225,7 +227,7 @@ int addBuiltInFunctions(BTNodePtr symBTree){
     strcpy(f4, "chr");
 
     int result;
-    BTItemPtr *actualF;
+    BTItemPtr *actualF = NULL;
 
     //f1
     result = BTInsertFunc(symBTree, var_integer, f1);
@@ -234,8 +236,7 @@ int addBuiltInFunctions(BTNodePtr symBTree){
         return result;
     }
     actualF = BTSearch(symBTree, f1);
-    if(actualF->parameterTypes == NULL)
-        actualF->parameterTypes = (int *) malloc(sizeof(int));
+    actualF->parameterTypes = (int *) malloc(sizeof(int) * 1);
     if(actualF->parameterTypes == NULL){
         multiFree(f1, f2, f3, f4);
         return 99;
@@ -304,7 +305,7 @@ int addBuiltInFunctions(BTNodePtr symBTree){
         return 3; //TODO: asi trojka?
     }
     if(actualF->parameterTypes == NULL)
-        actualF->parameterTypes = (int *) malloc(sizeof(int));
+        actualF->parameterTypes = (int *) malloc(sizeof(int)*1);
     if(actualF->parameterTypes == NULL){
         multiFree(f1, f2, f3, f4);
         return 99;

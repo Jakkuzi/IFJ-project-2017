@@ -8,7 +8,7 @@ int main(){
 
     int syntax = syntax_analysis(&sCode);
     if(syntax != 0){
-        // TODO: uvolnit struktury
+        tCodeDispose(&sCode);
         return syntax;
     }
     tCodeDispose(&sCode);

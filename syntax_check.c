@@ -134,35 +134,31 @@ int syntax_analysis(tCodeList *C){
     int t = 0; // token id
     int first_token = 1; // check start of code
 
-    //TODO:result = addBuiltInFunctions(symBTree);
-//    if(result != 0){
-//        free(s);
-//        //BTDispose(symBTree);
-//        free(symBTree);
-//        return result;
-//    }
+    result = addBuiltInFunctions(symBTree);
+    if(result != 0){
+        free(s);
+        BTDispose(symBTree);
+        return result;
+    }
 
     do{
         TString *token = (TString *) malloc(sizeof(TString));
         if(token == NULL){
             free(s);
-            //BTDispose(symBTree);
-            free(symBTree);
+            BTDispose(symBTree);
             return 99;
         }
         result = stringInit(token);
         if(result != 0){
             freeThisCycle(token, s);
-            //BTDispose(symBTree);
-            free(symBTree);
+            BTDispose(symBTree);
             return result;
         }
         if(t == EndOfLine){ // last token was EOL
             t = getNextToken(token);
             if(t == 99 || t == 1){
                 freeThisCycle(token, s);
-                //BTDispose(symBTree);
-                free(symBTree);
+                BTDispose(symBTree);
                 return t;
             }
             while(t == EndOfLine){
@@ -170,15 +166,13 @@ int syntax_analysis(tCodeList *C){
                 result = stringInit(token);
                 if(result != 0){
                     freeThisCycle(token, s);
-                    //BTDispose(symBTree);
-                    free(symBTree);
+                    BTDispose(symBTree);
                     return result;
                 }
                 t = getNextToken(token);
                 if(t == 99 || t == 1){
                     freeThisCycle(token, s);
-                    //BTDispose(symBTree);
-                    free(symBTree);
+                    BTDispose(symBTree);
                     return t;
                 }
             }
@@ -188,8 +182,7 @@ int syntax_analysis(tCodeList *C){
             t = getNextToken(token);
             if(t == 1 || t == 99){
                 freeThisCycle(token, s);
-                //BTDispose(symBTree);
-                free(symBTree);
+                BTDispose(symBTree);
                 return t;
             }
             if(!print_expanded){
@@ -208,8 +201,7 @@ int syntax_analysis(tCodeList *C){
             t = getNextToken(token);
             if(t == 99 || t == 1){
                 freeThisCycle(token, s);
-                //BTDispose(symBTree);
-                free(symBTree);
+                BTDispose(symBTree);
                 return t;
             }
         }
@@ -220,15 +212,13 @@ int syntax_analysis(tCodeList *C){
                 result = stringInit(token);
                 if(result != 0){
                     freeThisCycle(token, s);
-                    //BTDispose(symBTree);
-                    free(symBTree);
+                    BTDispose(symBTree);
                     return result;
                 }
                 t = getNextToken(token);
                 if(t == 1 || t == 99){
                     freeThisCycle(token, s);
-                    //BTDispose(symBTree);
-                    free(symBTree);
+                    BTDispose(symBTree);
                     return t;
                 }
             }
@@ -245,13 +235,13 @@ int syntax_analysis(tCodeList *C){
             }
             else{
                 freeThisCycle(token, s);
-                //BTDispose(symBTree);
-                free(symBTree);
+                BTDispose(symBTree);
                 return 2;
             }
             first_token = 0;
         }
         else{
+
             if(sTop(s) > 200 && (sTop(s) < 250 || sTop(s) == 297)){ // non-terminal to process, insert new rules to stack
                 found = 0;
                 // looking for rule based on next token
@@ -289,16 +279,14 @@ int syntax_analysis(tCodeList *C){
                             break;
                         default:
                             freeThisCycle(token, s);
-                            //BTDispose(symBTree);
-                            free(symBTree);
+                            BTDispose(symBTree);
                             return 2;
                     }
                     skip_insert = 1;
                     sPop(s);
                     if(result == 2 || result == 99){
                         freeThisCycle(token, s);
-                        //BTDispose(symBTree);
-                        free(symBTree);
+                        BTDispose(symBTree);
                         return result;
                     }
                     if((t = result) == sTop(s))
@@ -306,8 +294,7 @@ int syntax_analysis(tCodeList *C){
                 }
                 else{
                     freeThisCycle(token, s);
-                    //BTDispose(symBTree);
-                    free(symBTree);
+                    BTDispose(symBTree);
                     return 2;
                 }
 
@@ -317,30 +304,28 @@ int syntax_analysis(tCodeList *C){
                     sPop(s);
                 else{
                     freeThisCycle(token, s);
-                    //BTDispose(symBTree);
-                    free(symBTree);
+                    BTDispose(symBTree);
                     return 2;
                 }
             }
-
         }
         if(skip_insert){ // insert is skipped only if there is expression on line processed in another func
             skip_insert = 0;
         }
         else{
             if(t == EndOfLine){
+                stringFree(token);
+                free(token);
                 result = semantic_check(C, symBTree);
                 if(result != 0){
                     freeThisCycle(token, s);
-                    //BTDispose(symBTree);
-                    free(symBTree);
+                    BTDispose(symBTree);
                     return result;
                 }
                 result = tCodeCreateNewLine(C);
                 if(result != 0){
                     freeThisCycle(token, s);
-                    //BTDispose(symBTree);
-                    free(symBTree);
+                    BTDispose(symBTree);
                     return result;
                 }
             }
@@ -348,8 +333,7 @@ int syntax_analysis(tCodeList *C){
                 result = tCodeInsertToken(C, token, t);
                 if(result != 0){
                     freeThisCycle(token, s);
-                    //BTDispose(symBTree);
-                    free(symBTree);
+                    BTDispose(symBTree);
                     return result;
                 }
             }
@@ -359,29 +343,25 @@ int syntax_analysis(tCodeList *C){
     TString *token = (TString *) malloc(sizeof(TString));
     if(token == NULL){
         free(s);
-        //BTDispose(symBTree);
-        free(symBTree);
+        BTDispose(symBTree);
         return 99;
     }
     do{ // check if there is any command after 'end scope'
         result = stringInit(token);
         if(result != 0){
             freeThisCycle(token, s);
-            //BTDispose(symBTree);
-            free(symBTree);
+            BTDispose(symBTree);
             return result;
         }
         t = getNextToken(token);
         if(t == 1 || t == 99){
             freeThisCycle(token, s);
-            //BTDispose(symBTree);
-            free(symBTree);
+            BTDispose(symBTree);
             return t;
         }
         stringFree(token);
     }while(t == EndOfLine);
     freeThisCycle(token, s);
-
     BTDispose(symBTree);
     symBTree = NULL;
 
@@ -518,10 +498,6 @@ void applyRule(tStack *s,int rule, int section){
 }
 
 void freeThisCycle(TString *t, tStack *s){
-    if(t->myString != NULL){
-        free(t->myString);
-        t->myString = NULL;
-    }
     free(t);
     free(s);
 }
