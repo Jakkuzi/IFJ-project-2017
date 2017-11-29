@@ -1,6 +1,4 @@
 #include "semantic_check.h"
-#include "strings.h"
-
 
 static BTItemPtr *actualFunction;
 
