@@ -43,18 +43,20 @@ typedef struct varData {
 } *varDataPtr;
 
 // struktura popisujici data funkce
-typedef struct funcData {
-    varDataType returnType; // datovy typ navratove hodnoty promenne
-    int *parameterTypes;
-    BTNode *ParamRootPtr;	// ukazatel  na koren binarniho stromu parametru funkce
-} *funcDataPtr;
+//typedef struct funcData {
+//    varDataType returnType; // datovy typ navratove hodnoty promenne
+//    int *parameterTypes;
+//    BTNode *ParamRootPtr;	// ukazatel  na koren binarniho stromu parametru funkce
+//} *funcDataPtr;
 
 // struktura popisujici jednu promennou
 typedef struct BTItem {
     char* itemID;		// klic, podle ktereho bude uzel vyhledavan (identifikator promenne)
     itemType itemType;	// typ polozky (promenna nebo funkce)
     varDataPtr varData;	// ukazatel na data promenne (pokud je itemType = item_type_variable)
-    funcDataPtr funcData;	// ukazatel na data funkce (pokud je itemType = item_type_function)
+    varDataType returnType;
+    int *parameterTypes;
+    struct BTNode *ParamRootPtr;
     int declared;
     int defined;
     int paramCount;
@@ -88,9 +90,9 @@ void BTInit(BTNodePtr);                       // inicializace stromu, parametrem
 BTItemPtr *BTSearch(BTNodePtr, char *);	// najde polozku podle identifikatoru (char *)
 						// v BVS (BTNodePtr) a vrati ji pres ukazatel (BTItem *)
 
-int BTInsertVarInt(funcDataPtr, char *, int);		// vlozi integer
-int BTInsertVarDouble(funcDataPtr , char *, double);	// vlozi double
-int BTInsertVarString(funcDataPtr , char *, char *);	// vlozi string
+int BTInsertVarInt(BTNodePtr , char *, int);		// vlozi integer
+int BTInsertVarDouble(BTNodePtr , char *, double);	// vlozi double
+int BTInsertVarString(BTNodePtr , char *, char *);	// vlozi string
 
 
 int BTInsertFunc(BTNodePtr, varDataType, char *);	// vlozi funkci

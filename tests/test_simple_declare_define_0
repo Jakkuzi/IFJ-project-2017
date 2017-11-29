@@ -1,0 +1,10 @@
+declare function foo (p1 as integer, p2 as string ) as double
+
+function foo ( x as integer, x2 as string ) as double
+
+end function
+
+
+scope
+
+end scope

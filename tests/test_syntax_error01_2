@@ -1,0 +1,5 @@
+scope
+if x then
+else
+end if
+end scope
