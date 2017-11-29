@@ -12,3 +12,6 @@ deploy:
 
 clean:
 	rm -f $(PRJ) $(NAME).tgz
+
+test:
+	python3 tests.py $(PRJ)
