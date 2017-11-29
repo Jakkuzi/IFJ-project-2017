@@ -1,0 +1,6 @@
+scope
+dim x as integer = 5
+do while x = 5
+loop
+
+end scope
