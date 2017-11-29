@@ -767,7 +767,7 @@ typedef struct gTest{
 
 
 
-
+/*
 int main()
 {
 	tCodeList tInput;
@@ -797,96 +797,13 @@ int main()
 
 	gTest test[] = {
 	{"scope", Scope, 1},
-/*
-	{"dim", Dim ,0},
-        {"a", ID,0},
-        {"as", As ,0},
-        {"integer", Integer,1},
 
-        {"dim", Dim ,0},
-        {"vysl", ID,0},
-        {"as", As ,0},
-        {"integer", Integer,1},
-
-	{"print", Print, 0},
-        {"!", Exclamation, 0},
-        {"Zadejte cislo pro vypocet faktorialu", valueOfString, 0},
-	{";", Semicolon, 1},
-
-	{"input", Input ,0},
-        {"a", ID,1},
-
-	{"if", If,0},
-	{"a", ID,0},
-	{"<", Lower,0},
-	{"0", valueOfInteger,0},
-	{"then", Then,1},
-
-        {"print", Print, 0},
-        {"!", Exclamation, 0},
-        {"\nFaktorial nelze spocitat\n", valueOfString, 0},
-        {";", Semicolon, 1},
-
-	{"else", Else, 1},
-
-        {"vysl", ID ,0},
-        {"=", Equal,0},
-        {"1", valueOfInteger,1},
-
-        {"do", Do,0},
-        {"while", While,0},
-        {"a", ID,0},
-        {">", Greater,0},
-        {"0", valueOfInteger,1},
-
-        {"vysl", ID ,0},
-        {"=", Equal,0},
-        {"vysl", ID ,0},
-        {"*", Mul,0},
-        {"a", ID,1},
-
-        {"a", ID ,0},
-        {"=", Equal,0},
-        {"a", ID ,0},
-        {"-", Minus,0},
-        {"1", valueOfInteger,1},
-
-        {"loop", Loop,1},
-
-        {"print", Print, 0},
-        {"!", Exclamation, 0},
-        {"\nVysledek je:", valueOfString, 0},
-        {";", Semicolon, 0},
-        {"vysl", ID ,0},
-	{";", Semicolon, 0},
-        {"!", Exclamation, 0},
-	{"\n", valueOfString,0},
-        {";", Semicolon, 1},
-
-
-        {"end", End, 0},
-        {"if", If, 1},
-*/
 
 
 	{"dim", Dim ,0},
         {"promenna1", ID,1},
         {"promenna1", ID,0},
         {"=", Equal,0},
-/*
-        {"10", valueOfInteger,0},
-        {"+", Plus,0},
-        {"a", ID,0},
-        {"*", Mul,0},
-        {"(", LeftParenthes,0},
-        {"5", valueOfInteger,0},
-        {"-", Minus,0},
-        {"1", valueOfInteger,0},
-        {"/", Div,0},
-        {"2", valueOfInteger,0},
-	{")", RightParenthes, 1},
-*/
-
 
         {"8", valueOfInteger,0},
         {"+", Plus,0},
@@ -998,4 +915,4 @@ result = BTSearch(func->ParamRootPtr, "a");
 
 	return 0;
 }
-
+*/
