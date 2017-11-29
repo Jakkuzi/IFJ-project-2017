@@ -1,7 +1,7 @@
 #include "parser.h"
 
 int main(){
-    freopen("program.txt","r",stdin);
+//    freopen("tests/test_syntax_error01_2","r",stdin);
     tCodeList sCode;
     tCodeInit(&sCode);
     tCodeCreateNewLine(&sCode);
@@ -13,7 +13,7 @@ int main(){
     }
     tCodeDispose(&sCode);
 
-    printf("Obe analyzy OK\n");//TODO: smazat
+//    printf("Obe analyzy OK\n");//TODO: smazat
 
     return 0;
 }

@@ -96,6 +96,10 @@ int ll[21][8][8] = {
     {298,   0,      0,      0,      0,      0,      0,      0},},
     //ParameterFce
     {{11,   217,    0,      0,      0,      0,      0,      0},
+    {12,    217,    0,      0,      0,      0,      0,      0},
+    {13,    217,    0,      0,      0,      0,      0,      0},
+    {14,    217,    0,      0,      0,      0,      0,      0},
+    {15,    217,    0,      0,      0,      0,      0,      0},
     {101,	0,		0,		0,		0,		0,		0,		0},},
     //ParameterFceNext
     {{105,  216,    0,      0,      0,      0,      0,      0},
@@ -285,7 +289,7 @@ int syntax_analysis(tCodeList *C){
                     skip_insert = 1;
                     sPop(s);
                     if(result == 2 || result == 99){
-                        freeThisCycle(token, s);
+                        free(s);
                         BTDispose(symBTree);
                         return result;
                     }
@@ -318,7 +322,7 @@ int syntax_analysis(tCodeList *C){
                 free(token);
                 result = semantic_check(C, symBTree);
                 if(result != 0){
-                    freeThisCycle(token, s);
+                    free(s);
                     BTDispose(symBTree);
                     return result;
                 }
@@ -444,12 +448,23 @@ int process_expr(int id_processed, tCodeList *C, int t, TString *token, tStack *
             free(prec_str);
             return t;
         }
-        result = tCodeInsertToken(C, token, t);
-        if(result != 0){
-            free(token);
-            free(prec_str);
-            return result;
+        if(t != EndOfLine){
+            result = tCodeInsertToken(C, token, t);
+            if(result != 0){
+                free(token);
+                free(prec_str);
+                return result;
+            }
         }
+        else{
+            result = tCodeCreateNewLine(C);
+            if(result != 0){
+                free(token);
+                free(prec_str);
+                return result;
+            }
+        }
+
         if(print_to_process && t == Semicolon)
             break;
         else if(!print_to_process && (t == EndOfLine || t == Semicolon || t == Then))
@@ -479,7 +494,7 @@ int process_expr(int id_processed, tCodeList *C, int t, TString *token, tStack *
 
     result = precedencni(prec_str);
     free(prec_str);
-    free(token);
+    //free(token);
     if(result == 2 || result == 99)
         return result;
     else
