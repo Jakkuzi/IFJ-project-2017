@@ -1,0 +1,8 @@
+declare function foo () as string
+
+function foo() as integer
+
+end function
+
+scope 
+end scope

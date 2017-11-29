@@ -1,10 +1,11 @@
 import os
 import sys
+import subprocess
 
 
 if __name__ == '__main__':
     local_dir = os.popen('pwd').read()
-    local_dir = local_dir[:-1]+'/'+sys.argv[1]
+    app = local_dir[:-1]+'/'+sys.argv[1]
 
     test_files = os.popen('find tests/ -regex ".*test_.*"').read()
     test_files = test_files.split('\n')
@@ -16,7 +17,7 @@ if __name__ == '__main__':
     for file in test_files:
         test_name = file.split('/')
         success_return = file[-1]
-        ret_code = os.system('/home/tezzo/Dokumenty/IFJ-project-2017/IFJ-2017 < '+file)
+        ret_code = os.WEXITSTATUS(os.system(local_dir[:-1]+'/'+sys.argv[1] + ' < ' + local_dir[:-1]+'/'+file))
         if str(ret_code) != success_return:
             print('\x1b[0;37;41m' + 'Expected return code {}, got {}\x1b[0m --- {}'.format(success_return, ret_code,
                                                                                      test_name[-1]))
