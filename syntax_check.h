@@ -1,14 +1,16 @@
 #ifndef syntax_check_h
 #define syntax_check_h
 
+
 #include "parser.h"
 #include "scanner.h"
+#include "semantic_check.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX_STACK 10000000
-#define STRING_SIZE 20
+#define MAX_STACK       10000000
+#define STRING_SIZE     20
 
 /* definitions of LL non-terminals */
 #define S                    0     // 201    index in ll array
@@ -65,5 +67,6 @@ int sPopTop(tStack *);
 
 /* function to process expression */
 int process_expr(int, tCodeList *, int, TString *, tStack *);
+
 
 #endif

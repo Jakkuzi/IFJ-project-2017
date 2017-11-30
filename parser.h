@@ -7,6 +7,8 @@
 
 #include "strings.h"
 #include "prec.h"
+#include "symtable.h"
+
 
 /* struct for keeping one line of code */
 typedef struct tLine {
@@ -18,7 +20,7 @@ typedef struct tLine {
 
 /* list containing all lines from stdin */
 typedef struct tCode {
-    struct tLine *lineData;
+    tLinePtr lineData;
     struct tCode *next;
 } *tCodePtr;
 
@@ -33,6 +35,7 @@ void tCodeInit(tCodeList *);
 
 int tCodeCreateNewLine(tCodeList *);
 int tCodeInsertToken(tCodeList *, TString *, int);
+void tCodeDispose(tCodeList *);
 
 #include "syntax_check.h"
 
