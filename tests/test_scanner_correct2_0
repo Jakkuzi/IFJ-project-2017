@@ -1,0 +1,7 @@
+scope
+
+dim x as integer
+
+x=6
+
+end scope
