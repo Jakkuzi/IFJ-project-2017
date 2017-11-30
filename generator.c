@@ -767,7 +767,7 @@ typedef struct gTest{
 
 
 
-
+/*
 int main()
 {
 	tCodeList tInput;
@@ -797,7 +797,7 @@ int main()
 
 	gTest test[] = {
 	{"scope", Scope, 1},
-/*
+
 	{"dim", Dim ,0},
         {"a", ID,0},
         {"as", As ,0},
@@ -866,13 +866,13 @@ int main()
 
         {"end", End, 0},
         {"if", If, 1},
-*/
+
 
 
 	{"dim", Dim ,0},
         {"promenna1", ID,1},
 
-/*        {"dim", Dim ,0},
+        {"dim", Dim ,0},
         {"a", ID,1},
         {"a", ID,0},
         {"=", Equal,0},
@@ -891,8 +891,8 @@ int main()
         {"c", ID,0},
         {"=", Equal,0},
         {"3", valueOfInteger, 1},
-*/
-/*
+
+
         {"10", valueOfInteger,0},
         {"+", Plus,0},
         {"a", ID,0},
@@ -904,7 +904,7 @@ int main()
         {"/", Div,0},
         {"2", valueOfInteger,0},
 	{")", RightParenthes, 1},
-*/
+
 
         {"promenna1", ID,0},
         {"=", Equal,0},
@@ -1023,3 +1023,4 @@ result = BTSearch(func->ParamRootPtr, "a");
 	return 0;
 }
 
+*/
