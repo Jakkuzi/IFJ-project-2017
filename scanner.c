@@ -118,13 +118,13 @@ int getNextToken(TString* token){
           if (isalnum(i) || (i=='_')) //identifikator
               addToString(token,i);
               else if (compareStringAndString(token,"asc")== 0)
-                      return Asc;
+                      return ID;
               else if (compareStringAndString(token,"chr")== 0)
-                      return Chr;
+                      return ID;
               else if (compareStringAndString(token,"length")== 0)
-                      return Length;
+                      return ID;
               else if (compareStringAndString(token,"substr")== 0)
-                      return SubStr;
+                      return ID;
           else{
             ungetc(i,stdin);
             if (compareStringAndString(token,"as")== 0)  //rezervovane slova
@@ -221,14 +221,14 @@ int getNextToken(TString* token){
                         if (isdigit(i=getchar()))
                             {aux=aux*10+i;
                             addToString(token,aux);}
-                            else if (i==EOF)
-                                     return ErrorInLexicalAnalyzer;
+                          //  else if (i==EOF)
+                                     //return ErrorInLexicalAnalyzer;
                         else
                             return ErrorInLexicalAnalyzer;
-                  } else if (i==EOF)
+                  } else
                             return ErrorInLexicalAnalyzer;
-                         else
-                            return ErrorInLexicalAnalyzer;
+                        // else
+                          //  return ErrorInLexicalAnalyzer;
                }
 
            else
