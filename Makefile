@@ -1,2 +1,20 @@
+CC=gcc
+CFLAGS=-Wall -Werror -Wextra -pedantic -std=c11
+PRJ=IFJ-2017
+SOURCES=strings.c scanner.c syntax_check.c parser.c prec.c symtable.c semantic_check.c
+NAME=xzichj00
+
 all:
-	gcc -std=c99 symtable.c strings.c scanner.c syntax_check.c parser.c prec.c -Werror -Wall -pedantic -o a.out 
+	$(CC) $(CFLAGS) $(SOURCES) -o $(PRJ)
+
+test-pack:
+	tar cvfz $(NAME).tgz ./*.c ./*.h Makefile tests.py tests/*
+
+pack:
+	tar cvfz $(NAME).tgz ./*.c ./*.h Makefile
+
+clean:
+	rm -f $(PRJ) $(NAME).tgz
+
+test:
+	python3 tests.py $(PRJ)

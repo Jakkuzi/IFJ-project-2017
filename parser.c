@@ -1,18 +1,19 @@
 #include "parser.h"
 
 int main(){
-    freopen("program.txt","r", stdin);
+//    freopen("tests/test_syntax_error01_2","r",stdin);
     tCodeList sCode;
     tCodeInit(&sCode);
     tCodeCreateNewLine(&sCode);
 
     int syntax = syntax_analysis(&sCode);
     if(syntax != 0){
-        // TODO: uvolnit struktury
+        tCodeDispose(&sCode);
         return syntax;
     }
+    tCodeDispose(&sCode);
 
-    printf("Syntakticka analyza OK\n");//TODO: smazat
+//    printf("Obe analyzy OK\n");//TODO: smazat
 
     return 0;
 }
@@ -35,6 +36,7 @@ int tCodeCreateNewLine(tCodeList *sCode){
     }
     data->next = NULL;
     data->token = NULL;
+    data->tokenID = 0;
     line->next = NULL;
     line->lineData = data;
 
@@ -74,20 +76,47 @@ int tCodeInsertToken(tCodeList *sCode, TString *token, int id){
 // smaže kód a uvolní alokovanou paměť
 void tCodeDispose(tCodeList *sCode)
 {
-	tCodeList *tmp = sCode;
-	while(tmp->first != NULL)
-	{
-		tLinePtr tmpLine = tmp->first->lineData;
-		while(tmpLine != NULL)
-		{
-			free(tmpLine->token->myString);
-			tLinePtr deleteLine = tmpLine;
-			tmpLine = tmpLine->next;
-			free(deleteLine);
-		}
+    tCodePtr tmp;
+    tLinePtr data;
 
-		tCodePtr deleteList = tmp->first;
-		tmp->first = tmp->first->next;
-		free(deleteList);
-	}
+    while(sCode->first != NULL){
+        tmp = sCode->first;
+        while(tmp->lineData != NULL){
+            if(tmp->lineData->token != NULL){
+                if(tmp->lineData->token->myString != NULL){
+                    free(tmp->lineData->token->myString);
+                    tmp->lineData->token->myString = NULL;
+                }
+                free(tmp->lineData->token);
+                tmp->lineData->token = NULL;
+            }
+            data = tmp->lineData;
+            tmp->lineData = tmp->lineData->next;
+            free(data);
+            data = NULL;
+
+        }
+
+        sCode->first = tmp->next;
+        free(tmp);
+        tmp = NULL;
+    }
+    sCode->last = NULL;
+
+//    tCodeList *tmp = sCode;
+//    while(tmp->first != NULL)
+//	{
+//		tLinePtr tmpLine = tmp->first->lineData;
+//		while(tmpLine != NULL)
+//		{
+//			free(tmpLine->token->myString);
+//			tLinePtr deleteLine = tmpLine;
+//			tmpLine = tmpLine->next;
+//			free(deleteLine);
+//		}
+//
+//		tCodePtr deleteList = tmp->first;
+//		tmp->first = tmp->first->next;
+//		free(deleteList);
+//	}
 }

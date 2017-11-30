@@ -1,6 +1,4 @@
 #include "syntax_check.h"
-#include "strings.h"
-#include "parser.h"
 
 /* LL table converted to id of tokens */
 int ll[21][8][8] = {
@@ -41,7 +39,7 @@ int ll[21][8][8] = {
     {11,    86 ,    214,    122,    207,    0,      0,      0},
     {32,    11 ,    122,    207,    0,      0,      0,      0},
     {36,    221,    207,    0,      0,      0,      0,      0},
-    {37,    214,    207,    0,    0,      0,      0,      0},
+    {37,    214,    207,    0,      0,      0,      0,      0},
     {28,    0,      0,      0,      0,      0,      0,      },},
     //BodyWhile
     {{24,   11 ,    21 ,    220,    213,    208,    0,      0},
@@ -50,7 +48,7 @@ int ll[21][8][8] = {
     {11,    86 ,    214,    122,    208,    0,      0,      0},
     {32,    11 ,    122,    208,    0,      0,      0,      0},
     {36,    221,    208,    0,      0,      0,      0,      0},
-    {37,    214,    208,    0,    0,      0,      0,      0},
+    {37,    214,    208,    0,      0,      0,      0,      0},
     {35,    0,      0,      0,      0,      0,      0,      0},},
     //ScopeBody
     {{24,   11 ,    21 ,    220,    213,    209,    0,      0},
@@ -96,6 +94,10 @@ int ll[21][8][8] = {
     {298,   0,      0,      0,      0,      0,      0,      0},},
     //ParameterFce
     {{11,   217,    0,      0,      0,      0,      0,      0},
+    {12,    217,    0,      0,      0,      0,      0,      0},
+    {13,    217,    0,      0,      0,      0,      0,      0},
+    {14,    217,    0,      0,      0,      0,      0,      0},
+    {15,    217,    0,      0,      0,      0,      0,      0},
     {101,	0,		0,		0,		0,		0,		0,		0},},
     //ParameterFceNext
     {{105,  216,    0,      0,      0,      0,      0,      0},
@@ -117,34 +119,48 @@ int ll[21][8][8] = {
 
 /* syntax analysis top down */
 int syntax_analysis(tCodeList *C){
-    //symtable TODO: uvolnit symBTree pri chybe
-    BTNodePtr symBTree = (struct BTNode *) malloc(sizeof(struct BTNode));
-    BTItemPtr *actualFunction;
-
     tStack *s;
     s = (tStack *) malloc(sizeof(tStack));
-    if(s == NULL)
+    if(s == NULL) {
         return 99;
+    }
+    BTNodePtr symBTree = (struct BTNode *) malloc(sizeof(struct BTNode));
+    if(symBTree == NULL){
+        free(s);
+        return 99;
+    }
+    BTInit(symBTree);
+
     int i, found, top = 0, result, print_expanded = 0, skip_insert = 0; // iteration and auxiliary variables
     stackInit(s);
     int t = 0; // token id
     int first_token = 1; // check start of code
 
+    result = addBuiltInFunctions(symBTree);
+    if(result != 0){
+        free(s);
+        BTDispose(symBTree);
+        return result;
+    }
+
     do{
         TString *token = (TString *) malloc(sizeof(TString));
         if(token == NULL){
             free(s);
+            BTDispose(symBTree);
             return 99;
         }
         result = stringInit(token);
         if(result != 0){
             freeThisCycle(token, s);
+            BTDispose(symBTree);
             return result;
         }
         if(t == EndOfLine){ // last token was EOL
             t = getNextToken(token);
             if(t == 99 || t == 1){
                 freeThisCycle(token, s);
+                BTDispose(symBTree);
                 return t;
             }
             while(t == EndOfLine){
@@ -152,11 +168,13 @@ int syntax_analysis(tCodeList *C){
                 result = stringInit(token);
                 if(result != 0){
                     freeThisCycle(token, s);
+                    BTDispose(symBTree);
                     return result;
                 }
                 t = getNextToken(token);
                 if(t == 99 || t == 1){
                     freeThisCycle(token, s);
+                    BTDispose(symBTree);
                     return t;
                 }
             }
@@ -166,6 +184,7 @@ int syntax_analysis(tCodeList *C){
             t = getNextToken(token);
             if(t == 1 || t == 99){
                 freeThisCycle(token, s);
+                BTDispose(symBTree);
                 return t;
             }
             if(!print_expanded){
@@ -184,6 +203,7 @@ int syntax_analysis(tCodeList *C){
             t = getNextToken(token);
             if(t == 99 || t == 1){
                 freeThisCycle(token, s);
+                BTDispose(symBTree);
                 return t;
             }
         }
@@ -194,11 +214,13 @@ int syntax_analysis(tCodeList *C){
                 result = stringInit(token);
                 if(result != 0){
                     freeThisCycle(token, s);
+                    BTDispose(symBTree);
                     return result;
                 }
                 t = getNextToken(token);
                 if(t == 1 || t == 99){
                     freeThisCycle(token, s);
+                    BTDispose(symBTree);
                     return t;
                 }
             }
@@ -215,11 +237,13 @@ int syntax_analysis(tCodeList *C){
             }
             else{
                 freeThisCycle(token, s);
+                BTDispose(symBTree);
                 return 2;
             }
             first_token = 0;
         }
         else{
+
             if(sTop(s) > 200 && (sTop(s) < 250 || sTop(s) == 297)){ // non-terminal to process, insert new rules to stack
                 found = 0;
                 // looking for rule based on next token
@@ -257,12 +281,14 @@ int syntax_analysis(tCodeList *C){
                             break;
                         default:
                             freeThisCycle(token, s);
+                            BTDispose(symBTree);
                             return 2;
                     }
                     skip_insert = 1;
                     sPop(s);
                     if(result == 2 || result == 99){
-                        freeThisCycle(token, s);
+                        free(s);
+                        BTDispose(symBTree);
                         return result;
                     }
                     if((t = result) == sTop(s))
@@ -270,6 +296,7 @@ int syntax_analysis(tCodeList *C){
                 }
                 else{
                     freeThisCycle(token, s);
+                    BTDispose(symBTree);
                     return 2;
                 }
 
@@ -279,143 +306,28 @@ int syntax_analysis(tCodeList *C){
                     sPop(s);
                 else{
                     freeThisCycle(token, s);
+                    BTDispose(symBTree);
                     return 2;
                 }
             }
-
         }
         if(skip_insert){ // insert is skipped only if there is expression on line processed in another func
             skip_insert = 0;
         }
         else{
             if(t == EndOfLine){
-                /* SEMANTIC CHECK
-                 * filling symtable from here
-                 *TODO: než se vloží nový řádek
-                 * načíst aktuální data do symtable --- z C->last
-                 * zkontrolovat symtable, jestli je zatím správně
-                 * symBTree - strom plny ID funkci
-                 *
-                 * */
-                int id = C->last->lineData->tokenID;
-                char *name; // name of function or variable
-                varDataType idReturnType;
-                tLinePtr tmp = C->last->lineData; // iterator to get exact data
-                // create function in symtable
-                if(id == Declare || id == Function || id == Scope){
-                    while(tmp->tokenID != RightParenthes)
-                        tmp = tmp->next;
-                    // first next is As, second is data type, so tmp contains data type now
-                    tmp = tmp->next->next;
-                    switch (tmp->tokenID){
-                        case Double:
-                            idReturnType = var_double;
-                            break;
-                        case Integer:
-                            idReturnType = var_integer;
-                            break;
-                        case String:
-                            idReturnType = var_string;
-                            break;
-                        default:
-                            return 2;
-                    }
-                    switch (id){
-                        case Declare:
-                            name = C->last->lineData->next->next->token->myString;
-
-                            result = BTInsertFunc(symBTree, idReturnType, name);
-                            if(result != 0)//TODO: free some shits
-                                return result;
-                            actualFunction = BTSearch(symBTree, name);
-                            actualFunction->declared += 1;
-                            break;
-                        case Function:
-                            name = C->last->lineData->next->token->myString;
-                            result = BTInsertFunc(symBTree, idReturnType, name);
-                            if(result != 0)//TODO: free some shits
-                                return result;
-                            actualFunction = BTSearch(symBTree, name);
-                            actualFunction->defined += 1;
-                            // definition is also declaration
-                            if(actualFunction->declared == 0)
-                                actualFunction->declared = 1;
-                            break;
-                        case Scope:
-                            name = (char *) malloc(sizeof(char) * 20);
-                            strcmp(name, SCOPE_NAME);
-                            result = BTInsertFunc(symBTree, idReturnType, name);
-                            actualFunction = BTSearch(symBTree, name);
-                            actualFunction->declared = 1;
-                            actualFunction->defined = 1;
-                            break;
-                        default: //should not been reachable
-                            return 2;
-                    }
-                    //insert parameters from function
-                    tmp = C->last->lineData;
-                    while(tmp->tokenID != LeftParenthes || tmp == NULL)
-                        tmp = tmp->next;
-                    //tmp is on ID or ')' position
-                    tmp = tmp->next;
-                    while(tmp->tokenID != RightParenthes){
-                        name = tmp->token->myString;
-                        switch (tmp->next->next->tokenID){
-                            case Double:
-                                idReturnType = var_double;
-                                break;
-                            case Integer:
-                                idReturnType = var_integer;
-                                break;
-                            case String:
-                                idReturnType = var_string;
-                                break;
-                            default:
-                                return 2;
-                        }
-                        //TODO: je potreba vkladat hodnoty???
-                        switch (idReturnType){
-                            case var_integer:
-                                result = BTInsertVarInt(actualFunction->funcData, name, 0);
-                                if(result != 0)
-                                    return result;
-                                break;
-                            case var_string:
-                                result = BTInsertVarString(actualFunction->funcData, name, name);
-                                if(result != 0)
-                                    return result;
-                                break;
-                            case var_double:
-                                result = BTInsertVarDouble(actualFunction->funcData, name, 0.0);
-                                if(result != 0)
-                                    return result;
-                                break;
-                        }
-                        actualFunction->paramCount += 1;
-                        tmp = tmp->next->next->next;
-                    }
-
+                stringFree(token);
+                free(token);
+                result = semantic_check(C, symBTree);
+                if(result != 0){
+                    free(s);
+                    BTDispose(symBTree);
+                    return result;
                 }
-                else{ // insert variables from function to symBTree
-
-
-                }
-
-                /* symtable filled */
-
-                //TODO: zkontroluj kazdy radek, jestli je zatim spravne
-                // symTree je ukazatel na root
-                // actualFunction je funkce, ve ktere preva pracujeme
-                // search je vhodne aplikovat prvne na funkci pak prekontrolovat,
-                // jeslti se promenna nejmenuje jako funkce
-                // GL :-)
-
-
-                /* end of SEMANTIC CHECK */
-
                 result = tCodeCreateNewLine(C);
                 if(result != 0){
                     freeThisCycle(token, s);
+                    BTDispose(symBTree);
                     return result;
                 }
             }
@@ -423,6 +335,7 @@ int syntax_analysis(tCodeList *C){
                 result = tCodeInsertToken(C, token, t);
                 if(result != 0){
                     freeThisCycle(token, s);
+                    BTDispose(symBTree);
                     return result;
                 }
             }
@@ -432,22 +345,27 @@ int syntax_analysis(tCodeList *C){
     TString *token = (TString *) malloc(sizeof(TString));
     if(token == NULL){
         free(s);
+        BTDispose(symBTree);
         return 99;
     }
     do{ // check if there is any command after 'end scope'
         result = stringInit(token);
         if(result != 0){
             freeThisCycle(token, s);
+            BTDispose(symBTree);
             return result;
         }
         t = getNextToken(token);
         if(t == 1 || t == 99){
             freeThisCycle(token, s);
+            BTDispose(symBTree);
             return t;
         }
         stringFree(token);
     }while(t == EndOfLine);
     freeThisCycle(token, s);
+    BTDispose(symBTree);
+    symBTree = NULL;
 
     if(t != EndOfFile)
         return 2;
@@ -528,12 +446,23 @@ int process_expr(int id_processed, tCodeList *C, int t, TString *token, tStack *
             free(prec_str);
             return t;
         }
-        result = tCodeInsertToken(C, token, t);
-        if(result != 0){
-            free(token);
-            free(prec_str);
-            return result;
+        if(t != EndOfLine){
+            result = tCodeInsertToken(C, token, t);
+            if(result != 0){
+                free(token);
+                free(prec_str);
+                return result;
+            }
         }
+        else{
+            result = tCodeCreateNewLine(C);
+            if(result != 0){
+                free(token);
+                free(prec_str);
+                return result;
+            }
+        }
+
         if(print_to_process && t == Semicolon)
             break;
         else if(!print_to_process && (t == EndOfLine || t == Semicolon || t == Then))
@@ -563,7 +492,7 @@ int process_expr(int id_processed, tCodeList *C, int t, TString *token, tStack *
 
     result = precedencni(prec_str);
     free(prec_str);
-    free(token);
+    //free(token);
     if(result == 2 || result == 99)
         return result;
     else
@@ -599,8 +528,6 @@ void sPush(tStack *s, int num){
 }
 
 void sPop(tStack *s){
-    //TODO: smazat tu blbost pro urychleni
-    s->value[s->top] = 0;
     if(!stackEmpty(s))
         s->top--;
 }

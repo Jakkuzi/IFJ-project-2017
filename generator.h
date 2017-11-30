@@ -4,6 +4,49 @@
 #include "scanner.h"
 #include "parser.c"
 #include "strings.c"
+#include "symtable.c"
+
+// dodatecne operace pro jazyk IFJcode17 (implicitni konverze datovych typu)
+#define Int2Float 200
+#define Float2Int 201
+#define Float2Int2Float 202 // pro IntDiv je potreba nejdrive oseknout, pote prevest na float pro deleni a zpet na int
+
+// sLabel beginning
+
+// navesti LABELIF
+// Globalni pocitadlo pro navesti IF
+unsigned int labelIf = 0;
+
+// navesti LABELLOOP
+// Globalni pocitadlo pro navesti LOOP
+unsigned int labelLoop = 0;
+
+#define sLabelMax 10000
+// pomocny zasobnik pro navesti
+typedef struct sLabel{
+	int array[sLabelMax];
+	int top;
+} *sLabelPtr;
+
+void sLabelInit(sLabelPtr stack)
+{
+        stack->top = -1;
+}
+void sLabelPush(sLabelPtr stack, int newLabel)
+{
+        stack->top += 1;
+        stack->array[stack->top] = newLabel;
+}
+int sLabelTop(sLabelPtr stack)
+{
+        return stack->array[stack->top];
+}
+void sLabelPop(sLabelPtr stack)
+{
+	stack->top -= 1;
+}
+
+// sLabel end
 
 
 // list beginning
@@ -30,18 +73,18 @@ void gListAdd(gListPtr *list, tLinePtr val)
 
 	if(val->tokenID == ID)
 	{
-		newL->isOp = 1;
+		newL->isOp = 0;
 		newL->isConst = 0;
 	}
 	else if(val->tokenID == valueOfInteger || val->tokenID == valueOfDouble ||
 	val->tokenID == valueOfDoubleWithExp || val->tokenID == valueOfString)
 	{
-		newL->isOp = 1;
+		newL->isOp = 0;
                 newL->isConst = 1;
 	}
 	else
 	{
-		newL->isOp = 0;
+		newL->isOp = 1;
                 newL->isConst = 0;
 	}
 	newL->data = val->token->myString;
@@ -79,6 +122,9 @@ void gListPrint(gListPtr list)
                         	case LowerOrEqual: printf("<="); break;
        				case Greater: printf(">"); break;
 				case GreaterOrEqual: printf(">="); break;
+				case Int2Float: printf("I2F"); break;
+				case Float2Int: printf("F2I"); break;
+				case Float2Int2Float: printf("F2I2F"); break;
 				default: fprintf(stderr, "neznamy token[%d]", list->tokenID); break;
 			}
 			printf(" ");
@@ -153,7 +199,7 @@ struct tLine gListConv(gStackPtr stack)
 }
 // stack end
 
-int generateLine(tLinePtr);
+int generateLine(tLinePtr, BTItemPtr *);
 void copyString(char *, char*);
 
 #endif

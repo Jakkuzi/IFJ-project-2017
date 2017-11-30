@@ -1,0 +1,3 @@
+scope
+	dim x as integer
+end scope
