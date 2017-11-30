@@ -1,0 +1,13 @@
+function foo(param1 as integer, param2 as integer, param3 as integer) as integer
+
+	if x < 5 then
+		return param1 + param3
+	else
+		return param2
+	end if
+end function
+
+scope
+	dim prom as integer = foo(5, 10, 15)
+	print prom;
+end scope

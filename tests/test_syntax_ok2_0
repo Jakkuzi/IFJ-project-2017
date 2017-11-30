@@ -1,0 +1,6 @@
+scope
+	dim i as integer = 0
+	while (5+10)*i = 100
+		i = i+1
+	loop
+end scope
