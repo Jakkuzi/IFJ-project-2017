@@ -1,8 +1,8 @@
 scope
 
-dim x as double
+dim x as double=6.ww
 
-x=6.ww
+
 
 end scope
 
