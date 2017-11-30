@@ -291,6 +291,10 @@ int getNextToken(TString* token){
               addToString(token,i);
               stateOfAutomat=10;
           }
+          else if (isdigit(i)){
+                 addToString(token, i);
+                  stateOfAutomat = 10;
+              }
         break;
 
         case 10:
