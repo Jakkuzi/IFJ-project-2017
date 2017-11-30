@@ -26,6 +26,13 @@ int getNextToken(TString* token){
                addToString(token,i);
                stateOfAutomat=3;
           }
+           else if (i == '0') {
+                        i=getchar();
+                        if (!isdigit(i)) {
+                        addToString(token,'0');
+                        stateOfAutomat = 6;
+                      }
+                      ungetc(i,stdin);
           else if (isdigit(i)){         //cislo
                  addToString(token,i);
                  stateOfAutomat=6;
@@ -247,7 +254,7 @@ int getNextToken(TString* token){
            }
            else if ((i=='E') || (i=='e')){
                    addToString(token,i);
-                   stateOfAutomat=8;
+                   stateOfAutomat=13;
            }
            else{
                 ungetc(i,stdin);
@@ -313,8 +320,13 @@ int getNextToken(TString* token){
             return Greater;
            }
         break;
-
-
+          
+        case 13:
+              if (isdigit(i)){
+                  addToString(token, i);
+                  stateOfAutomat = 10;
+              }
+              break;
   }
  }
 }
