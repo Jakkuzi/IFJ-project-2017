@@ -1,0 +1,11 @@
+scope
+        do while (5+5)=10
+
+        loop
+
+        if (5+5) = 10 then
+        else
+        end if
+	dim i as integer = (5+5+5*5)
+end scope
+

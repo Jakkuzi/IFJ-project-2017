@@ -1,0 +1,22 @@
+declare function foo(param1 as integer) as integer
+	
+function foo1(param as integer) as integer
+	dim i as integer = 0
+	if param1 < i then
+		return i
+	else
+		i = i + param
+	end if
+	
+	dim a as integer = foo(i)
+	return a + 10
+end function
+
+function foo(param as integer) as integer
+	return param * 5
+end function
+
+scope 
+	dim x as integer = foo1(10)
+	print x;
+end scope
