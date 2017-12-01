@@ -1,0 +1,7 @@
+scope
+	'poznamka
+'dalsi poznamka
+			'jeste jedna poznamka
+							'a posledni
+end scope
+

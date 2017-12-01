@@ -1,0 +1,7 @@
+scope
+
+dim x as integer
+
+x=87.+
+
+end scope

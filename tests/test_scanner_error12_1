@@ -1,0 +1,5 @@
+scope
+
+print !"a EOL"
+
+end scope

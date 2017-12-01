@@ -1,0 +1,7 @@
+scope
+	dim i as integer = 4
+	do while i < 5
+		i = 5
+		return i
+	loop
+end scope

@@ -1,0 +1,10 @@
+scope
+
+dim x as double
+
+x=5.e
+
+end scope
+
+
+
