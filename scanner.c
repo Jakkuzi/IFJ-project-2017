@@ -20,7 +20,7 @@ int getNextToken(TString* token){
           if (isspace(i)) // zistuje biele znaky
               stateOfAutomat=0;
           else if (i=='/'){  // komentar alebo delenie
-               addToString(token,i);
+               //addToString(token,i);
                stateOfAutomat=1;}
           else if (isalpha(i) || (i=='_')) {// identifikator,klucove slovo alebo rezervovane klucove slovo
                addToString(token,i);
@@ -101,16 +101,17 @@ int getNextToken(TString* token){
         break;
 
         case 1:
-          if(i=='/')
+          if(i=='\'')
             stateOfAutomat=2;
           else{
             ungetc(i,stdin);
+            addToString(token,i);
             return Div;
           }
          break;
 
         case 2:           //blokovy komentar
-          if (i=='/'){
+          if (i=='\''){
             i=getchar();
             if (i=='/')
               stateOfAutomat=0;
