@@ -12,15 +12,17 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
      * symBTree - strom plny ID funkci
      *
      * */
-    int result, i, pomint, pomint2;
-    double pomd, pomd2, pomd3, pomd4;
+    int pom = 0, pom2 = 0;
+    int result, i;
     int id = C->last->lineData->tokenID;
     char *name = NULL; // name of function or variable
     char *name2 = NULL;
     char *name3 = NULL;
     varDataType idReturnType;
     tLinePtr tmp = C->last->lineData; // iterator to get exact data
-    tLinePtr tmp2 = C->last->lineData->next->next->next->next->next->next->next;
+    tLinePtr tmp2;
+
+    static int scope_only = 0;
 
     // create function in symtable
     if(id == Declare || id == Function){
@@ -74,6 +76,8 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                         return 3;
                 }
                 break;
+            default:
+                return 99;
         }
         // check parameters from function
         tmp = C->last->lineData;
@@ -199,7 +203,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
 
     }
     else if(id == Scope){
-        //TODO: zkontrolovat definice
+
     }
     else{ // insert variables from function to symBTree
         switch(id){
@@ -236,256 +240,289 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                         default:
                             return 2;
                     }
-                    actualFunction->itemID = name;
-                    actualFunction->itemType = item_type_variable;
-                    actualFunction->declared++;
-                    if((actualFunction->declared) > 1 || (actualFunction->defined) > 0)
-                        return 3;
-                    actualFunction->varData->type = idReturnType;
-                    result = BTInsert(symBTree, actualFunction);
+                    switch(idReturnType){
+                        case var_integer:
+                            result = BTInsertVarInt(symBTree, name, 0);
+                            break;
+                        case var_double:
+                            result = BTInsertVarDouble(symBTree, name, 0.0);
+                            break;
+                        case var_string:
+                            result = BTInsertVarString(symBTree, name, '\0');
+                            break;
+                        default:
+                            return 99;
+                    }
                     if(result != 0)
                         return result;
+                    actualFunction = BTSearch(symBTree, name);
+                    if(actualFunction == NULL)
+                        return 3;
+                    actualFunction->itemType = item_type_variable;
+                    actualFunction->varData->type = idReturnType;
+                    actualFunction->declared++;
+                    if((actualFunction->declared) > 1)
+                        return 3;
                     tmp = tmp->next;
+                    //TODO:je to spravne?
+                    if(tmp == NULL)
+                        return 0;
                     switch (tmp->tokenID){
-                        case EOL:
-                            break;
                         case Equal:
+                        /*************************************************************************/
                             tmp = tmp->next;
-                            switch (tmp->tokenID){
-                                case valueOfInteger:
-                                    if(idReturnType == var_string)
-                                        return 4;
-                                    else if(idReturnType == var_integer){
-                                        name2 = C->last->lineData->next->next->next->next->next->token->myString;
-                                        pomint = atoi(name2);
-                                        actualFunction = BTSearch(symBTree, name);
-                                        BTInsertVarInt(symBTree, name, pomint);
-                                        break;
-                                    }
-                                    else{ //double
-                                        name2 = C->last->lineData->next->next->next->next->next->token->myString;
-                                        sscanf(name2, "%lf", &pomd);
-                                        actualFunction = BTSearch(symBTree, name);
-                                        BTInsertVarDouble(symBTree, name, pomd);
-                                        break;
-                                    }
-                                case valueOfDouble:
-                                    if(idReturnType == var_string)
-                                        return 4;
-                                    else if(idReturnType == var_integer){
-                                        actualFunction = BTSearch(symBTree, name);
-                                        actualFunction->varData->type = var_double;
-                                        name2 = C->last->lineData->next->next->next->next->next->token->myString;
-                                        sscanf(name2, "%lf", &pomd2);
-                                        BTInsertVarDouble(symBTree, name, pomd2);
-                                        break;
-                                    }
-                                    else{ //double
-                                        name2 = C->last->lineData->next->next->next->next->next->token->myString;
-                                        sscanf(name2, "%lf", &pomd);
-                                        BTInsertVarDouble(symBTree, name, pomd2);
-                                        break;
-                                    }
-                                case valueOfString:
-                                    if(idReturnType == var_integer || idReturnType == var_double)
-                                        return 4;
-                                    else{
-                                        name2 = C->last->lineData->next->next->next->next->next->token->myString;
-                                        BTInsertVarString(symBTree, name, name2);
-                                        break;
-                                    }
-                                case ID:
-                                    tmp = tmp->next;
-                                    name2 = C->last->lineData->next->next->next->next->next->token->myString;
-                                    actualFunction = BTSearch(symBTree, name2);
-                                    if(actualFunction == NULL)
-                                        return 3;
-                                    else if(actualFunction->declared != 1 || actualFunction->defined != 1)
-                                        return 3;
-                                    switch(tmp->tokenID){
-                                        case EOL:
-                                            //TODO: udelat neco s warningy
-                                            switch(actualFunction->varData->type){
+                            while(tmp != NULL){
+                                switch (tmp->tokenID){
+                                    case valueOfInteger:
+                                        if(idReturnType == var_string)
+                                            return 4;
+                                        else if(idReturnType == var_integer || idReturnType == var_double){
+                                            tmp = tmp->next;
+                                            break;
+                                        }
+                                    case valueOfDouble:
+                                        if(idReturnType == var_string)
+                                            return 4;
+                                        else if(idReturnType == var_integer){
+                                            actualFunction->varData->type = var_double;
+                                            tmp = tmp->next;
+                                            break;
+                                        }
+                                        else{ //double
+                                            tmp = tmp->next;
+                                            break;
+                                        }
+                                    case valueOfString:
+                                        if(idReturnType == var_integer || idReturnType == var_double)
+                                            return 4;
+                                        else{
+                                            tmp = tmp->next;
+                                            break;
+                                        }
+                                    case ID:
+                                        tmp = tmp->next;
+                                        name2 = C->last->lineData->next->next->token->myString;
+                                        actualFunction = BTSearch(symBTree, name2);
+                                        if(actualFunction == NULL)
+                                            return 3;
+                                        else if(actualFunction->declared != 1 || actualFunction->defined != 1)
+                                            return 3;
+                                            //TODO: je to spravne?
+                                        else if(tmp == NULL){
+                                            switch (actualFunction->varData->type) {
                                                 case var_integer:
                                                     if(idReturnType == var_string)
                                                         return 4;
-                                                    else if(idReturnType == var_integer){
-                                                        BTInsertVarInt(symBTree, name, actualFunction->varData->data);
+                                                    else if(idReturnType == var_integer || idReturnType == var_double){
                                                         break;
                                                     }
-                                                    else{ //double
-                                                        BTInsertVarDouble(symBTree, name, actualFunction->varData->data);
-                                                        break;
-                                                    }
-
                                                 case var_double:
                                                     if(idReturnType == var_string)
                                                         return 4;
                                                     else if(idReturnType == var_integer){
-                                                        BTInsertVarDouble(symBTree, name, actualFunction->varData->data);
-                                                        actualFunction = BTSearch(symBTree, name);
                                                         actualFunction->varData->type = var_double;
                                                         break;
                                                     }
                                                     else{ //double
-                                                        BTInsertVarDouble(symBTree, name, actualFunction->varData->data);
                                                         break;
                                                     }
                                                 case var_string:
                                                     if(idReturnType == var_integer || idReturnType == var_double)
                                                         return 4;
                                                     else{
-                                                        BTInsertVarString(symBTree, name, actualFunction->varData->data);
                                                         break;
                                                     }
                                                 default:
                                                     return 2;
                                             }
-                                        case LeftParenthes:
+                                            break;
+                                        }
+                                        else if(tmp->tokenID == LeftParenthes) {
                                             //TODO: muze se navratovy typ taky pretypovat?
-                                            switch(actualFunction->returnType){
+                                            switch (actualFunction->returnType) {
                                                 case var_integer:
-                                                    if(idReturnType == var_string)
+                                                    if (idReturnType == var_string)
                                                         return 4;
-                                                    /*else if(idReturnType == var_integer){
-                                                        break;
-                                                    }*/
-                                                    else{ //double, int
-                                                        int pom = 0;
+                                                    else { //double, int
+                                                        pom = 0;
                                                         tmp = tmp->next->next;
-                                                        if(tmp->tokenID == EOL) //bez parametru
+                                                        tmp2 = tmp->next;
+                                                        if (tmp == NULL) //bez parametru
                                                             break;
-                                                        else if(tmp->tokenID == RightParenthes){ //1 parametr
+                                                        else if (tmp->tokenID == RightParenthes) { //1 parametr
                                                             name3 = tmp2->token->myString;
                                                             actualFunction2 = BTSearch(symBTree, name3);
-                                                            if(actualFunction2 == NULL)
+                                                            if (actualFunction2 == NULL)
                                                                 return 3;
-                                                            else if(actualFunction2->declared != 1 || actualFunction2->defined != 1)
+                                                            else if (actualFunction2->declared != 1 ||
+                                                                     actualFunction2->defined != 1)
                                                                 return 3;
-                                                            else if(actualFunction->parameterTypes[pom] != tmp2->tokenID)
+                                                            else if (actualFunction->parameterTypes[pom] == valueOfInteger&&
+                                                                     actualFunction->varData->type != var_integer ||
+                                                                     actualFunction->parameterTypes[pom] == valueOfDouble&&
+                                                                     actualFunction->varData->type != var_double ||
+                                                                     actualFunction->parameterTypes[pom] == valueOfString&&
+                                                                     actualFunction->varData->type != var_string)
                                                                 return 4;
-                                                            else if(actualFunction->parameterTypes[pom] == tmp2->tokenID)
-                                                                break;
+                                                            else
+                                                                tmp = tmp->next;
+                                                            break;
                                                         }
-
-                                                        while(tmp->tokenID == Comma){ //2 a vice parametru
-                                                            name3 = tmp2->token->myString;
-                                                            actualFunction = BTSearch(symBTree, name3);
-                                                            if(actualFunction == NULL)
-                                                                return 3;
-                                                            else if(actualFunction->declared != 1 || actualFunction->defined != 1)
-                                                                return 3;
-                                                            else{
-                                                                if(actualFunction->parameterTypes[pom] == tmp2->tokenID){
+                                                        else {
+                                                            while (tmp->tokenID == Comma) { //2 a vice parametru
+                                                                name3 = tmp2->token->myString;
+                                                                actualFunction = BTSearch(symBTree, name3);
+                                                                if (actualFunction == NULL)
+                                                                    return 3;
+                                                                else if (actualFunction->declared != 1 ||
+                                                                         actualFunction->defined != 1)
+                                                                    return 3;
+                                                                else if (actualFunction->parameterTypes[pom] == valueOfInteger &&
+                                                                         actualFunction->varData->type != var_integer ||
+                                                                         actualFunction->parameterTypes[pom] == valueOfDouble &&
+                                                                         actualFunction->varData->type != var_double ||
+                                                                         actualFunction->parameterTypes[pom] == valueOfString &&
+                                                                         actualFunction->varData->type != var_string)
+                                                                    return 4;
+                                                                else {
                                                                     tmp = tmp->next->next;
                                                                     tmp2 = tmp2->next->next;
                                                                     pom++;
                                                                 }
-                                                                else
-                                                                    return 4;
                                                             }
+                                                            if (pom != actualFunction->paramCount - 1)
+                                                                return 4;
+                                                            tmp = tmp->next;
+                                                            break;
                                                         }
-                                                        if(pom != actualFunction->paramCount-1)
-                                                            return 4;
+                                                        break;
                                                     }
 
                                                 case var_double:
-                                                    if(idReturnType == var_string)
+                                                    if (idReturnType == var_string)
                                                         return 4;
-                                                        /*else if(idReturnType == var_integer){
-                                                            break;
-                                                        }*/
-                                                    else{ //double, int
-                                                        if(idReturnType == var_integer)
+                                                    else { //double, int
+                                                        if (idReturnType == var_integer)
                                                             actualFunction->varData->type = var_double;
-                                                        int pom = 0;
+                                                        pom = 0;
                                                         tmp = tmp->next->next;
-                                                        if(tmp->tokenID == EOL) //bez parametru
+                                                        tmp2 = tmp->next;
+                                                        if (tmp == NULL) //bez parametru
                                                             break;
-                                                        else if(tmp->tokenID == RightParenthes){ //1 parametr
+                                                        else if (tmp->tokenID == RightParenthes) { //1 parametr
                                                             name3 = tmp2->token->myString;
                                                             actualFunction2 = BTSearch(symBTree, name3);
-                                                            if(actualFunction2 == NULL)
+                                                            if (actualFunction2 == NULL)
                                                                 return 3;
-                                                            else if(actualFunction2->declared != 1 || actualFunction2->defined != 1)
+                                                            else if (actualFunction2->declared != 1 ||
+                                                                     actualFunction2->defined != 1)
                                                                 return 3;
-                                                            else if(actualFunction->parameterTypes[pom] != tmp2->tokenID)
+                                                            else if (actualFunction->parameterTypes[pom] == valueOfInteger&&
+                                                                     actualFunction->varData->type != var_integer ||
+                                                                     actualFunction->parameterTypes[pom] == valueOfDouble&&
+                                                                     actualFunction->varData->type != var_double ||
+                                                                     actualFunction->parameterTypes[pom] == valueOfString&&
+                                                                     actualFunction->varData->type != var_string)
                                                                 return 4;
-                                                            else if(actualFunction->parameterTypes[pom] == tmp2->tokenID)
-                                                                break;
+                                                            else
+                                                                tmp = tmp->next;
+                                                            break;
                                                         }
-
-                                                        while(tmp->tokenID == Comma){ // 2 a vice parametru
-                                                            name3 = tmp2->token->myString;
-                                                            actualFunction = BTSearch(symBTree, name3);
-                                                            if(actualFunction == NULL)
-                                                                return 3;
-                                                            else if(actualFunction->declared != 1 || actualFunction->defined != 1)
-                                                                return 3;
-                                                            else{
-                                                                if(actualFunction->parameterTypes[pom] == tmp2->tokenID){
+                                                        else{
+                                                            while (tmp->tokenID == Comma) { //2 a vice parametru
+                                                                name3 = tmp2->token->myString;
+                                                                actualFunction = BTSearch(symBTree, name3);
+                                                                if (actualFunction == NULL)
+                                                                    return 3;
+                                                                else if (actualFunction->declared != 1 || actualFunction->defined != 1)
+                                                                    return 3;
+                                                                else if (actualFunction->parameterTypes[pom] == valueOfInteger&&
+                                                                         actualFunction->varData->type != var_integer ||
+                                                                         actualFunction->parameterTypes[pom] == valueOfDouble&&
+                                                                         actualFunction->varData->type != var_double ||
+                                                                         actualFunction->parameterTypes[pom] == valueOfString&&
+                                                                         actualFunction->varData->type != var_string)
+                                                                    return 4;
+                                                                else {
                                                                     tmp = tmp->next->next;
                                                                     tmp2 = tmp2->next->next;
                                                                     pom++;
                                                                 }
-                                                                else
-                                                                    return 4;
                                                             }
+                                                            if (pom != actualFunction->paramCount - 1)
+                                                                return 4;
+                                                            tmp = tmp->next;
+                                                            break;
                                                         }
-                                                        if(pom != actualFunction->paramCount-1)
-                                                            return 4;
+                                                        break;
                                                     }
                                                 case var_string:
-                                                    if(idReturnType == var_integer || idReturnType == var_double)
+                                                    if (idReturnType == var_integer || idReturnType == var_double)
                                                         return 4;
-                                                    else{ //string
-                                                        int pom = 0;
+                                                    else { //string
+                                                        pom = 0;
                                                         tmp = tmp->next->next;
-                                                        if(tmp->tokenID == EOL) //bez parametru
+                                                        tmp2 = tmp->next;
+                                                        if (tmp == NULL) //bez parametru
                                                             break;
-                                                        else if(tmp->tokenID == RightParenthes){ //1 parametr
+                                                        else if (tmp->tokenID == RightParenthes) { //1 parametr
                                                             name3 = tmp2->token->myString;
                                                             actualFunction2 = BTSearch(symBTree, name3);
-                                                            if(actualFunction2 == NULL)
+                                                            if (actualFunction2 == NULL)
                                                                 return 3;
-                                                            else if(actualFunction2->declared != 1 || actualFunction2->defined != 1)
+                                                            else if (actualFunction2->declared != 1 ||
+                                                                     actualFunction2->defined != 1)
                                                                 return 3;
-                                                            else if(actualFunction->parameterTypes[pom] != tmp2->tokenID)
+                                                            else if (actualFunction->parameterTypes[pom] == valueOfInteger&&
+                                                                     actualFunction->varData->type != var_integer ||
+                                                                     actualFunction->parameterTypes[pom] == valueOfDouble&&
+                                                                     actualFunction->varData->type != var_double ||
+                                                                     actualFunction->parameterTypes[pom] == valueOfString&&
+                                                                     actualFunction->varData->type != var_string)
                                                                 return 4;
-                                                            else if(actualFunction->parameterTypes[pom] == tmp2->tokenID)
-                                                                break;
+                                                            else
+                                                                tmp = tmp->next;
+                                                            break;
                                                         }
-
-                                                        while(tmp->tokenID == Comma){ //2 a vice parametru
-                                                            name3 = tmp2->token->myString;
-                                                            actualFunction = BTSearch(symBTree, name3);
-                                                            if(actualFunction == NULL)
-                                                                return 3;
-                                                            else if(actualFunction->declared != 1 || actualFunction->defined != 1)
-                                                                return 3;
-                                                            else{
-                                                                if(actualFunction->parameterTypes[pom] == tmp2->tokenID){
+                                                        else{
+                                                            while (tmp->tokenID == Comma) { //2 a vice parametru
+                                                                name3 = tmp2->token->myString;
+                                                                actualFunction = BTSearch(symBTree, name3);
+                                                                if (actualFunction == NULL)
+                                                                    return 3;
+                                                                else if (actualFunction->declared != 1 || actualFunction->defined != 1)
+                                                                    return 3;
+                                                                else if (actualFunction->parameterTypes[pom] == valueOfInteger&&
+                                                                         actualFunction->varData->type != var_integer ||
+                                                                         actualFunction->parameterTypes[pom] == valueOfDouble&&
+                                                                         actualFunction->varData->type != var_double ||
+                                                                         actualFunction->parameterTypes[pom] == valueOfString&&
+                                                                         actualFunction->varData->type != var_string)
+                                                                    return 4;
+                                                                else {
                                                                     tmp = tmp->next->next;
                                                                     tmp2 = tmp2->next->next;
                                                                     pom++;
                                                                 }
-                                                                else
-                                                                    return 4;
                                                             }
+                                                            if (pom != actualFunction->paramCount - 1)
+                                                                return 4;
+                                                            tmp = tmp->next;
+                                                            break;
                                                         }
-                                                        if(pom != actualFunction->paramCount-1)
-                                                            return 4;
+                                                        break;
                                                     }
                                                 default:
                                                     return 2;
                                             }
-                                        default:
-                                            return 2;
-                                    }
-                                default:
-                                    return 2;
+                                            break;
+                                        }
+                                    default:
+                                        return 2;
 
+                                }
                             }
+                        /**********************************************************************/
                         default:
                             return 2;
 
@@ -496,7 +533,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
             case Print:
                 while(tmp->tokenID != Semicolon)
                     tmp = tmp->next;
-                if(tmp->next->tokenID == EOL)
+                if(tmp->next == NULL)
                     break;
                 else{
                     tmp = tmp->next;
@@ -534,108 +571,84 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                     return 3;
                 idReturnType = actualFunction->varData->type;
                 tmp = tmp->next->next;
-                switch(tmp->tokenID){
-                    case valueOfInteger:
-                        if(idReturnType == var_string)
-                            return 4;
-                        else if(idReturnType == var_integer){
+                /************************************************************/
+                while(tmp != NULL){
+                    switch(tmp->tokenID){
+                        case valueOfInteger:
+                            if(idReturnType == var_string)
+                                return 4;
+                            else if(idReturnType == var_integer || idReturnType == var_double){
+                                tmp = tmp->next;
+                                break;
+                            }
+                        case valueOfDouble:
+                            if(idReturnType == var_string)
+                                return 4;
+                            else if(idReturnType == var_integer){
+                                actualFunction->varData->type = var_double;
+                                tmp = tmp->next;
+                                break;
+                            }
+                            else{ //double
+                                tmp = tmp->next;
+                                break;
+                            }
+                        case valueOfString:
+                            if(idReturnType == var_integer || idReturnType == var_double)
+                                return 4;
+                            else{
+                                tmp = tmp->next;
+                                break;
+                            }
+                        case ID:
+                            tmp = tmp->next;
                             name2 = C->last->lineData->next->next->token->myString;
-                            pomint2 = atoi(name2);
-                            actualFunction = BTSearch(symBTree, name);
-                            BTInsertVarInt(symBTree, name, pomint2);
-                            break;
-                        }
-                        else{ //double
-                            name2 = C->last->lineData->next->next->token->myString;
-                            sscanf(name2, "%lf", &pomd3);
-                            actualFunction = BTSearch(symBTree, name);
-                            BTInsertVarDouble(symBTree, name, pomd3);
-                            break;
-                        }
-                    case valueOfDouble:
-                        if(idReturnType == var_string)
-                            return 4;
-                        else if(idReturnType == var_integer){
-                            actualFunction = BTSearch(symBTree, name);
-                            actualFunction->varData->type = var_double;
-                            name2 = C->last->lineData->next->next->token->myString;
-                            sscanf(name2, "%lf", &pomd3);
-                            BTInsertVarDouble(symBTree, name, pomd3);
-                            break;
-                        }
-                        else{ //double
-                            name2 = C->last->lineData->next->next->token->myString;
-                            sscanf(name2, "%lf", &pomd3);
-                            BTInsertVarDouble(symBTree, name, pomd3);
-                            break;
-                        }
-                    case valueOfString:
-                        if(idReturnType == var_integer || idReturnType == var_double)
-                            return 4;
-                        else{
-                            name2 = C->last->lineData->next->next->token->myString;
-                            BTInsertVarString(symBTree, name, name2);
-                            break;
-                        }
-                    case ID:
-                        tmp = tmp->next;
-                        name2 = C->last->lineData->next->next->token->myString;
-                        actualFunction = BTSearch(symBTree, name2);
-                        if(actualFunction == NULL)
-                            return 3;
-                        else if(actualFunction->declared != 1 || actualFunction->defined != 1)
-                            return 3;
-                        switch(tmp->tokenID) {
-                            case EOL:
-                                //TODO: udelat neco s warningy
+                            actualFunction = BTSearch(symBTree, name2);
+                            if(actualFunction == NULL)
+                                return 3;
+                            else if(actualFunction->declared != 1 || actualFunction->defined != 1)
+                                return 3;
+                                //TODO: je to spravne?
+                            else if(tmp == NULL){
                                 switch (actualFunction->varData->type) {
                                     case var_integer:
-                                        if (idReturnType == var_string)
+                                        if(idReturnType == var_string)
                                             return 4;
-                                        else if (idReturnType == var_integer) {
-                                            BTInsertVarInt(symBTree, name, actualFunction->varData->data);
-                                            break;
-                                        } else { //double
-                                            BTInsertVarDouble(symBTree, name, actualFunction->varData->data);
+                                        else if(idReturnType == var_integer || idReturnType == var_double){
                                             break;
                                         }
-
                                     case var_double:
-                                        if (idReturnType == var_string)
+                                        if(idReturnType == var_string)
                                             return 4;
-                                        else if (idReturnType == var_integer) {
-                                            BTInsertVarDouble(symBTree, name, actualFunction->varData->data);
-                                            actualFunction = BTSearch(symBTree, name);
+                                        else if(idReturnType == var_integer){
                                             actualFunction->varData->type = var_double;
                                             break;
-                                        } else { //double
-                                            BTInsertVarDouble(symBTree, name, actualFunction->varData->data);
+                                        }
+                                        else{ //double
                                             break;
                                         }
                                     case var_string:
-                                        if (idReturnType == var_integer || idReturnType == var_double)
+                                        if(idReturnType == var_integer || idReturnType == var_double)
                                             return 4;
-                                        else {
-                                            BTInsertVarString(symBTree, name, actualFunction->varData->data);
+                                        else{
                                             break;
                                         }
                                     default:
                                         return 2;
                                 }
-                            case LeftParenthes:
+                                break;
+                            }
+                            else if(tmp->tokenID == LeftParenthes) {
                                 //TODO: muze se navratovy typ taky pretypovat?
                                 switch (actualFunction->returnType) {
                                     case var_integer:
                                         if (idReturnType == var_string)
                                             return 4;
-                                            /*else if(idReturnType == var_integer){
-                                                break;
-                                            }*/
                                         else { //double, int
-                                            int pom = 0;
+                                            pom = 0;
                                             tmp = tmp->next->next;
-                                            tmp2 = C->last->lineData->next->next->next->next;
-                                            if (tmp->tokenID == EOL) //bez parametru
+                                            tmp2 = tmp->next;
+                                            if (tmp == NULL) //bez parametru
                                                 break;
                                             else if (tmp->tokenID == RightParenthes) { //1 parametr
                                                 name3 = tmp2->token->myString;
@@ -645,45 +658,57 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                                                 else if (actualFunction2->declared != 1 ||
                                                          actualFunction2->defined != 1)
                                                     return 3;
-                                                else if (actualFunction->parameterTypes[pom] != tmp2->tokenID)
+                                                else if (actualFunction->parameterTypes[pom] == valueOfInteger&&
+                                                        actualFunction->varData->type != var_integer ||
+                                                        actualFunction->parameterTypes[pom] == valueOfDouble&&
+                                                        actualFunction->varData->type != var_double ||
+                                                        actualFunction->parameterTypes[pom] == valueOfString&&
+                                                        actualFunction->varData->type != var_string)
                                                     return 4;
-                                                else if (actualFunction->parameterTypes[pom] == tmp2->tokenID)
-                                                    break;
+                                                else
+                                                    tmp = tmp->next;
+                                                break;
                                             }
-
-                                            while (tmp->tokenID == Comma) { //2 a vice parametru
-                                                name3 = tmp2->token->myString;
-                                                actualFunction = BTSearch(symBTree, name3);
-                                                if (actualFunction == NULL)
-                                                    return 3;
-                                                else if (actualFunction->declared != 1 || actualFunction->defined != 1)
-                                                    return 3;
-                                                else {
-                                                    if (actualFunction->parameterTypes[pom] == tmp2->tokenID) {
+                                            else {
+                                                while (tmp->tokenID == Comma) { //2 a vice parametru
+                                                    name3 = tmp2->token->myString;
+                                                    actualFunction = BTSearch(symBTree, name3);
+                                                    if (actualFunction == NULL)
+                                                        return 3;
+                                                    else if (actualFunction->declared != 1 ||
+                                                             actualFunction->defined != 1)
+                                                        return 3;
+                                                    else if (actualFunction->parameterTypes[pom] == valueOfInteger &&
+                                                             actualFunction->varData->type != var_integer ||
+                                                             actualFunction->parameterTypes[pom] == valueOfDouble &&
+                                                             actualFunction->varData->type != var_double ||
+                                                             actualFunction->parameterTypes[pom] == valueOfString &&
+                                                             actualFunction->varData->type != var_string)
+                                                        return 4;
+                                                    else {
                                                         tmp = tmp->next->next;
                                                         tmp2 = tmp2->next->next;
                                                         pom++;
-                                                    } else
-                                                        return 4;
+                                                    }
                                                 }
+                                                if (pom != actualFunction->paramCount - 1)
+                                                    return 4;
+                                                tmp = tmp->next;
+                                                break;
                                             }
-                                            if (pom != actualFunction->paramCount - 1)
-                                                return 4;
+                                            break;
                                         }
 
                                     case var_double:
                                         if (idReturnType == var_string)
                                             return 4;
-                                            /*else if(idReturnType == var_integer){
-                                                break;
-                                            }*/
                                         else { //double, int
                                             if (idReturnType == var_integer)
                                                 actualFunction->varData->type = var_double;
-                                            int pom = 0;
+                                            pom = 0;
                                             tmp = tmp->next->next;
-                                            tmp2 = C->last->lineData->next->next->next->next;
-                                            if (tmp->tokenID == EOL) //bez parametru
+                                            tmp2 = tmp->next;
+                                            if (tmp == NULL) //bez parametru
                                                 break;
                                             else if (tmp->tokenID == RightParenthes) { //1 parametr
                                                 name3 = tmp2->token->myString;
@@ -693,39 +718,53 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                                                 else if (actualFunction2->declared != 1 ||
                                                          actualFunction2->defined != 1)
                                                     return 3;
-                                                else if (actualFunction->parameterTypes[pom] != tmp2->tokenID)
+                                                else if (actualFunction->parameterTypes[pom] == valueOfInteger&&
+                                                         actualFunction->varData->type != var_integer ||
+                                                         actualFunction->parameterTypes[pom] == valueOfDouble&&
+                                                         actualFunction->varData->type != var_double ||
+                                                         actualFunction->parameterTypes[pom] == valueOfString&&
+                                                         actualFunction->varData->type != var_string)
                                                     return 4;
-                                                else if (actualFunction->parameterTypes[pom] == tmp2->tokenID)
-                                                    break;
+                                                else
+                                                    tmp = tmp->next;
+                                                break;
                                             }
-
-                                            while (tmp->tokenID == Comma) { // 2 a vice parametru
-                                                name3 = tmp2->token->myString;
-                                                actualFunction = BTSearch(symBTree, name3);
-                                                if (actualFunction == NULL)
-                                                    return 3;
-                                                else if (actualFunction->declared != 1 || actualFunction->defined != 1)
-                                                    return 3;
-                                                else {
-                                                    if (actualFunction->parameterTypes[pom] == tmp2->tokenID) {
+                                            else{
+                                                while (tmp->tokenID == Comma) { //2 a vice parametru
+                                                    name3 = tmp2->token->myString;
+                                                    actualFunction = BTSearch(symBTree, name3);
+                                                    if (actualFunction == NULL)
+                                                        return 3;
+                                                    else if (actualFunction->declared != 1 || actualFunction->defined != 1)
+                                                        return 3;
+                                                    else if (actualFunction->parameterTypes[pom] == valueOfInteger&&
+                                                             actualFunction->varData->type != var_integer ||
+                                                             actualFunction->parameterTypes[pom] == valueOfDouble&&
+                                                             actualFunction->varData->type != var_double ||
+                                                             actualFunction->parameterTypes[pom] == valueOfString&&
+                                                             actualFunction->varData->type != var_string)
+                                                        return 4;
+                                                    else {
                                                         tmp = tmp->next->next;
                                                         tmp2 = tmp2->next->next;
                                                         pom++;
-                                                    } else
-                                                        return 4;
+                                                    }
                                                 }
+                                                if (pom != actualFunction->paramCount - 1)
+                                                    return 4;
+                                                tmp = tmp->next;
+                                                break;
                                             }
-                                            if (pom != actualFunction->paramCount - 1)
-                                                return 4;
+                                            break;
                                         }
                                     case var_string:
                                         if (idReturnType == var_integer || idReturnType == var_double)
                                             return 4;
                                         else { //string
-                                            int pom = 0;
+                                            pom = 0;
                                             tmp = tmp->next->next;
-                                            tmp2 = C->last->lineData->next->next->next->next;
-                                            if (tmp->tokenID == EOL) //bez parametru
+                                            tmp2 = tmp->next;
+                                            if (tmp == NULL) //bez parametru
                                                 break;
                                             else if (tmp->tokenID == RightParenthes) { //1 parametr
                                                 name3 = tmp2->token->myString;
@@ -735,44 +774,59 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                                                 else if (actualFunction2->declared != 1 ||
                                                          actualFunction2->defined != 1)
                                                     return 3;
-                                                else if (actualFunction->parameterTypes[pom] != tmp2->tokenID)
+                                                else if (actualFunction->parameterTypes[pom] == valueOfInteger&&
+                                                         actualFunction->varData->type != var_integer ||
+                                                         actualFunction->parameterTypes[pom] == valueOfDouble&&
+                                                         actualFunction->varData->type != var_double ||
+                                                         actualFunction->parameterTypes[pom] == valueOfString&&
+                                                         actualFunction->varData->type != var_string)
                                                     return 4;
-                                                else if (actualFunction->parameterTypes[pom] == tmp2->tokenID)
-                                                    break;
+                                                else
+                                                    tmp = tmp->next;
+                                                break;
                                             }
-
-                                            while (tmp->tokenID == Comma) { //2 a vice parametru
-                                                name3 = tmp2->token->myString;
-                                                actualFunction = BTSearch(symBTree, name3);
-                                                if (actualFunction == NULL)
-                                                    return 3;
-                                                else if (actualFunction->declared != 1 || actualFunction->defined != 1)
-                                                    return 3;
-                                                else {
-                                                    if (actualFunction->parameterTypes[pom] == tmp2->tokenID) {
+                                            else{
+                                                while (tmp->tokenID == Comma) { //2 a vice parametru
+                                                    name3 = tmp2->token->myString;
+                                                    actualFunction = BTSearch(symBTree, name3);
+                                                    if (actualFunction == NULL)
+                                                        return 3;
+                                                    else if (actualFunction->declared != 1 || actualFunction->defined != 1)
+                                                        return 3;
+                                                    else if (actualFunction->parameterTypes[pom] == valueOfInteger&&
+                                                             actualFunction->varData->type != var_integer ||
+                                                             actualFunction->parameterTypes[pom] == valueOfDouble&&
+                                                             actualFunction->varData->type != var_double ||
+                                                             actualFunction->parameterTypes[pom] == valueOfString&&
+                                                             actualFunction->varData->type != var_string)
+                                                        return 4;
+                                                    else {
                                                         tmp = tmp->next->next;
                                                         tmp2 = tmp2->next->next;
                                                         pom++;
                                                     }
-                                                    else
-                                                        return 4;
                                                 }
+                                                if (pom != actualFunction->paramCount - 1)
+                                                    return 4;
+                                                tmp = tmp->next;
+                                                break;
                                             }
-                                            if (pom != actualFunction->paramCount - 1)
-                                                return 4;
+                                            break;
                                         }
                                     default:
                                         return 2;
                                 }
-                            default:
-                                return 2;
-                        }
-                    default:
-                        return 2;
+                                break;
+                            }
+                            /*********************************************************************/
+                        default:
+                            return 2;
+                    }
                 }
+
             case If:
-                int pom = 0;
-                while(tmp->tokenID != EOL){
+                pom = 0;
+                while(tmp!= NULL){
                     if(tmp->tokenID == ID){
                         name = tmp->token->myString;
                         actualFunction = BTSearch(symBTree, name);
@@ -849,11 +903,9 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                         if(pom == 0){
                             pom = tmp->tokenID;
                             tmp = tmp->next;
-                            break;
                         }
                         if(pom != valueOfString){
                             tmp = tmp->next;
-                            break;
                         }
                         else
                             return 4;
@@ -862,19 +914,20 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                         if(pom == 0){
                             pom = tmp->tokenID;
                             tmp = tmp->next;
-                            break;
                         }
                         if(pom == valueOfString){
                             tmp = tmp->next;
-                            break;
                         }
                         else
                             return 4;
                     }
+                    else{
+                        tmp = tmp->next;
+                    }
                 }
             case Do:
-                int pom2 = 0;
-                while(tmp->tokenID != EOL){
+                pom2 = 0;
+                while(tmp != NULL){
                     if(tmp->tokenID == ID){
                         name = tmp->token->myString;
                         actualFunction = BTSearch(symBTree, name);
@@ -951,11 +1004,9 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                         if(pom2 == 0){
                             pom2 = tmp->tokenID;
                             tmp = tmp->next;
-                            break;
                         }
-                        if(pom2 != valueOfString){
+                        else if(pom2 != valueOfString){
                             tmp = tmp->next;
-                            break;
                         }
                         else
                             return 4;
@@ -964,14 +1015,15 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                         if(pom2 == 0){
                             pom2 = tmp->tokenID;
                             tmp = tmp->next;
-                            break;
                         }
-                        if(pom2 == valueOfString){
+                        else if(pom2 == valueOfString){
                             tmp = tmp->next;
-                            break;
                         }
                         else
                             return 4;
+                    }
+                    else{
+                        tmp = tmp->next;
                     }
                 }
             default:
@@ -1001,11 +1053,8 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
             free(actualFunction->ParamRootPtr);
             actualFunction->varData = NULL;
         }
-
     }
-
-
-    /* end of SEMANTIC CHECK */
+    /* end of SEMANTIC CHECK *
     return 0;
 }*/
 
@@ -1055,7 +1104,7 @@ int addBuiltInFunctions(BTNodePtr symBTree){
         return 3; //TODO: asi trojka?
     }
     if(actualF->parameterTypes == NULL)
-       actualF->parameterTypes = (int *) malloc(sizeof(int) * 3);
+        actualF->parameterTypes = (int *) malloc(sizeof(int) * 3);
 
     if(actualF->parameterTypes == NULL){
         multiFree(f1, f2, f3, f4);
@@ -1080,7 +1129,7 @@ int addBuiltInFunctions(BTNodePtr symBTree){
         return 3; //TODO: asi trojka?
     }
     if(actualF->parameterTypes == NULL)
-         actualF->parameterTypes = (int *) malloc(sizeof(int) * 2);
+        actualF->parameterTypes = (int *) malloc(sizeof(int) * 2);
     if(actualF->parameterTypes == NULL){
         multiFree(f1, f2, f3, f4);
         return 99;
