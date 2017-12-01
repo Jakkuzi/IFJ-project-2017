@@ -1,7 +1,7 @@
 #include "parser.h"
 
 int main(){
-//    freopen("tests/test_syntax_error01_2","r",stdin);
+//    freopen("test_program","r",stdin);
     tCodeList sCode;
     tCodeInit(&sCode);
     tCodeCreateNewLine(&sCode);

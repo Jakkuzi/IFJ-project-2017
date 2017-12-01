@@ -66,7 +66,7 @@ int sTop(tStack *);
 int sPopTop(tStack *);
 
 /* function to process expression */
-int process_expr(int, tCodeList *, int, TString *, tStack *);
+int process_expr(int, tCodeList *, int, TString *, tStack *, BTNodePtr);
 
 
 #endif

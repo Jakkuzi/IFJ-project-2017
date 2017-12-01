@@ -262,22 +262,22 @@ int syntax_analysis(tCodeList *C){
                         || top == 297){ // 297 is special case for print
                     switch(sTop(s)){
                         case 221:
-                            result = process_expr(0, C, t, token, s);//297
+                            result = process_expr(0, C, t, token, s, symBTree);//297
                             break;
                         case 219:
-                            result = process_expr(0,  C, t, token, s);//296
+                            result = process_expr(0,  C, t, token, s, symBTree);//296
                             break;
                         case 218:
-                            result = process_expr(1, C, t, token, s);//298
+                            result = process_expr(1, C, t, token, s, symBTree);//298
                             break;
                         case 215:
-                            result = process_expr(1, C, t, token, s);//298
+                            result = process_expr(1, C, t, token, s, symBTree);//298
                             break;
                         case 214:
-                            result = process_expr(0, C, t, token, s);//299
+                            result = process_expr(0, C, t, token, s, symBTree);//299
                             break;
                         case 297:
-                            result = process_expr(0, C, t, token, s);//special case for print
+                            result = process_expr(0, C, t, token, s, symBTree);//special case for print
                             break;
                         default:
                             freeThisCycle(token, s);
@@ -374,7 +374,7 @@ int syntax_analysis(tCodeList *C){
 /* END of main function */
 
 /* function to process expression */
-int process_expr(int id_processed, tCodeList *C, int t, TString *token, tStack *s){
+int process_expr(int id_processed, tCodeList *C, int t, TString *token, tStack *s, BTNodePtr symBTree){
     int print_to_process = 0;
     if(sTop(s) == 297) // Special case for print
         print_to_process = 1;
@@ -455,6 +455,9 @@ int process_expr(int id_processed, tCodeList *C, int t, TString *token, tStack *
             }
         }
         else{
+            result = semantic_check(C, symBTree);
+            if(result != 0)
+                return result;
             result = tCodeCreateNewLine(C);
             if(result != 0){
                 free(token);
@@ -520,7 +523,7 @@ void stackInit(tStack *s){
 }
 
 int stackEmpty(tStack *s){
-    return (s->top == -1) ? 1 : 0;
+    return (s->top < 0) ? 1 : 0;
 }
 
 void sPush(tStack *s, int num){

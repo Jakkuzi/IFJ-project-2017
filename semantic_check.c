@@ -1,4 +1,6 @@
 #include "semantic_check.h"
+#include "parser.h"
+#include "strings.h"
 
 static BTItemPtr *actualFunction;
 static BTItemPtr *actualFunction2;
@@ -13,7 +15,8 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
      *
      * */
     int pom = 0, pom2 = 0;
-    int result, i;
+    int result, i, pomint, pomint2;
+    double pomd, pomd2, pomd3, pomd4;
     int id = C->last->lineData->tokenID;
     char *name = NULL; // name of function or variable
     char *name2 = NULL;
@@ -21,7 +24,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
     varDataType idReturnType;
     tLinePtr tmp = C->last->lineData; // iterator to get exact data
     tLinePtr tmp2;
-
+  
     static int scope_only = 0;
 
     // create function in symtable
@@ -343,7 +346,6 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                                                 case var_integer:
                                                     if (idReturnType == var_string)
                                                         return 4;
-                                                    else { //double, int
                                                         pom = 0;
                                                         tmp = tmp->next->next;
                                                         tmp2 = tmp->next;
@@ -459,7 +461,6 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                                                 case var_string:
                                                     if (idReturnType == var_integer || idReturnType == var_double)
                                                         return 4;
-                                                    else { //string
                                                         pom = 0;
                                                         tmp = tmp->next->next;
                                                         tmp2 = tmp->next;
@@ -1030,33 +1031,9 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                 return 2;
         }
     }
-
-    /* symtable filled */
-
-    //TODO: zkontroluj kazdy radek, jestli je zatim spravne
-    // symTree je ukazatel na root
-    // actualFunction je funkce, ve ktere preva pracujeme
-    // search je vhodne aplikovat prvne na funkci pak prekontrolovat,
-    // jeslti se promenna nejmenuje jako funkce
-    // GL :-)
-
-
-    /* end of SEMANTIC CHECK */
-
-    //TODO: smazat promenne aktualni funkce
     return 0;
 }
 
-/*        if(id == End && C->last->lineData->next->tokenID == Function){
-            BTDispose(actualFunction->ParamRootPtr);
-            actualFunction->ParamRootPtr = NULL;
-            free(actualFunction->ParamRootPtr);
-            actualFunction->varData = NULL;
-        }
-    }
-    /* end of SEMANTIC CHECK *
-    return 0;
-}*/
 
 int addBuiltInFunctions(BTNodePtr symBTree){
     char *f1 = (char *) malloc(sizeof(char) * 7); // lenght
@@ -1176,3 +1153,4 @@ void multiFree(char *s1, char *s2, char *s3, char *s4){
     if(s4 != NULL)
         free(s4);
 }
+
