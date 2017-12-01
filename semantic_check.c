@@ -25,6 +25,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
     tLinePtr tmp = C->last->lineData; // iterator to get exact data
     tLinePtr tmp2 = C->last->lineData;//->next->next->next->next->next->next->next;
     static int scope_only = 0;
+    BTItemPtr *var;
 
     // create function in symtable
     if(id == Declare || id == Function){
@@ -219,6 +220,104 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
             case Else:
                 break;
             case Loop:
+                break;
+            case Return:
+                pom = 1;
+                int parametr = 0, type;
+                tmp = C->last->lineData->next; // return x<-
+
+                if(tmp->tokenID == ID){
+                    if((var = BTSearch(symBTree, tmp->token->myString)) == NULL)
+                        return 3; // nedefinovana promenna
+                    if(var->itemType == item_type_function)
+                        pom = 0;
+                    if(pom == 0){
+                        if(actualFunction->returnType == var_integer || actualFunction->returnType == var_double) {
+                            if (var->returnType == var_string)
+                                return 4;
+                        }
+                        else
+                        if(var->returnType != var_string)
+                            return 4;
+                        tmp = tmp->next;
+                        if(tmp == NULL || tmp->tokenID != LeftParenthes)
+                            return 4;
+                    }
+                }
+
+                while(tmp != NULL){
+                    switch (pom){
+                        case 0://parametry funkce
+                            type = actualFunction->parameterTypes[parametr]; // typ parametru, int atd
+                            switch (tmp->tokenID){
+                                case RightParenthes:
+                                    break;
+                                case LeftParenthes:
+                                    break;
+                                case valueOfDouble:
+                                    if(type == String)
+                                        return 4;
+                                    break;
+                                case valueOfDoubleWithExp:
+                                    if(type == String)
+                                        return 4;
+                                    break;
+                                case valueOfInteger:
+                                    if(type == String)
+                                        return 4;
+                                    break;
+                                case valueOfString:
+                                    if(type != String)
+                                        return 4;
+                                    break;
+                                case ID:
+                                    if((var = BTSearch(actualFunction->ParamRootPtr, tmp->token->myString)) == NULL)
+                                        return 3;
+                                    if(type == var_string && var->varData->type != var_string)
+                                        return 4;
+                                    else if(type != var_string && var->varData->type == var_string)
+                                        return 4;
+                                    break;
+                                default:
+                                    return 6;
+                            }
+                            parametr++;
+
+                            break;
+                        case 1://promenna
+                            switch (tmp->tokenID){
+                                case ID:
+                                    if((var = BTSearch(actualFunction->ParamRootPtr, tmp->token->myString)) == NULL)
+                                        return 3;
+                                    if(actualFunction->returnType == var_string && var->varData->type != var_string)
+                                        return 4;
+                                    else if(var->varData->type == var_string)
+                                        return 4;
+                                    break;
+                                case valueOfString:
+                                    if(actualFunction->returnType != var_string)
+                                        return 4;
+                                    break;
+                                case valueOfInteger:
+                                    if(actualFunction->returnType == var_string)
+                                        return 4;
+                                    break;
+                                case valueOfDoubleWithExp:
+                                    if(actualFunction->returnType == var_string)
+                                        return 4;
+                                    break;
+                                case valueOfDouble:
+                                    if(actualFunction->returnType == var_string)
+                                        return 4;
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+                    }
+                    tmp = tmp->next;
+                }
+
                 break;
             case Dim:
                 name = C->last->lineData->next->token->myString;
