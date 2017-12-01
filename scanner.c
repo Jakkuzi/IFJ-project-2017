@@ -33,6 +33,7 @@ int getNextToken(TString* token){
                         stateOfAutomat = 6;
                       }
                       ungetc(i,stdin);
+                     }
           else if (isdigit(i)){         //cislo
                  addToString(token,i);
                  stateOfAutomat=6;
