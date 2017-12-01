@@ -618,7 +618,8 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                                             break;
                                         }
                                     default:
-                                        return 2;
+                                        tmp = tmp->next;
+                                        break;
 
                                 }
                             }
@@ -920,7 +921,8 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                             }
                             /*********************************************************************/
                         default:
-                            return 2;
+                            tmp = tmp->next;
+                            break;
                     }
                 }
 
