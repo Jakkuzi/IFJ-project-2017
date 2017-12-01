@@ -103,7 +103,7 @@ int ll[21][8][8] = {
     {13,    217,    0,      0,      0,      0,      0,      0},
     {14,    217,    0,      0,      0,      0,      0,      0},
     {15,    217,    0,      0,      0,      0,      0,      0},
-    {101,	0,		0,		0,		0,		0,		0,		0},},
+    {101,	122,    0,		0,		0,		0,		0,		0},},
     //ParameterFceNext
     {{105,  216,    0,      0,      0,      0,      0,      0},
     {101,   0,      0,      0,      0,      0,      0,      0},},
@@ -323,12 +323,12 @@ int syntax_analysis(tCodeList *C){
             if(t == EndOfLine){
                 stringFree(token);
                 free(token);
-//                result = semantic_check(C, symBTree);
-//                if(result != 0){
-//                    free(s);
-//                    BTDispose(symBTree);
-//                    return result;
-//                }
+                result = semantic_check(C, symBTree);
+                if(result != 0){
+                    free(s);
+                    BTDispose(symBTree);
+                    return result;
+                }
                 result = tCodeCreateNewLine(C);
                 if(result != 0){
                     freeThisCycle(token, s);
@@ -394,8 +394,9 @@ int process_expr(int id_processed, tCodeList *C, int t, TString *token, tStack *
         tLinePtr last = C->last->lineData;
         while(last->next != NULL)
             last = last->next;
+        if(last->tokenID == While);
 
-        if((id = last->tokenID) >= ID && id <= valueOfString){ // transform number or id to 'i'
+        else if((id = last->tokenID) >= ID && id <= valueOfString){ // transform number or id to 'i'
             strcat(prec_str, "i");
             len++;
         }

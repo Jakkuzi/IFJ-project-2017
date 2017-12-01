@@ -6,17 +6,8 @@ static BTItemPtr *actualFunction;
 static BTItemPtr *actualFunction2;
 
 int semantic_check(tCodeList *C, BTNodePtr symBTree) {
-    /* SEMANTIC CHECK
-     * filling symtable from here
-     *TODO: než se vloží nový řádek
-     * načíst aktuální data do symtable --- z C->last
-     * zkontrolovat symtable, jestli je zatím správně
-     * symBTree - strom plny ID funkci
-     *
-     * */
     int pom = 0, pom2 = 0;
-    int result, i, pomint, pomint2;
-    double pomd, pomd2, pomd3, pomd4;
+    int result, i;
     int id = C->last->lineData->tokenID;
     char *name = NULL; // name of function or variable
     char *name2 = NULL;
@@ -24,8 +15,6 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
     varDataType idReturnType;
     tLinePtr tmp = C->last->lineData; // iterator to get exact data
     tLinePtr tmp2;
-
-    static int scope_only = 0;
     BTItemPtr *var;
 
     // create function in symtable
@@ -73,7 +62,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                         return result;
                     actualFunction = BTSearch(symBTree, name);
                 }
-                actualFunction->defined = 1;
+                actualFunction->defined++;
                 if (actualFunction->declared) {
                     if (actualFunction->returnType != idReturnType)
                         return 3;
@@ -116,7 +105,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                 if (i > 1) {
                     for (int j = 0; j < i - 1; j++)
                         if (strcmp(tokenArr[j]->myString, tmp->token->myString) == 0) {
-                            return 3;//TODO: asi 3, nwm co je to za error kdyz se 2 parametry jmenuji stejne + free
+                            return 3;
                         }
                     tokenArr[i - 1] = tmp->token;
                 } else
@@ -202,7 +191,17 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
             free(tokenArr);
 
     } else if (id == Scope) {
-
+        result = check_func_for_definition(symBTree);
+        if (result != 0)
+            return result;
+        result = BTInsertFunc(symBTree, var_integer, "@Scope");
+        if(result != 0)
+            return result;
+        actualFunction = BTSearch(symBTree, "@Scope");
+        if(actualFunction == NULL)
+            return 99;
+        actualFunction->declared++;
+        actualFunction->defined++;
     } else { // insert variables from function to symBTree
         switch (id) {
             case End:
@@ -211,7 +210,6 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                     actualFunction->ParamRootPtr = NULL;
                     free(actualFunction->ParamRootPtr);
                     actualFunction->varData = NULL;
-                    break;
                 }
                 break;
             case Else:
@@ -619,6 +617,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
 
                     }
                 }
+                break;
             case Print:
                 while (tmp->tokenID != Semicolon)
                     tmp = tmp->next;
@@ -909,7 +908,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                             break;
                     }
                 }
-
+                break;
             case If:
                 pom = 0;
                 while (tmp != NULL) {
@@ -1003,6 +1002,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                         tmp = tmp->next;
                     }
                 }
+                break;
             case Do:
                 pom2 = 0;
                 while (tmp != NULL) {
@@ -1094,6 +1094,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                         tmp = tmp->next;
                     }
                 }
+                break;
             default:
                 return 2;
         }
@@ -1219,5 +1220,21 @@ void multiFree(char *s1, char *s2, char *s3, char *s4) {
         free(s3);
     if (s4 != NULL)
         free(s4);
+}
+
+int check_func_for_definition(BTNodePtr symBTree){
+    if(symBTree->LPtr != NULL)
+        if(check_func_for_definition(symBTree->LPtr) == 3)
+            return 3;
+    if(symBTree->RPtr != NULL)
+        if(check_func_for_definition(symBTree->RPtr) == 3)
+            return 3;
+    if(symBTree->item != NULL){
+        if(symBTree->item->declared > 1)
+            return 3;
+        if(symBTree->item->defined != 1)
+            return 3;
+    }
+    return 0;
 }
 

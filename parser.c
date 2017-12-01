@@ -1,7 +1,7 @@
 #include "parser.h"
 
 int main(){
-    freopen("test_program","r",stdin);
+//    freopen("test_program","r",stdin);
     tCodeList sCode;
     tCodeInit(&sCode);
     tCodeCreateNewLine(&sCode);
@@ -12,8 +12,6 @@ int main(){
         return syntax;
     }
     tCodeDispose(&sCode);
-
-    printf("Obe analyzy OK\n");//TODO: smazat
 
     return 0;
 }
