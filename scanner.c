@@ -3,7 +3,7 @@
 int getNextToken(TString* token){
 
   int stateOfAutomat=0;
-  int i;
+  char i;
   int aux;
   stringClean(token);
 
@@ -207,44 +207,83 @@ int getNextToken(TString* token){
             stateOfAutomat=0;
         break;
 
-        case 5:
-           if (i=='"'){
-             i=getchar();
-             if (i<=001 || i>=255)
-                return ErrorInLexicalAnalyzer;
-               else if(i=='"')
-                addToString(token,'\"');
-               else if (i=='n')
-                addToString(token,'\n');
-               else if (i=='t')
-                addToString(token,'\t');
-               else if (i=='\\')
-                addToString(token,'\\');
-               else if (isdigit(i)){
-                      {aux=i;
-                      addToString(token,aux);}
-                    if (isdigit(i=getchar())){
-                        {aux=aux*10+i;
-                        addToString(token,aux);}
-                        if (isdigit(i=getchar()))
-                            {aux=aux*10+i;
-                            addToString(token,aux);}
-                          //  else if (i==EOF)
-                                     //return ErrorInLexicalAnalyzer;
-                        else
-                            return ErrorInLexicalAnalyzer;
+         case 5:
+              if (i == '"') {{ 
+                  i=getchar();
+                  addToString(token,i);
+                  //stateOfAutomat=15;
+                }
+                  /*  if (i== '\\'){
+                            addToString(token,i);
+                            i = fgetc(f);
+                            stateOfAutomat=15;}
+                  }*/
+
+                       //if (i >= 001 || i <= 255)
+                      //return ErrorInLexicalAnalyzer;
+                  if (i == '\"')
+                     addToString(token, '\"');
+                  else if (i == 'n')
+                      addToString(token, '\n');
+                  else if (i == 't')
+                      addToString(token, '\t');
+                  else if (i == '\\')
+                      addToString(token, '\\');
+                  
+                 /* else if (isdigit(i)) {
+                      {
+                          aux = i;
+                          addToString(token, aux);
+                      }
+                      //if (isdigit(i=getchar())){
+                      if (isdigit(i = fgetc(f))) {
+                          aux = aux * 10 + i;
+                          addToString(token, aux);
+                      }
+                      // if (isdigit(i=getchar()))
+                      if (isdigit(i = fgetc(f))) {
+                          aux = aux * 10 + i;
+                          addToString(token, aux);
+                      } else
+                          return ErrorInLexicalAnalyzer;
                   } else
-                            return ErrorInLexicalAnalyzer;
-                        // else
-                          //  return ErrorInLexicalAnalyzer;
-               }
+                      return ErrorInLexicalAnalyzer; */
+                   
+                  else if (isprint(i=getchar()))
+                      {
+                          addToString(token,i);
+                          i=getchar();
+                          stateOfAutomat=5;
+                          return valueOfString;
+                  }
+                    
+                  else{
+                    ungetc(i,stdin);
+                    return ErrorInLexicalAnalyzer;
+                  }   
 
-           else
-                return ErrorInLexicalAnalyzer;
-               }
-        break;
-
-        case 6:
+                    } 
+                  
+                  
+                  else if (i == '"') {
+                        stateOfAutomat=0;
+                        return valueOfString;
+                                   }
+                 
+                else if(i==EOF)
+                           return ErrorInLexicalAnalyzer; 
+                  
+                   else {
+                      addToString(token,i); 
+                      stateOfAutomat=5;  
+                      //return valueOfString; 
+                     // return ErrorInLexicalAnalyzer;
+   
+                        }
+             break;
+       
+         
+         case 6:
            if (isdigit(i)){
               addToString(token,i);
               stateOfAutomat=6;
