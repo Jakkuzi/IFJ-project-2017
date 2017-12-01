@@ -1,4 +1,6 @@
 #include "semantic_check.h"
+#include "parser.h"
+#include "strings.h"
 
 static BTItemPtr *actualFunction;
 static BTItemPtr *actualFunction2;
@@ -12,6 +14,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
      * symBTree - strom plny ID funkci
      *
      * */
+    int pom = 0, pom2 = 0;
     int result, i, pomint, pomint2;
     double pomd, pomd2, pomd3, pomd4;
     int id = C->last->lineData->tokenID;
@@ -20,7 +23,8 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
     char *name3 = NULL;
     varDataType idReturnType;
     tLinePtr tmp = C->last->lineData; // iterator to get exact data
-    tLinePtr tmp2 = C->last->lineData->next->next->next->next->next->next->next;
+    tLinePtr tmp2 = C->last->lineData;//->next->next->next->next->next->next->next;
+    static int scope_only = 0;
 
     // create function in symtable
     if(id == Declare || id == Function){
@@ -199,7 +203,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
 
     }
     else if(id == Scope){
-        //TODO: zkontrolovat definice
+
     }
     else{ // insert variables from function to symBTree
         switch(id){
@@ -310,11 +314,11 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                                                     if(idReturnType == var_string)
                                                         return 4;
                                                     else if(idReturnType == var_integer){
-                                                        BTInsertVarInt(symBTree, name, actualFunction->varData->data);
+                                                        BTInsertVarInt(symBTree, name, *(int *)actualFunction->varData->data);
                                                         break;
                                                     }
                                                     else{ //double
-                                                        BTInsertVarDouble(symBTree, name, actualFunction->varData->data);
+                                                        BTInsertVarDouble(symBTree, name, *(double *)actualFunction->varData->data);
                                                         break;
                                                     }
 
@@ -322,20 +326,20 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                                                     if(idReturnType == var_string)
                                                         return 4;
                                                     else if(idReturnType == var_integer){
-                                                        BTInsertVarDouble(symBTree, name, actualFunction->varData->data);
+                                                        BTInsertVarDouble(symBTree, name, *(double *)actualFunction->varData->data);
                                                         actualFunction = BTSearch(symBTree, name);
                                                         actualFunction->varData->type = var_double;
                                                         break;
                                                     }
                                                     else{ //double
-                                                        BTInsertVarDouble(symBTree, name, actualFunction->varData->data);
+                                                        BTInsertVarDouble(symBTree, name, *(double *)actualFunction->varData->data);
                                                         break;
                                                     }
                                                 case var_string:
                                                     if(idReturnType == var_integer || idReturnType == var_double)
                                                         return 4;
                                                     else{
-                                                        BTInsertVarString(symBTree, name, actualFunction->varData->data);
+                                                        BTInsertVarString(symBTree, name, (char *)actualFunction->varData->data);
                                                         break;
                                                     }
                                                 default:
@@ -351,7 +355,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                                                         break;
                                                     }*/
                                                     else{ //double, int
-                                                        int pom = 0;
+                                                        pom = 0;
                                                         tmp = tmp->next->next;
                                                         if(tmp->tokenID == EOL) //bez parametru
                                                             break;
@@ -398,7 +402,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                                                     else{ //double, int
                                                         if(idReturnType == var_integer)
                                                             actualFunction->varData->type = var_double;
-                                                        int pom = 0;
+                                                        pom = 0;
                                                         tmp = tmp->next->next;
                                                         if(tmp->tokenID == EOL) //bez parametru
                                                             break;
@@ -439,7 +443,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                                                     if(idReturnType == var_integer || idReturnType == var_double)
                                                         return 4;
                                                     else{ //string
-                                                        int pom = 0;
+                                                        pom = 0;
                                                         tmp = tmp->next->next;
                                                         if(tmp->tokenID == EOL) //bez parametru
                                                             break;
@@ -593,10 +597,10 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                                         if (idReturnType == var_string)
                                             return 4;
                                         else if (idReturnType == var_integer) {
-                                            BTInsertVarInt(symBTree, name, actualFunction->varData->data);
+                                            BTInsertVarInt(symBTree, name, *(int *)actualFunction->varData->data);
                                             break;
                                         } else { //double
-                                            BTInsertVarDouble(symBTree, name, actualFunction->varData->data);
+                                            BTInsertVarDouble(symBTree, name, *(double *)actualFunction->varData->data);
                                             break;
                                         }
 
@@ -604,12 +608,12 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                                         if (idReturnType == var_string)
                                             return 4;
                                         else if (idReturnType == var_integer) {
-                                            BTInsertVarDouble(symBTree, name, actualFunction->varData->data);
+                                            BTInsertVarDouble(symBTree, name, *(double *)actualFunction->varData->data);
                                             actualFunction = BTSearch(symBTree, name);
                                             actualFunction->varData->type = var_double;
                                             break;
                                         } else { //double
-                                            BTInsertVarDouble(symBTree, name, actualFunction->varData->data);
+                                            BTInsertVarDouble(symBTree, name, *(double *)actualFunction->varData->data);
                                             break;
                                         }
                                     case var_string:
@@ -632,7 +636,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                                                 break;
                                             }*/
                                         else { //double, int
-                                            int pom = 0;
+                                            pom = 0;
                                             tmp = tmp->next->next;
                                             tmp2 = C->last->lineData->next->next->next->next;
                                             if (tmp->tokenID == EOL) //bez parametru
@@ -680,7 +684,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                                         else { //double, int
                                             if (idReturnType == var_integer)
                                                 actualFunction->varData->type = var_double;
-                                            int pom = 0;
+                                            pom = 0;
                                             tmp = tmp->next->next;
                                             tmp2 = C->last->lineData->next->next->next->next;
                                             if (tmp->tokenID == EOL) //bez parametru
@@ -722,7 +726,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                                         if (idReturnType == var_integer || idReturnType == var_double)
                                             return 4;
                                         else { //string
-                                            int pom = 0;
+                                            pom = 0;
                                             tmp = tmp->next->next;
                                             tmp2 = C->last->lineData->next->next->next->next;
                                             if (tmp->tokenID == EOL) //bez parametru
@@ -771,7 +775,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                         return 2;
                 }
             case If:
-                int pom = 0;
+                pom = 0;
                 while(tmp->tokenID != EOL){
                     if(tmp->tokenID == ID){
                         name = tmp->token->myString;
@@ -873,7 +877,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
                     }
                 }
             case Do:
-                int pom2 = 0;
+                pom2 = 0;
                 while(tmp->tokenID != EOL){
                     if(tmp->tokenID == ID){
                         name = tmp->token->myString;
@@ -1005,7 +1009,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree){
     }
 
 
-    /* end of SEMANTIC CHECK */
+    /* end of SEMANTIC CHECK *
     return 0;
 }*/
 
@@ -1127,3 +1131,4 @@ void multiFree(char *s1, char *s2, char *s3, char *s4){
     if(s4 != NULL)
         free(s4);
 }
+
