@@ -4,7 +4,7 @@ int getNextToken(TString* token){
 
   int stateOfAutomat=0;
   char i;
-  int aux;
+  //int aux;
   stringClean(token);
 
   while (1) {
