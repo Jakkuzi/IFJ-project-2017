@@ -604,27 +604,31 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                                             }//konec switch
                                         }//konec else if
                                         else{//za ID2 je znamenko
-                                            if(tmp->tokenID == Equal || tmp->tokenID == LowerGreater ||
-                                                    tmp->tokenID == Lower || tmp->tokenID == Greater ||
-                                                    tmp->tokenID == LowerOrEqual || tmp->tokenID == GreaterOrEqual){
+                                            if(tmp->tokenID == LowerGreater || tmp->tokenID == Lower ||
+                                                    tmp->tokenID == Greater || tmp->tokenID == LowerOrEqual ||
+                                                    tmp->tokenID == GreaterOrEqual){
                                                 pome++;
                                                 if(pome>1)
                                                     return 2;
                                                 tmp = tmp->next;
                                             }
+                                            else if(tmp->tokenID == Equal)
+                                                return 2;
                                             else
                                                 tmp = tmp->next;
                                         }//konec else
                                         break;
                                     default://znamenko
-                                        if(tmp->tokenID == Equal || tmp->tokenID == LowerGreater ||
-                                           tmp->tokenID == Lower || tmp->tokenID == Greater ||
-                                           tmp->tokenID == LowerOrEqual || tmp->tokenID == GreaterOrEqual){
+                                        if(tmp->tokenID == LowerGreater || tmp->tokenID == Lower ||
+                                           tmp->tokenID == Greater || tmp->tokenID == LowerOrEqual ||
+                                           tmp->tokenID == GreaterOrEqual){
                                             pome++;
                                             if(pome>1)
                                                 return 2;
                                             tmp = tmp->next;
                                         }
+                                        else if(tmp->tokenID == Equal)
+                                            return 2;
                                         else
                                             tmp = tmp->next;
                                         break;
@@ -913,27 +917,31 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                                 }//konec switch
                             }//konec else if
                             else{//za ID2 je znamenko
-                                if(tmp->tokenID == Equal || tmp->tokenID == LowerGreater ||
-                                   tmp->tokenID == Lower || tmp->tokenID == Greater ||
-                                   tmp->tokenID == LowerOrEqual || tmp->tokenID == GreaterOrEqual){
+                                if(tmp->tokenID == LowerGreater || tmp->tokenID == Lower ||
+                                   tmp->tokenID == Greater || tmp->tokenID == LowerOrEqual ||
+                                   tmp->tokenID == GreaterOrEqual){
                                     pome++;
                                     if(pome>1)
                                         return 2;
                                     tmp = tmp->next;
                                 }
+                                else if(tmp->tokenID == Equal)
+                                    return 2;
                                 else
                                     tmp = tmp->next;
                             }//konec else
                             break;
                         default://znamenko
-                            if(tmp->tokenID == Equal || tmp->tokenID == LowerGreater ||
-                               tmp->tokenID == Lower || tmp->tokenID == Greater ||
-                               tmp->tokenID == LowerOrEqual || tmp->tokenID == GreaterOrEqual){
+                            if(tmp->tokenID == LowerGreater || tmp->tokenID == Lower ||
+                               tmp->tokenID == Greater || tmp->tokenID == LowerOrEqual ||
+                               tmp->tokenID == GreaterOrEqual){
                                 pome++;
                                 if(pome>1)
                                     return 2;
                                 tmp = tmp->next;
                             }
+                            else if(tmp->tokenID == Equal)
+                                return 2;
                             else
                                 tmp = tmp->next;
                             break;
