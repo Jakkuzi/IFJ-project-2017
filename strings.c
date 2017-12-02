@@ -9,50 +9,51 @@
 #define  StringLength  8
 
 
-int stringInit (TString *s){
+int stringInit(TString *s) {
 
- if ((s->myString = (char*) malloc(StringLength)) == NULL)
-    return StringError;
+    if ((s->myString = (char *) malloc(StringLength)) == NULL)
+        return StringError;
 
- s->myString[0] = '\0';
- s->length = 0;
- s->sizeOfAllocation = StringLength;
- return StringOk;
-
-}
-
-void stringFree (TString *s){
-
- free(s->myString);
+    s->myString[0] = '\0';
+    s->length = 0;
+    s->sizeOfAllocation = StringLength;
+    return StringOk;
 
 }
 
-void stringClean (TString *s){
+void stringFree(TString *s) {
 
- s->myString[0]= '\0';
- s->length=0;
+    free(s->myString);
+    s->myString = NULL;
+
+}
+
+void stringClean(TString *s) {
+
+    s->myString[0] = '\0';
+    s->length = 0;
 
 }
 
 
-int addToString (TString *s, char c ){
+int addToString(TString *s, char c) {
 
- if (s->length + 1 >= s->sizeOfAllocation){
+    if (s->length + 1 >= s->sizeOfAllocation) {
 
-   if ((s->myString = (char*) realloc(s->myString, s->length + StringLength * sizeof(char))) == NULL)
-     return StringError;
-   s->sizeOfAllocation = s->length + StringLength ;
-   }
- s->myString[s->length] = c;
- s->length++;
- s->myString[s->length] = '\0';
- return StringOk;
+        if ((s->myString = (char *) realloc(s->myString, s->length + StringLength * sizeof(char))) == NULL)
+            return StringError;
+        s->sizeOfAllocation = s->length + StringLength;
+    }
+    s->myString[s->length] = c;
+    s->length++;
+    s->myString[s->length] = '\0';
+    return StringOk;
 
 
 }
 
-int compareStringAndString (TString *s1, char *s2){
+int compareStringAndString(TString *s1, char *s2) {
 
- return strcmp(s1->myString, s2);
+    return strcmp(s1->myString, s2);
 
 }

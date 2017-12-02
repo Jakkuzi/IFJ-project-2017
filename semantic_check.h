@@ -10,5 +10,7 @@ int semantic_check(tCodeList *, BTNodePtr);
 
 int addBuiltInFunctions(BTNodePtr);
 void multiFree(char *, char *, char *, char *);
+int check_func_for_definition(BTNodePtr);
+
 
 #endif

@@ -1,0 +1,4 @@
+scope
+	dim i as integer
+	print i; i
+end scope

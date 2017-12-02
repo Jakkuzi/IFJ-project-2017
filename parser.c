@@ -13,8 +13,6 @@ int main(){
     }
     tCodeDispose(&sCode);
 
-//    printf("Obe analyzy OK\n");//TODO: smazat
-
     return 0;
 }
 

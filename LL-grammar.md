@@ -80,6 +80,7 @@
 71. __Přiřazení__			→ 	eol
 72. __Přiřazení2__			→	id __Id_as__
 73. __Přiřazení2__			→	299
+90. __Přiřazení2__			→	valueOfX
 74. __Id_as__				→	( __Parametr_fce__ eol
 75. __Id_as__				→	298 eol
 76. __Id_as__               →   eol

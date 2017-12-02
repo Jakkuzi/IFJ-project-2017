@@ -1,0 +1,7 @@
+scope
+
+dim x as double
+
+x=4.3E5+
+
+end scope

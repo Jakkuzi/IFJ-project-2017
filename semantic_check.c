@@ -413,6 +413,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                                                         return 4;
                                                     else if (idReturnType == var_integer) {
                                                         actualFunction->varData->type = var_double;
+
                                                     }
                                                     break;
                                                 case var_string:
@@ -492,11 +493,11 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                                                         tmp = tmp->next->next;
                                                         if (tmp->tokenID == RightParenthes) { //1 parametr
                                                             name3 = tmp2->token->myString;
-                                                            actualFunction2 = BTSearch(symBTree, name3);
-                                                            if (actualFunction2 == NULL)
+                                                            actualFunction = BTSearch(symBTree, name3);
+                                                            if (actualFunction == NULL)
                                                                 return 3;
-                                                            else if (actualFunction2->declared != 1 ||
-                                                                     actualFunction2->defined != 1)
+                                                            else if (actualFunction->declared != 1 ||
+                                                                     actualFunction->defined != 1)
                                                                 return 3;
                                                             else if (
                                                                     actualFunction->parameterTypes[pom] ==
@@ -611,6 +612,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                                                 if(pome>1)
                                                     return 2;
                                                 tmp = tmp->next;
+
                                             }
                                             else if(tmp->tokenID == Equal)
                                                 return 2;
@@ -1029,8 +1031,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                         }
                         if (pom != valueOfString) {
                             tmp = tmp->next;
-                        }
-                        else
+                        } else
                             return 4;
                     }
                     else if (tmp->tokenID == valueOfString) {
@@ -1040,8 +1041,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                         }
                         if (pom == valueOfString) {
                             tmp = tmp->next;
-                        }
-                        else
+                        } else
                             return 4;
                     }
                     else {
@@ -1139,8 +1139,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                         }
                         if (pom != valueOfString) {
                             tmp = tmp->next;
-                        }
-                        else
+                        } else
                             return 4;
                     }
                     else if (tmp->tokenID == valueOfString) {
@@ -1150,8 +1149,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                         }
                         if (pom == valueOfString) {
                             tmp = tmp->next;
-                        }
-                        else
+                        } else
                             return 4;
                     }
                     else {
