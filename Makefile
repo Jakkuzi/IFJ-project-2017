@@ -1,7 +1,7 @@
 CC=gcc
-CFLAGS=-Wall -Werror -Wextra -pedantic -std=c11
+CFLAGS= -std=c99 #-Wall -Wextra -pedantic -Werror
 PRJ=IFJ-2017
-SOURCES=strings.c scanner.c syntax_check.c parser.c prec.c symtable.c semantic_check.c
+SOURCES=strings.c scanner.c syntax_check.c parser.c prec.c symtable.c semantic_check.c 
 NAME=xzichj00
 
 all:

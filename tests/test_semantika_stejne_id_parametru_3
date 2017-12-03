@@ -1,0 +1,5 @@
+declare function foo (id as integer, id as integer) as string
+
+
+scope 
+end scope

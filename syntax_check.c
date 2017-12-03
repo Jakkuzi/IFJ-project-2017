@@ -19,7 +19,7 @@ int ll[21][8][8] = {
     {{24, 	11,		21,		220, 	213, 	205,	0,		0},
     {31, 	219,	41,		122, 	206, 	31 ,	122,	205},
     {25, 	42,		218,	122, 	208, 	122,	205,	0},
-    {11, 	86,		214,	122, 	205,	0,		0,		0},
+    {11, 	86,		214,	205,	0,      0,		0,		0},
     {32, 	11,		122,	205,	0,		0,		0,		0},
     {36, 	221,	205,	0,		0,		0,		0,		0},
     {37, 	214,	205,	0,	    0,		0,		0,		0},
@@ -28,7 +28,7 @@ int ll[21][8][8] = {
     {{24,   11 ,    21 ,    220,    213,    206,    0,      0},
     {31,    219,    41 ,    122,    206,    31 ,    122,    206},
     {25,    42,     218,    122,    208,    122,    206,    0},
-    {11,    86,     214,    122,    206,    0,      0,      0},
+    {11,    86,     214,    206,    0,      0,      0,      0},
     {32,    11,     122,    206,    0,      0,      0,      0},
     {36,    221,    206,    0,      0,      0,      0,      0},
     {37,    214,    206,    0,      0,      0,      0,      0},
@@ -37,7 +37,7 @@ int ll[21][8][8] = {
     {{24,   11 ,    21 ,    220,    213,    207,    0,      0},
     {31,    219,    41 ,    122,    206,    31 ,    122,    207},
     {25,    42 ,    218,    122,    208,    122,    207,    0},
-    {11,    86 ,    214,    122,    207,    0,      0,      0},
+    {11,    86 ,    214,    207,    0,      0,      0,      0},
     {32,    11 ,    122,    207,    0,      0,      0,      0},
     {36,    221,    207,    0,      0,      0,      0,      0},
     {37,    214,    207,    0,      0,      0,      0,      0},
@@ -46,7 +46,7 @@ int ll[21][8][8] = {
     {{24,   11 ,    21 ,    220,    213,    208,    0,      0},
     {31,    219,    41 ,    122,    206,    31 ,    122,    208},
     {25,    42 ,    218,    122,    208,    122,    208,    0},
-    {11,    86 ,    214,    122,    208,    0,      0,      0},
+    {11,    86 ,    214,    208,    0,      0,      0,      0},
     {32,    11 ,    122,    208,    0,      0,      0,      0},
     {36,    221,    208,    0,      0,      0,      0,      0},
     {37,    214,    208,    0,      0,      0,      0,      0},
@@ -55,7 +55,7 @@ int ll[21][8][8] = {
     {{24,   11 ,    21 ,    220,    213,    209,    0,      0},
     {31,    219,    41 ,    122,    211,    31 ,    122,    209},
     {25,    42 ,    218,    122,    210,    122,    209,    0},
-    {11,    86 ,    214,    122,    209,    0,      0,      0},
+    {11,    86 ,    214,    209,    0,      0,      0,      0},
     {32,    11 ,    122,    209,    0,      0,      0,      0},
     {36,    221,    209,    0,      0,      0,      0,      0},
     {28,    0,      0,      0,      0,      0,      0,      0},},
@@ -63,7 +63,7 @@ int ll[21][8][8] = {
     {{24,   11 ,    21 ,    220,    213,    210,    0,      0},
     {31,    219,    41 ,    122,    211,    31 ,    122,    210},
     {25,    42 ,    218,    122,    210,    122,    210,    0},
-    {11,    86 ,    214,    122,    210,    0,      0,      0},
+    {11,    86 ,    214,    210,    0,      0,      0,      0},
     {32,    11 ,    122,    210,    0,      0,      0,      0},
     {36,    221,    210,    0,      0,      0,      0,      0},
     {35,    0,      0,      0,      0,      0,      0,      0},},
@@ -71,7 +71,7 @@ int ll[21][8][8] = {
     {{24,   11 ,    21 ,    220,    213,    211,    0,      0},
     {31,    219,    41 ,    122,    211,    31 ,    122,    211},
     {25,    42 ,    218,    122,    210,    122,    211,    0},
-    {11,    86 ,    214,    122,    211,    0,      0,      0},
+    {11,    86 ,    214,    211,    0,      0,      0,      0},
     {32,    11 ,    122,    211,    0,      0,      0,      0},
     {36,    221,    211,    0,      0,      0,      0,      0},
     {27,    122,    212,    0,      0,      0,      0,      0},},
@@ -79,27 +79,31 @@ int ll[21][8][8] = {
     {{24,   11 ,    21 ,    220,    213,    212,    0,      0},
     {31,    219,    41 ,    122,    211,    31 ,    122,    212},
     {25,    42 ,    218,    122,    210,    122,    212,    0},
-    {11,    86 ,    214,    122,    212,    0,      0,      0},
+    {11,    86 ,    214,    212,    0,      0,      0,      0},
     {32,    11 ,    122,    212,    0,      0,      0,      0},
     {36,    221,    212,    0,      0,      0,      0,      0},
     {28,    0,      0,      0,      0,      0,      0,      0},},
     //Assignment
-    {{86,   214,    122,    0,      0,      0,      0,      0},
+    {{86,   214,    0,      0,      0,      0,      0,      0},
     {122,   0,      0,      0,      0,      0,      0,      0},},
     //Assignment2
     {{11,   215,    0,      0,      0,      0,      0,      0},
+    {12,    215,    0,      0,      0,      0,      0,      0},
+    {13,    215,    0,      0,      0,      0,      0,      0},
+    {14,    215,    0,      0,      0,      0,      0,      0},
+    {15,    215,    0,      0,      0,      0,      0,      0},
     {299,   0,      0,      0,      0,      0,      0,      0},},
     //IdAs
     {{100,  216,    0,      0,      0,      0,      0,      0},
     {122,   0,      0,      0,      0,      0,      0,      0},
     {298,   0,      0,      0,      0,      0,      0,      0},},
     //ParameterFce
-    {{11,   217,    0,      0,      0,      0,      0,      0},
-    {12,    217,    0,      0,      0,      0,      0,      0},
-    {13,    217,    0,      0,      0,      0,      0,      0},
-    {14,    217,    0,      0,      0,      0,      0,      0},
-    {15,    217,    0,      0,      0,      0,      0,      0},
-    {101,	0,		0,		0,		0,		0,		0,		0},},
+    {{11,   217,    122,    0,      0,      0,      0,      0},
+    {12,    217,    122,    0,      0,      0,      0,      0},
+    {13,    217,    122,    0,      0,      0,      0,      0},
+    {14,    217,    122,    0,      0,      0,      0,      0},
+    {15,    217,    122,    0,      0,      0,      0,      0},
+    {101,	122,    0,		0,		0,		0,		0,		0},},
     //ParameterFceNext
     {{105,  216,    0,      0,      0,      0,      0,      0},
     {101,   0,      0,      0,      0,      0,      0,      0},},
@@ -208,7 +212,7 @@ int syntax_analysis(tCodeList *C){
                 return t;
             }
         }
-
+//TODO:return foo() nejede
         if(first_token){ // code must start with exact commands from set of 3 words
             while(t == EndOfLine){ // ignore empty lines on start
                 stringFree(token);
@@ -263,22 +267,22 @@ int syntax_analysis(tCodeList *C){
                         || top == 297){ // 297 is special case for print
                     switch(sTop(s)){
                         case 221:
-                            result = process_expr(0, C, t, token, s);//297
+                            result = process_expr(0, C, t, token, s, symBTree);//297
                             break;
                         case 219:
-                            result = process_expr(0,  C, t, token, s);//296
+                            result = process_expr(0,  C, t, token, s, symBTree);//296
                             break;
                         case 218:
-                            result = process_expr(1, C, t, token, s);//298
+                            result = process_expr(1, C, t, token, s, symBTree);//298
                             break;
                         case 215:
-                            result = process_expr(1, C, t, token, s);//298
+                            result = process_expr(1, C, t, token, s, symBTree);//298
                             break;
                         case 214:
-                            result = process_expr(0, C, t, token, s);//299
+                            result = process_expr(0, C, t, token, s, symBTree);//299
                             break;
                         case 297:
-                            result = process_expr(0, C, t, token, s);//special case for print
+                            result = process_expr(0, C, t, token, s, symBTree);//special case for print
                             break;
                         default:
                             freeThisCycle(token, s);
@@ -287,7 +291,7 @@ int syntax_analysis(tCodeList *C){
                     }
                     skip_insert = 1;
                     sPop(s);
-                    if(result == 2 || result == 99){
+                    if(result == 2 || result == 99 || result == 3 || result == 4 || result == 6){
                         free(s);
                         BTDispose(symBTree);
                         return result;
@@ -316,7 +320,7 @@ int syntax_analysis(tCodeList *C){
             skip_insert = 0;
         }
         else{
-            if(t == EndOfLine){
+             if(t == EndOfLine){
                 stringFree(token);
                 free(token);
                 result = semantic_check(C, symBTree);
@@ -375,7 +379,7 @@ int syntax_analysis(tCodeList *C){
 /* END of main function */
 
 /* function to process expression */
-int process_expr(int id_processed, tCodeList *C, int t, TString *token, tStack *s){
+int process_expr(int id_processed, tCodeList *C, int t, TString *token, tStack *s, BTNodePtr symBTree){
     int print_to_process = 0;
     if(sTop(s) == 297) // Special case for print
         print_to_process = 1;
@@ -390,8 +394,9 @@ int process_expr(int id_processed, tCodeList *C, int t, TString *token, tStack *
         tLinePtr last = C->last->lineData;
         while(last->next != NULL)
             last = last->next;
+        if(last->tokenID == While);
 
-        if((id = last->tokenID) >= ID && id <= valueOfString){ // transform number or id to 'i'
+        else if((id = last->tokenID) >= ID && id <= valueOfString){ // transform number or id to 'i'
             strcat(prec_str, "i");
             len++;
         }
@@ -456,6 +461,12 @@ int process_expr(int id_processed, tCodeList *C, int t, TString *token, tStack *
             }
         }
         else{
+            result = semantic_check(C, symBTree);
+            if(result != 0) {
+                free(prec_str);
+                free(token);
+                return result;
+            }
             result = tCodeCreateNewLine(C);
             if(result != 0){
                 free(token);
@@ -521,7 +532,7 @@ void stackInit(tStack *s){
 }
 
 int stackEmpty(tStack *s){
-    return (s->top == -1) ? 1 : 0;
+    return (s->top < 0) ? 1 : 0;
 }
 
 void sPush(tStack *s, int num){
@@ -529,6 +540,7 @@ void sPush(tStack *s, int num){
 }
 
 void sPop(tStack *s){
+    s->value[s->top] = 0;
     if(!stackEmpty(s))
         s->top--;
 }
