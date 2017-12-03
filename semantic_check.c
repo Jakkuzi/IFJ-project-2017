@@ -413,7 +413,6 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                                                         return 4;
                                                     else if (idReturnType == var_integer) {
                                                         actualFunction->varData->type = var_double;
-
                                                     }
                                                     break;
                                                 case var_string:
@@ -493,11 +492,11 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                                                         tmp = tmp->next->next;
                                                         if (tmp->tokenID == RightParenthes) { //1 parametr
                                                             name3 = tmp2->token->myString;
-                                                            actualFunction = BTSearch(symBTree, name3);
-                                                            if (actualFunction == NULL)
+                                                            actualFunction2 = BTSearch(symBTree, name3);
+                                                            if (actualFunction2 == NULL)
                                                                 return 3;
-                                                            else if (actualFunction->declared != 1 ||
-                                                                     actualFunction->defined != 1)
+                                                            else if (actualFunction2->declared != 1 ||
+                                                                     actualFunction2->defined != 1)
                                                                 return 3;
                                                             else if (
                                                                     actualFunction->parameterTypes[pom] ==
@@ -605,31 +604,18 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                                             }//konec switch
                                         }//konec else if
                                         else{//za ID2 je znamenko
-                                            if(tmp->tokenID == LowerGreater || tmp->tokenID == Lower ||
-                                                    tmp->tokenID == Greater || tmp->tokenID == LowerOrEqual ||
-                                                    tmp->tokenID == GreaterOrEqual){
-                                                pome++;
-                                                if(pome>1)
-                                                    return 2;
-                                                tmp = tmp->next;
-
-                                            }
-                                            else if(tmp->tokenID == Equal)
+                                            if(tmp->tokenID == Equal || tmp->tokenID == LowerGreater ||
+                                               tmp->tokenID == Lower || tmp->tokenID == Greater ||
+                                               tmp->tokenID == LowerOrEqual || tmp->tokenID == GreaterOrEqual)
                                                 return 2;
                                             else
                                                 tmp = tmp->next;
                                         }//konec else
                                         break;
                                     default://znamenko
-                                        if(tmp->tokenID == LowerGreater || tmp->tokenID == Lower ||
-                                           tmp->tokenID == Greater || tmp->tokenID == LowerOrEqual ||
-                                           tmp->tokenID == GreaterOrEqual){
-                                            pome++;
-                                            if(pome>1)
-                                                return 2;
-                                            tmp = tmp->next;
-                                        }
-                                        else if(tmp->tokenID == Equal)
+                                        if(tmp->tokenID == Equal || tmp->tokenID == LowerGreater ||
+                                           tmp->tokenID == Lower || tmp->tokenID == Greater ||
+                                           tmp->tokenID == LowerOrEqual || tmp->tokenID == GreaterOrEqual)
                                             return 2;
                                         else
                                             tmp = tmp->next;
@@ -673,9 +659,10 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                 actualFunction = BTSearch(symBTree, name);
                 if (actualFunction == NULL)
                     return 3;
-                else if (actualFunction->defined != 1 || actualFunction->declared != 1)
+                else if (actualFunction->declared != 1)
                     return 3;
-                else if (actualFunction->varData == NULL)
+                actualFunction->defined++;
+                if(actualFunction->defined != 1)
                     return 3;
                 idReturnType = actualFunction->varData->type;
                 tmp = tmp->next->next;
@@ -919,30 +906,18 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                                 }//konec switch
                             }//konec else if
                             else{//za ID2 je znamenko
-                                if(tmp->tokenID == LowerGreater || tmp->tokenID == Lower ||
-                                   tmp->tokenID == Greater || tmp->tokenID == LowerOrEqual ||
-                                   tmp->tokenID == GreaterOrEqual){
-                                    pome++;
-                                    if(pome>1)
-                                        return 2;
-                                    tmp = tmp->next;
-                                }
-                                else if(tmp->tokenID == Equal)
+                                if(tmp->tokenID == Equal || tmp->tokenID == LowerGreater ||
+                                   tmp->tokenID == Lower || tmp->tokenID == Greater ||
+                                   tmp->tokenID == LowerOrEqual || tmp->tokenID == GreaterOrEqual)
                                     return 2;
                                 else
                                     tmp = tmp->next;
                             }//konec else
                             break;
                         default://znamenko
-                            if(tmp->tokenID == LowerGreater || tmp->tokenID == Lower ||
-                               tmp->tokenID == Greater || tmp->tokenID == LowerOrEqual ||
-                               tmp->tokenID == GreaterOrEqual){
-                                pome++;
-                                if(pome>1)
-                                    return 2;
-                                tmp = tmp->next;
-                            }
-                            else if(tmp->tokenID == Equal)
+                            if(tmp->tokenID == Equal || tmp->tokenID == LowerGreater ||
+                                    tmp->tokenID == Lower || tmp->tokenID == Greater ||
+                                    tmp->tokenID == LowerOrEqual || tmp->tokenID == GreaterOrEqual)
                                 return 2;
                             else
                                 tmp = tmp->next;
@@ -1031,7 +1006,8 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                         }
                         if (pom != valueOfString) {
                             tmp = tmp->next;
-                        } else
+                        }
+                        else
                             return 4;
                     }
                     else if (tmp->tokenID == valueOfString) {
@@ -1041,7 +1017,8 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                         }
                         if (pom == valueOfString) {
                             tmp = tmp->next;
-                        } else
+                        }
+                        else
                             return 4;
                     }
                     else {
@@ -1139,7 +1116,8 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                         }
                         if (pom != valueOfString) {
                             tmp = tmp->next;
-                        } else
+                        }
+                        else
                             return 4;
                     }
                     else if (tmp->tokenID == valueOfString) {
@@ -1149,7 +1127,8 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                         }
                         if (pom == valueOfString) {
                             tmp = tmp->next;
-                        } else
+                        }
+                        else
                             return 4;
                     }
                     else {
