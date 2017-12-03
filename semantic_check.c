@@ -644,16 +644,24 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                 }
                 break;
             case Input:
-                tmp = tmp->next;
+                tmp = tmp->next; // input id<--
                 name = tmp->token->myString;
-                actualFunction = BTSearch(symBTree, name);
-                if (actualFunction == NULL)
-                    return 3;
-                else if (actualFunction->defined != 1 || actualFunction->declared != 1)
-                    return 3;
-                else if (actualFunction->varData == NULL)
-                    return 3;
+                if((var = BTSearch(symBTree, name)) == NULL) // hleda v celem stromu identifikator
+                    return 3; //promenna neni deklarovana
+                if(var->itemType != item_type_variable) // pokud je identifikator funkce, je to spatne
+                    return 6;
                 break;
+
+//                tmp = tmp->next;
+//                name = tmp->token->myString;
+//                actualFunction = BTSearch(symBTree, name);
+//                if (actualFunction == NULL)
+//                    return 3;
+//                else if (actualFunction->defined != 1 || actualFunction->declared != 1)
+//                    return 3;
+//                else if (actualFunction->varData == NULL)
+//                    return 3;
+//                break;
             case ID:
                 name = C->last->lineData->token->myString;
                 actualFunction = BTSearch(symBTree, name);
