@@ -460,7 +460,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                 if(var != BTSearch(actualFunction->ParamRootPtr, name))
                     return 6;
                 break;
-                
+
             case ID:
                 name = C->last->lineData->token->myString;
                 actualFunction = BTSearch(symBTree, name);
@@ -733,224 +733,130 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                 }//konec while
                 break;
             case If:
-                pom = 0;
-                tmp = tmp->next;
-                while (tmp != NULL) {
-                    if (tmp->tokenID == ID) {
-                        name = tmp->token->myString;
-                        actualFunction = BTSearch(symBTree, name);
-                        if (actualFunction == NULL)
+                pom = 0; // 0 = int/double, 1 = string
+                tmp = tmp->next; // if x<--
+
+                switch (tmp->tokenID){
+                    case valueOfInteger:
+                    case valueOfDouble:
+                    case valueOfDoubleWithExp:
+                        pom = 0;
+                        break;
+                    case valueOfString:
+                        pom = 1;
+                        break;
+                    case ID:
+                        var = BTSearch(actualFunction->ParamRootPtr, tmp->token->myString);
+                        if(var == NULL)
                             return 3;
-                        else if (actualFunction->declared != 1 || actualFunction->defined != 1)
-                            return 3;
-                        else {
-                            if (pom == 0) {
-                                switch (actualFunction->varData->type) {
-                                    case var_integer:
-                                        pom = valueOfInteger;
-                                        tmp = tmp->next;
-                                        break;
-                                    case var_double:
-                                        pom = valueOfDouble;
-                                        tmp = tmp->next;
-                                        break;
-                                    case var_string:
-                                        pom = valueOfString;
-                                        tmp = tmp->next;
-                                        break;
-                                    default:
-                                        return 4;
-                                }
-                            }
-                            else if (pom == valueOfInteger) {
-                                switch (actualFunction->varData->type) {
-                                    case var_integer:
-                                        tmp = tmp->next;
-                                        break;
-                                    case var_double:
-                                        pom = valueOfDouble;
-                                        tmp = tmp->next;
-                                        break;
-                                    case var_string:
-                                        return 4;
-                                    default:
-                                        return 4;
-                                }
-                            }
-                            else if (pom == valueOfDouble) {
-                                switch (actualFunction->varData->type) {
-                                    case var_integer:
-                                        tmp = tmp->next;
-                                        break;
-                                    case var_double:
-                                        tmp = tmp->next;
-                                        break;
-                                    case var_string:
-                                        return 4;
-                                    default:
-                                        return 4;
-                                }
-                            }
-                            else if (pom == valueOfString) {
-                                switch (actualFunction->varData->type) {
-                                    case var_integer:
-                                        return 4;
-                                    case var_double:
-                                        return 4;
-                                    case var_string:
-                                        tmp = tmp->next;
-                                        break;
-                                    default:
-                                        return 4;
-                                }
-                            }
-                        }//konec else
-                    }//konec if (tmp->tokenID == ID)
-                    else if (tmp->tokenID == valueOfInteger || tmp->tokenID == valueOfDouble) {
-                        if (pom == 0) {
-                            pom = tmp->tokenID;
-                            tmp = tmp->next;
-                        }
-                        if (pom != valueOfString) {
-                            tmp = tmp->next;
-                        }
+                        if(var->itemType == item_type_function)
+                            return 6;
+
+                        if(var->varData->type == var_string)
+                            pom = 1;
                         else
-                            return 4;
+                            pom = 0;
+                        break;
+                }
+
+                pom2 = 0; // count of =
+                while(tmp->tokenID != Then){
+                    switch(tmp->tokenID){
+                        case valueOfInteger:
+                        case valueOfDouble:
+                        case valueOfDoubleWithExp:
+                            if(pom == 1)
+                                return 4;
+                            break;
+                        case valueOfString:
+                            if(pom == 0)
+                                return 4;
+                            break;
+                        case ID:
+                            var = BTSearch(actualFunction->ParamRootPtr, tmp->token->myString);
+                            if(var == NULL)
+                                return 3;
+                            if(var->itemType == item_type_function)
+                                return 6;
+
+                            if(var->varData->type == var_string && pom != 1)
+                                return 4;
+                            else if(var->varData->type != var_string && pom == 1)
+                                return 4;
+                            break;
+                        default:
+                            if(tmp->tokenID == Equal){
+                                pom2++;
+                                if(pom2 > 1)
+                                    return 2;
+                            }
                     }
-                    else if (tmp->tokenID == valueOfString) {
-                        if (pom == 0) {
-                            pom = tmp->tokenID;
-                            tmp = tmp->next;
-                        }
-                        if (pom == valueOfString) {
-                            tmp = tmp->next;
-                        }
-                        else
-                            return 4;
-                    }
-                    else {
-                        if(tmp->tokenID == Equal || tmp->tokenID == LowerGreater ||
-                           tmp->tokenID == Lower || tmp->tokenID == Greater ||
-                           tmp->tokenID == LowerOrEqual || tmp->tokenID == GreaterOrEqual){
-                            pome++;
-                            if(pome>1)
-                                return 2;
-                            tmp = tmp->next;
-                        }
-                        else
-                            tmp = tmp->next;
-                    }
-                }//konec while
+
+                    tmp = tmp->next;
+                }
                 break;
             case Do:
-                pom = 0;
-                tmp = tmp->next;
-                while (tmp != NULL) {
-                    if (tmp->tokenID == ID) {
-                        name = tmp->token->myString;
-                        actualFunction = BTSearch(symBTree, name);
-                        if (actualFunction == NULL)
+                pom = 0; // 0 = int/double, 1 = string
+                tmp = tmp->next->next; // do while x<--
+
+                switch (tmp->tokenID){
+                    case valueOfInteger:
+                    case valueOfDouble:
+                    case valueOfDoubleWithExp:
+                        pom = 0;
+                        break;
+                    case valueOfString:
+                        pom = 1;
+                        break;
+                    case ID:
+                        var = BTSearch(actualFunction->ParamRootPtr, tmp->token->myString);
+                        if(var == NULL)
                             return 3;
-                        else if (actualFunction->declared != 1 || actualFunction->defined != 1)
-                            return 3;
-                        else {
-                            if (pom == 0) {
-                                switch (actualFunction->varData->type) {
-                                    case var_integer:
-                                        pom = valueOfInteger;
-                                        tmp = tmp->next;
-                                        break;
-                                    case var_double:
-                                        pom = valueOfDouble;
-                                        tmp = tmp->next;
-                                        break;
-                                    case var_string:
-                                        pom = valueOfString;
-                                        tmp = tmp->next;
-                                        break;
-                                    default:
-                                        return 4;
-                                }
-                            }
-                            else if (pom == valueOfInteger) {
-                                switch (actualFunction->varData->type) {
-                                    case var_integer:
-                                        tmp = tmp->next;
-                                        break;
-                                    case var_double:
-                                        pom = valueOfDouble;
-                                        tmp = tmp->next;
-                                        break;
-                                    case var_string:
-                                        return 4;
-                                    default:
-                                        return 4;
-                                }
-                            }
-                            else if (pom == valueOfDouble) {
-                                switch (actualFunction->varData->type) {
-                                    case var_integer:
-                                        tmp = tmp->next;
-                                        break;
-                                    case var_double:
-                                        tmp = tmp->next;
-                                        break;
-                                    case var_string:
-                                        return 4;
-                                    default:
-                                        return 4;
-                                }
-                            }
-                            else if (pom == valueOfString) {
-                                switch (actualFunction->varData->type) {
-                                    case var_integer:
-                                        return 4;
-                                    case var_double:
-                                        return 4;
-                                    case var_string:
-                                        tmp = tmp->next;
-                                        break;
-                                    default:
-                                        return 4;
-                                }
-                            }
-                        }//konec else
-                    }//konec if (tmp->tokenID == ID)
-                    else if (tmp->tokenID == valueOfInteger || tmp->tokenID == valueOfDouble) {
-                        if (pom == 0) {
-                            pom = tmp->tokenID;
-                            tmp = tmp->next;
-                        }
-                        if (pom != valueOfString) {
-                            tmp = tmp->next;
-                        }
+                        if(var->itemType == item_type_function)
+                            return 6;
+
+                        if(var->varData->type == var_string)
+                            pom = 1;
                         else
-                            return 4;
+                            pom = 0;
+                        break;
+                }
+
+                pom2 = 0; // count of =
+                while(tmp->tokenID != Then){
+                    switch(tmp->tokenID){
+                        case valueOfInteger:
+                        case valueOfDouble:
+                        case valueOfDoubleWithExp:
+                            if(pom == 1)
+                                return 4;
+                            break;
+                        case valueOfString:
+                            if(pom == 0)
+                                return 4;
+                            break;
+                        case ID:
+                            var = BTSearch(actualFunction->ParamRootPtr, tmp->token->myString);
+                            if(var == NULL)
+                                return 3;
+                            if(var->itemType == item_type_function)
+                                return 6;
+
+                            if(var->varData->type == var_string && pom != 1)
+                                return 4;
+                            else if(var->varData->type != var_string && pom == 1)
+                                return 4;
+                            break;
+                        default:
+                            if(tmp->tokenID == Equal){
+                                pom2++;
+                                if(pom2 > 1)
+                                    return 2;
+                            }
                     }
-                    else if (tmp->tokenID == valueOfString) {
-                        if (pom == 0) {
-                            pom = tmp->tokenID;
-                            tmp = tmp->next;
-                        }
-                        if (pom == valueOfString) {
-                            tmp = tmp->next;
-                        }
-                        else
-                            return 4;
-                    }
-                    else {
-                        if(tmp->tokenID == Equal || tmp->tokenID == LowerGreater ||
-                           tmp->tokenID == Lower || tmp->tokenID == Greater ||
-                           tmp->tokenID == LowerOrEqual || tmp->tokenID == GreaterOrEqual){
-                            pome++;
-                            if(pome>1)
-                                return 2;
-                            tmp = tmp->next;
-                        }
-                        else
-                            tmp = tmp->next;
-                    }
-                }//konec while
+
+                    tmp = tmp->next;
+                }
                 break;
             default:
                 return 2;
