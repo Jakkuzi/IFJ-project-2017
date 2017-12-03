@@ -650,6 +650,9 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                     return 3; //promenna neni deklarovana
                 if(var->itemType != item_type_variable) // pokud je identifikator funkce, je to spatne
                     return 6;
+                // tohle je zbytecne, ale mas to jako priklad, ze promenna je v aktualni funkci definovana
+                if(var != BTSearch(actualFunction->ParamRootPtr, name))
+                    return 6;
                 break;
 
 //                tmp = tmp->next;
