@@ -12,5 +12,6 @@ int addBuiltInFunctions(BTNodePtr);
 void multiFree(char *, char *, char *, char *);
 int check_func_for_definition(BTNodePtr);
 
+varDataType getType(int);
 
 #endif
