@@ -239,7 +239,7 @@ switch(stateOfAutomat) {
               }
 
               else{
-                  ungetc(i,f);
+                  ungetc(i,stdin);
                   return ErrorInLexicalAnalyzer;
               }
 
