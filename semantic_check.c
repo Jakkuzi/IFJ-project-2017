@@ -342,7 +342,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                 idReturnType = getType(tmp->tokenID); // typ deklarace
                 tmp = tmp->next->next; // dim id as dataType = x<--
 
-                if(tmp->tokenID == ID && tmp->next->tokenID == LeftParenthes){ // prirazeni funkce
+                if(tmp->tokenID == ID && tmp->next != NULL && tmp->next->tokenID == LeftParenthes){ // prirazeni funkce
                     actualFunction2 = BTSearch(symBTree, tmp->token->myString);
                     if(actualFunction2 == NULL) //nedefinovana funkce
                         return 3;
@@ -363,11 +363,32 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                     i = 0; // parametr counter
                     while(tmp->tokenID != RightParenthes){
                         switch(tmp->tokenID){
-                            
+                            case valueOfString:
+                                if(actualFunction2->parameterTypes[i] != String)
+                                    return 4;
+                                break;
+                            case valueOfInteger:
+                                if(actualFunction2->parameterTypes[i] != Integer)
+                                    return 4;
+                                break;
+                            case valueOfDouble:
+                            case valueOfDoubleWithExp:
+                                if(actualFunction2->parameterTypes[i] != Double)
+                                    return 4;
+                                break;
+                            case ID:
+                                if((var = BTSearch(actualFunction->ParamRootPtr, tmp->token->myString)) == NULL)
+                                    return 3; // promenna neni deklarovana v aktualni funkci
+                                if(var->varData->type != actualFunction2->parameterTypes[i])
+                                    return 4;
+                                break;
                         }
-
+                        if(tmp->tokenID != Comma)
+                            i++;
                         tmp = tmp->next;
                     }
+                    if(actualFunction2->paramCount != i)
+                        return 4;
                 }
                 else{ //prirazeni promenne
                     while(tmp != NULL){
@@ -401,9 +422,9 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                                 break;
                             default:
                                 if(idReturnType == var_string && tmp->tokenID > 81 && tmp->tokenID < 95)
-                                    return 6; //TODO asi?
-                                tmp = tmp->next;
+                                    return 6; // operace se stringem
                         }
+                        tmp = tmp->next;
                     }
                 }
 
