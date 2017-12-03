@@ -337,6 +337,8 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                 if(result != 0)
                     return result;
 
+                var = BTSearch(symBTree, name);
+
                 //bez prirazeni
                 if(tmp->next == NULL)
                     break;
@@ -381,7 +383,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                             case ID:
                                 if((var = BTSearch(actualFunction->ParamRootPtr, tmp->token->myString)) == NULL)
                                     return 3; // promenna neni deklarovana v aktualni funkci
-                                if(var->varData->type != actualFunction2->parameterTypes[i])
+                                if(var->varData->type != getType(actualFunction2->parameterTypes[i]))
                                     return 4;
                                 break;
                         }
@@ -466,16 +468,11 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                 break;
             case ID:
                 name = C->last->lineData->token->myString;
-                if(BTSearch(symBTree, name) != NULL)
+                if(BTSearch(symBTree, name) == NULL)
                     return 3;
                 var = BTSearch(actualFunction->ParamRootPtr, name);
                 if(var == NULL) //nedefinovana funkce
                     return 3;
-                else if(var->declared != 1)
-                    return 3;
-                else if(var->defined != 0)
-                    return 3;
-                var->defined++;
                 idReturnType = var->varData->type;
                 tmp = tmp->next->next;
                 if(tmp->tokenID == ID && tmp->next != NULL && tmp->next->tokenID == LeftParenthes){ // prirazeni funkce
@@ -570,6 +567,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
             case If:
                 pom = 0; // 0 = int/double, 1 = string
                 tmp = tmp->next; // if x<--
+                pom2 = 0; // je to vyraz?
 
                 switch (tmp->tokenID){
                     case valueOfInteger:
@@ -621,17 +619,25 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                             break;
                         default:
                             if(tmp->tokenID == Equal){
-                                pom2++;
+                                pom++;
                                 if(pom2 > 1)
                                     return 2;
                             }
+                            if(tmp->tokenID >= Equal && tmp->tokenID <= GreaterOrEqual)
+                                pom2++;
                     }
-
                     tmp = tmp->next;
+                }
+                if(pom2 != 1){
+//                    if(pom2 > 1)
+//                        return 4;
+//                    else
+                        return 2;
                 }
                 break;
             case Do:
                 pom = 0; // 0 = int/double, 1 = string
+                pom2 = 0; // je to vyraz?
                 tmp = tmp->next->next; // do while x<--
 
                 switch (tmp->tokenID){
@@ -658,7 +664,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                 }
 
                 pom2 = 0; // count of =
-                while(tmp->tokenID != Then){
+                while(tmp != NULL){
                     switch(tmp->tokenID){
                         case valueOfInteger:
                         case valueOfDouble:
@@ -688,9 +694,17 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                                 if(pom2 > 1)
                                     return 2;
                             }
+                            if(tmp->tokenID >= Equal && tmp->tokenID <= GreaterOrEqual)
+                                pom2++;
                     }
 
                     tmp = tmp->next;
+                }
+                if(pom2 != 1){
+//                    if(pom2 > 1)
+//                        return 4;
+//                    else TODO co a jak s timhle??? stejne i if
+                        return 2;
                 }
                 break;
             default:
@@ -846,3 +860,6 @@ varDataType getType(int type){
             return var_string;
     }
 }
+
+
+

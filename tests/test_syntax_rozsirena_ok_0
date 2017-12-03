@@ -2,7 +2,7 @@ declare function foo(param1 as integer) as integer
 	
 function foo1(param as integer) as integer
 	dim i as integer = 0
-	if param1 < i then
+	if param < i then
 		return i
 	else
 		i = i + param
