@@ -14,6 +14,7 @@ int getNextToken(TString *token) {
         i = getchar();
         i = tolower(i);
 
+switch(stateOfAutomat) {
 
         case 0:
           if (i==EOL)
@@ -40,8 +41,11 @@ int getNextToken(TString *token) {
                  stateOfAutomat=6;
           }
           else if (i=='!'){             //retazcovy literal
-                 addToString(token,i);
-                 stateOfAutomat=5;}
+                 i = getchar();
+                 if(i != '"')
+                 return ErrorInLexicalAnalyzer;
+                 stateOfAutomat = 5;
+                 }
           else if (i=='<'){
                  addToString(token,i);
                  stateOfAutomat=11;}
@@ -211,82 +215,35 @@ int getNextToken(TString *token) {
                     stateOfAutomat = 0;
                 break;
 
-<
-         case 5:
-              if (i == '"') {{ 
-                  i=getchar();
-                  addToString(token,i);
-                  //stateOfAutomat=15;
-                }
-                  /*  if (i== '\\'){
-                            addToString(token,i);
-                            i = fgetc(f);
-                            stateOfAutomat=15;}
-                  }*/
 
-                       //if (i >= 001 || i <= 255)
-                      //return ErrorInLexicalAnalyzer;
-                  if (i == '\"')
-                     addToString(token, '\"');
+         case 5:
+             if (i== '\\'){
+
+                  i = getchar();
+                  if (i == '"')
+                      addToString(token, '"');
                   else if (i == 'n')
                       addToString(token, '\n');
                   else if (i == 't')
                       addToString(token, '\t');
                   else if (i == '\\')
                       addToString(token, '\\');
-                  
-                 /* else if (isdigit(i)) {
-                      {
-                          aux = i;
-                          addToString(token, aux);
-                      }
-                      //if (isdigit(i=getchar())){
-                      if (isdigit(i = fgetc(f))) {
-                          aux = aux * 10 + i;
-                          addToString(token, aux);
-                      }
-                      // if (isdigit(i=getchar()))
-                      if (isdigit(i = fgetc(f))) {
-                          aux = aux * 10 + i;
-                          addToString(token, aux);
-                      } else
-                          return ErrorInLexicalAnalyzer;
-                  } else
-                      return ErrorInLexicalAnalyzer; */
-                   
-                  else if (isprint(i=getchar()))
-                      {
-                          addToString(token,i);
-                          i=getchar();
-                          stateOfAutomat=5;
-                          return valueOfString;
-                  }
-                    
-                  else{
-                    ungetc(i,stdin);
-                    return ErrorInLexicalAnalyzer;
-                  }   
+              }
 
-                    } 
-                  
-                  
-                  else if (i == '"') {
-                        stateOfAutomat=0;
-                        return valueOfString;
-                                   }
-                 
-                else if(i==EOF)
-                           return ErrorInLexicalAnalyzer; 
-                  
-                   else {
-                      addToString(token,i); 
-                      stateOfAutomat=5;  
-                      //return valueOfString; 
-                     // return ErrorInLexicalAnalyzer;
-   
-                        }
-             break;
-       
+              else if (isprint(i))
+              {
+
+                  if(i == '"')
+                      return valueOfString;
+                  addToString(token,i);
+              }
+
+              else{
+                  ungetc(i,stdin);
+                  return ErrorInLexicalAnalyzer;
+              }
+
+              break;
          
          case 6:
            if (isdigit(i)){
