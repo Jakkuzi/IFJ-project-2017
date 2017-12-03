@@ -14,6 +14,7 @@ int getNextToken(TString *token) {
         i = getchar();
         i = tolower(i);
 
+switch(stateOfAutomat) {
 
         case 0:
           if (i==EOL)
@@ -211,7 +212,7 @@ int getNextToken(TString *token) {
                     stateOfAutomat = 0;
                 break;
 
-<
+
          case 5:
               if (i == '"') {{ 
                   i=getchar();
