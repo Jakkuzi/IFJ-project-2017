@@ -423,8 +423,11 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                                 }
                                 break;
                             default:
-                                if(idReturnType == var_string && tmp->tokenID > 81 && tmp->tokenID < 95)
-                                    return 6; // operace se stringem
+                                if(idReturnType == var_string && tmp->tokenID != Plus)
+                                    return 6; // operace nad stringem
+                                if(idReturnType != var_string && (tmp->tokenID < Plus || tmp->tokenID > IntDiv))
+                                    return 6; // operace nad int a double
+
                         }
                         tmp = tmp->next;
                     }
@@ -457,17 +460,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                 if(var != BTSearch(actualFunction->ParamRootPtr, name))
                     return 6;
                 break;
-
-//                tmp = tmp->next;
-//                name = tmp->token->myString;
-//                actualFunction = BTSearch(symBTree, name);
-//                if (actualFunction == NULL)
-//                    return 3;
-//                else if (actualFunction->defined != 1 || actualFunction->declared != 1)
-//                    return 3;
-//                else if (actualFunction->varData == NULL)
-//                    return 3;
-//                break;
+                
             case ID:
                 name = C->last->lineData->token->myString;
                 actualFunction = BTSearch(symBTree, name);
