@@ -423,8 +423,10 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                                 }
                                 break;
                             default:
-                                if(idReturnType == var_string && tmp->tokenID > 81 && tmp->tokenID < 95)
-                                    return 6; // operace se stringem
+                                if(idReturnType == var_string && tmp->tokenID != Plus)
+                                    return 6; // operace nad stringem
+                                if(idReturnType != var_string && (tmp->tokenID < Plus || tmp->tokenID > IntDiv))
+                                    return 6; // operace nad int a double
                         }
                         tmp = tmp->next;
                     }
@@ -566,8 +568,10 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                                 }
                                 break;
                             default:
-                                if(idReturnType == var_string && tmp->tokenID > 81 && tmp->tokenID < 95)
-                                    return 6; // operace se stringem
+                                if(idReturnType == var_string && tmp->tokenID != Plus)
+                                    return 6; // operace nad stringem
+                                if(idReturnType != var_string && (tmp->tokenID < Plus || tmp->tokenID > IntDiv))
+                                    return 6; // operace nad int a double
                         }
                         tmp = tmp->next;
                     }
