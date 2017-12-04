@@ -483,8 +483,13 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                     if(!(actualFunction2->declared || actualFunction2->defined))
                         return 3;
 
-                    if(actualFunction2->returnType != idReturnType)
-                        return 4;
+                    if(actualFunction2->returnType == var_double || actualFunction2->returnType == var_integer){
+                        if(idReturnType == var_string)
+                            return 4;
+                    }
+                    else
+                        if(idReturnType != var_string)
+                            return 4;
 
                     tmp = tmp->next->next;
 
