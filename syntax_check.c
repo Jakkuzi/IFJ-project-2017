@@ -141,12 +141,12 @@ int syntax_analysis(tCodeList *C){
     int t = 0; // token id
     int first_token = 1; // check start of code
 
-    result = addBuiltInFunctions(symBTree);
-    if(result != 0){
-        free(s);
-        BTDispose(symBTree);
-        return result;
-    }
+//    result = addBuiltInFunctions(symBTree);
+//    if(result != 0){
+//        free(s);
+//        BTDispose(symBTree);
+//        return result;
+//    }
 
     do{
         TString *token = (TString *) malloc(sizeof(TString));
@@ -504,7 +504,6 @@ int process_expr(int id_processed, tCodeList *C, int t, TString *token, tStack *
 
     result = precedencni(prec_str);
     free(prec_str);
-    //free(token);
     if(result == 2 || result == 99)
         return result;
     else

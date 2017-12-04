@@ -444,8 +444,6 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                             var = BTSearch(actualFunction->ParamRootPtr, name);
                             if (var == NULL)
                                 return 3;
-                            else if (var->defined != 1 || var->declared != 1)
-                                return 3;
                             else if (var->varData == NULL)
                                 return 3;
                         }
@@ -483,10 +481,6 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                     //neni deklarovana ani definovana
                     if(!(actualFunction2->declared || actualFunction2->defined))
                         return 3;
-
-                    if(strcmp(actualFunction->itemID, "@Scope") == 0)
-                        if(actualFunction2->defined == 0)
-                            return 3;
 
                     if(actualFunction2->returnType != idReturnType)
                         return 4;

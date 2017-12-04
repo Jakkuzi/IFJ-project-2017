@@ -66,15 +66,27 @@ int BTInsert(BTNodePtr BTRoot, BTItemPtr *newItem) {
 // navratova hodnota udava uspech (true) nebo neuspech (false)
 BTItemPtr *BTSearch(BTNodePtr RootPtr, char *searchedID) {
     int compare = 0;    // pomocna promenna pro uchovani hodnoty porovnani dvou stringu (identifikatoru)
+    BTItemPtr *var = NULL;
+    BTNodePtr tmp = RootPtr;
     // compare = 0          ~ identifikatory jsou stejne
     // compare < 0          ~ hledany identifikator je mensi (pruchod do leveho syna)
     // compare > 0          ~ hledany identifikator je vetsi (pruchod do praveho syna)
 
-    if(RootPtr == NULL)
+    if(RootPtr == NULL) {
         return NULL;
+    }
 
-    BTItemPtr *var = NULL;
-    BTNodePtr tmp = RootPtr;
+    if(RootPtr->RPtr != NULL) {
+        var = BTSearch(RootPtr->RPtr, searchedID);
+        if(var != NULL)
+            return var;
+    }
+    if(RootPtr->LPtr != NULL){
+        var = BTSearch(RootPtr->LPtr, searchedID);
+        if(var != NULL)
+            return var;
+    }
+
     while(tmp != NULL){
         if(tmp->item != NULL) {
             if(tmp->item->ParamRootPtr != NULL)
