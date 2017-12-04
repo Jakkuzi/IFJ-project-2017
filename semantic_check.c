@@ -1,20 +1,15 @@
 #include "semantic_check.h"
-#include "parser.h"
-#include "strings.h"
 
 static BTItemPtr *actualFunction;
 static BTItemPtr *actualFunction2;
 
 int semantic_check(tCodeList *C, BTNodePtr symBTree) {
-    int pom = 0, pom2 = 0, pome = 0;
+    int pom = 0, pom2 = 0;
     int result, i;
     int id = C->last->lineData->tokenID;
     char *name = NULL; // name of function or variable
-    char *name2 = NULL;
-    char *name3 = NULL;
     varDataType idReturnType;
     tLinePtr tmp = C->last->lineData; // iterator to get exact data
-    tLinePtr tmp2;
     BTItemPtr *var;
 
     // create function in symtable
@@ -506,7 +501,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                             case ID:
                                 if((var = BTSearch(actualFunction->ParamRootPtr, tmp->token->myString)) == NULL)
                                     return 3; // promenna neni deklarovana v aktualni funkci
-                                if(var->varData->type != actualFunction2->parameterTypes[i])
+                                if(var->varData->type != getType(actualFunction2->parameterTypes[i]))
                                     return 4;
                                 break;
                         }
@@ -852,6 +847,8 @@ varDataType getType(int type){
             return var_double;
         case String:
             return var_string;
+        default:// nemuze nastat
+            return var_integer;
     }
 }
 

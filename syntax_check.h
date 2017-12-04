@@ -5,6 +5,7 @@
 #include "parser.h"
 #include "scanner.h"
 #include "semantic_check.h"
+#include "generator.h"
 
 #include <stdio.h>
 #include <stdlib.h>
