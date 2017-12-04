@@ -22,8 +22,8 @@ switch(stateOfAutomat) {
           if (isspace(i)) // zistuje biele znaky
               stateOfAutomat=0;
           else if (i=='/'){  // komentar alebo delenie
-               //addToString(token,i);
-               stateOfAutomat=1;}
+                stateOfAutomat=1;
+          }
           else if (isalpha(i) || (i=='_')) {// identifikator,klucove slovo alebo rezervovane klucove slovo
                addToString(token,i);
                stateOfAutomat=3;
@@ -111,7 +111,7 @@ switch(stateOfAutomat) {
             stateOfAutomat=2;
           else{
             ungetc(i,stdin);
-            addToString(token,i);
+            addToString(token, '/');
             return Div;
           }
          break;
@@ -291,17 +291,34 @@ switch(stateOfAutomat) {
                 if ((i == '+') || (i == '-')) {
                     addToString(token, i);
                     stateOfAutomat = 10;
-                } else if (isdigit(i)) {
+                }
+                else if (i == '0') {
+                    i=getchar();
+                    if (!isdigit(i)) {
+                        addToString(token, '0');
+                        stateOfAutomat = 10;}
+                }
+                else if (isdigit(i)) {
                     addToString(token, i);
                     stateOfAutomat = 10;
                 }
+                else
+                    return ErrorInLexicalAnalyzer;
                 break;
 
             case 10:
-                if (isdigit(i)) {
+                if (i == '0') {
+                    i=getchar();
+                    if (!isdigit(i)) {
+                        addToString(token, '0');
+                        stateOfAutomat = 10;}}
+                else if (isdigit(i)) {
                     addToString(token, i);
+                    stateOfAutomat = 10;
+                } else {
+                    ungetc(i, stdin);
                     return valueOfDoubleWithExp;
-                } else return ErrorInLexicalAnalyzer;
+                }
                 break;
 
             case 11:
@@ -325,11 +342,21 @@ switch(stateOfAutomat) {
                 break;
 
             case 13:
-                if (isdigit(i)) {
+                if (i == '0') {
+                    i=getchar();
+                    if (!isdigit(i)) {
+                        addToString(token, '0');
+                        stateOfAutomat = 10;}
+                } else if (isdigit(i)) {
                     addToString(token, i);
                     stateOfAutomat = 10;
-                }
-                break;
+                } else if ((i == '+') || (i == '-')) {
+                    addToString(token, i);
+                    stateOfAutomat = 10;
+                } else
+                    return ErrorInLexicalAnalyzer;
+
+        break;
         }
     }
 }
