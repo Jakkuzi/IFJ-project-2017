@@ -232,7 +232,7 @@ switch(stateOfAutomat) {
                       addToString(token, '\t');
                   else if (i == '\\')
                       addToString(token, '\\');
-                  else if (isprint(i))
+                  else if (isdigit(i))
                         addToString(token,i);
               }
 
