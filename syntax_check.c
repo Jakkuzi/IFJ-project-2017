@@ -329,6 +329,8 @@ int syntax_analysis(tCodeList *C){
                     BTDispose(symBTree);
                     return result;
                 }
+                // generateLine(C->last->lineData, symBTree);
+
                 result = tCodeCreateNewLine(C);
                 if(result != 0){
                     freeThisCycle(token, s);
@@ -467,6 +469,8 @@ int process_expr(int id_processed, tCodeList *C, int t, TString *token, tStack *
                 free(token);
                 return result;
             }
+            // generateLine(C->last->lineData, symBTree);
+            
             result = tCodeCreateNewLine(C);
             if(result != 0){
                 free(token);
