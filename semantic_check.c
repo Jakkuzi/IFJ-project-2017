@@ -483,23 +483,6 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                         return 2;
                     tmp = tmp->next;
                 }
-
-//                while (tmp != NULL){
-//                    if(tmp->tokenID == Semicolon){
-//                        tmp = tmp->next;
-//                        if(tmp != NULL) {
-//                            name = tmp->token->myString;
-//                            var = BTSearch(actualFunction->ParamRootPtr, name);
-//                            if (var == NULL)
-//                                return 3;
-//                            else if (var->varData == NULL)
-//                                return 3;
-//                        }
-//                    }
-//                    else
-//                        tmp = tmp->next;
-//                }
-
                 break;
             case Input:
                 tmp = tmp->next; // input id<--
