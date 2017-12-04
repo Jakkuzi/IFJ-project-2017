@@ -220,37 +220,36 @@ switch(stateOfAutomat) {
 
 
          case 5:
-             if (i== '\\'){
+             if (i== '\\') {
 
-                  i = getchar();
-                  if (i == '"')
-                      addToString(token, '"');
-                  else if (i == 'n')
-                      addToString(token, '\n');
-                  else if (i == 't')
-                      addToString(token, '\t');
-                  else if (i == '\\')
-                      addToString(token, '\\');
-                  else if (isdigit(i))
-                        addToString(token,i);
-                  else {
-                      int value[3];
-                      int j;
-                      for (j = 0; (j <= 2) && isdigit(i); j++) {
-                          value[j] = (i - '0');
-                          i=getchar();
-                      }
-
-                      int result;
-                      //if((result>=001) && (result<=255)) {
-                      if (j == 3)
-                          result = value[0] * 100 + value[1] * 10 + value[2];
-                     // else if (j==2) result=value[0]*10+ value [1];
-                      //else if (j==1) result=value[0];
-                      addToString(token, result);
-                      addToString(token,i);
-                  }
-              }
+                 i = getchar();
+                 if (i == '"')
+                     addToString(token, '"');
+                 else if (i == 'n')
+                     addToString(token, '\n');
+                 else if (i == 't')
+                     addToString(token, '\t');
+                 else if (i == '\\')
+                     addToString(token, '\\');
+                 else if (isdigit(i))
+                     addToString(token, i);
+                 else {
+                     int value[3];
+                     int j;
+                     for (j = 0; (j <= 2) && isdigit(i); j++) {
+                         value[j] = i - '0';
+                         if (j + 1 <= 2)
+                             i = getchar();
+                     }
+                     int result;
+                     if (j == 3) result = value[0] * 100 + value[1] * 10 + value[2];
+                     if ((result >= 001) && (result <= 255)) {
+                         addToString(token, result);
+                     } else {
+                         return ErrorInLexicalAnalyzer;
+                     }
+                 }
+             }
 
               else if (isprint(i))
               {
