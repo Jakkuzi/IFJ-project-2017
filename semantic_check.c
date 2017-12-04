@@ -1,4 +1,5 @@
 #include "semantic_check.h"
+#include "strings.h"
 
 static BTItemPtr *actualFunction;
 static BTItemPtr *actualFunction2;
@@ -373,12 +374,9 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                                     return 4;
                                 break;
                             case valueOfInteger:
-                                if(actualFunction2->parameterTypes[i] != Integer)
-                                    return 4;
-                                break;
                             case valueOfDouble:
                             case valueOfDoubleWithExp:
-                                if(actualFunction2->parameterTypes[i] != Double)
+                                if(actualFunction2->parameterTypes[i] == String)
                                     return 4;
                                 break;
                             case ID:
@@ -437,21 +435,70 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
 
                 break;
             case Print:
-                while (tmp != NULL){
-                    if(tmp->tokenID == Semicolon){
-                        tmp = tmp->next;
-                        if(tmp != NULL) {
-                            name = tmp->token->myString;
-                            var = BTSearch(actualFunction->ParamRootPtr, name);
-                            if (var == NULL)
+                tmp = tmp->next;
+                pom2 = -1; // operace s datovymi typy 1 int/double, 0 string, -1 undefined
+                pom = 0; // pocet relacnich operatoru
+                while(tmp != NULL){
+                    switch (tmp->tokenID){
+                        case ID:
+                            var = BTSearch(symBTree, tmp->token->myString);
+                            if(var == NULL)
                                 return 3;
-                            else if (var->varData == NULL)
-                                return 3;
-                        }
+                            if(var->itemType == item_type_function)
+                                return 6; //funexp - neni podporovano
+
+                            if(pom2 == -1)
+                                pom2 = var->varData->type == var_string ? 0 : 1;
+                            else{
+                                if(pom2 == 0 && var->varData->type != var_string)
+                                    return 4;
+                                else if(pom2 == 1 && var->varData->type == var_string)
+                                    return 4;
+                            }
+
+                            break;
+                        case valueOfString:
+                            if(pom2 == -1)
+                                pom2 = 0;
+                            else if(pom2 == 1)
+                                return 4;
+                            break;
+                        case valueOfInteger:
+                        case valueOfDouble:
+                        case valueOfDoubleWithExp:
+                            if(pom2 == -1)
+                                pom2 = 1;
+                            else if(pom2 == 0)
+                                return 4;
+                            break;
+                        case Semicolon:
+                            pom2 = -1;
+                            pom = 0;
+                            break;
+                        default:// operator
+                            if(tmp->tokenID >= Equal && tmp->tokenID <= GreaterOrEqual)
+                                pom++;
                     }
-                    else
-                        tmp = tmp->next;
+                    if(pom > 1)
+                        return 2;
+                    tmp = tmp->next;
                 }
+
+//                while (tmp != NULL){
+//                    if(tmp->tokenID == Semicolon){
+//                        tmp = tmp->next;
+//                        if(tmp != NULL) {
+//                            name = tmp->token->myString;
+//                            var = BTSearch(actualFunction->ParamRootPtr, name);
+//                            if (var == NULL)
+//                                return 3;
+//                            else if (var->varData == NULL)
+//                                return 3;
+//                        }
+//                    }
+//                    else
+//                        tmp = tmp->next;
+//                }
 
                 break;
             case Input:
@@ -501,19 +548,21 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                                     return 4;
                                 break;
                             case valueOfInteger:
-                                if(actualFunction2->parameterTypes[i] != Integer)
-                                    return 4;
-                                break;
                             case valueOfDouble:
                             case valueOfDoubleWithExp:
-                                if(actualFunction2->parameterTypes[i] != Double)
+                                if(actualFunction2->parameterTypes[i] == String)
                                     return 4;
                                 break;
                             case ID:
                                 if((var = BTSearch(actualFunction->ParamRootPtr, tmp->token->myString)) == NULL)
                                     return 3; // promenna neni deklarovana v aktualni funkci
-                                if(var->varData->type != getType(actualFunction2->parameterTypes[i]))
-                                    return 4;
+                                if(var->varData->type == var_double || var->varData->type == var_integer) {
+                                    if (getType(actualFunction2->parameterTypes[i]) == var_string)
+                                        return 4;
+                                }
+                                else
+                                    if(getType(actualFunction2->parameterTypes[i]) != var_string)
+                                        return 4;
                                 break;
                         }
                         if(tmp->tokenID != Comma)
