@@ -248,6 +248,7 @@ switch(stateOfAutomat) {
                      // else if (j==2) result=value[0]*10+ value [1];
                       //else if (j==1) result=value[0];
                       addToString(token, result);
+                      addToString(token,i);
                   }
               }
 
