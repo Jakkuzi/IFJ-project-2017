@@ -121,8 +121,10 @@ switch(stateOfAutomat) {
             i=getchar();
             if (i=='/')
               stateOfAutomat=0;
-            else
+            else{
               ungetc(i,stdin);
+              return EndOfLine;
+            }
            }
           else if (i==EOF)
             return ErrorInLexicalAnalyzer;
@@ -211,8 +213,10 @@ switch(stateOfAutomat) {
                 }
 
             case 4:          //riadkovy komentar
-                if (i == '\n')
+                if (i == '\n'){
                     stateOfAutomat = 0;
+                    return EndOfLine;
+                }
                 break;
 
 
