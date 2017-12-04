@@ -717,7 +717,7 @@ void IFJcode17_evalExpr(tLinePtr *temp, BTNodePtr BTree, int assignType)
 		{
 			switch(assistList->tokenID)
 			{
-				case Float2IntOsek:	printf("FLOAT2INTS\n"); break;
+				case Float2IntOsek:	printf("FLOAT2R2EINTS\n"); break;
 				case Float2Int2Float: 	printf("FLOAT2R2EINTS\n");
 							printf("INT2FLOATS\n"); break;
 				case Int2Float: printf("INT2FLOATS\n"); break;
@@ -926,13 +926,27 @@ void IFJcode17_write(tLinePtr *temp)
                         if((*temp) != NULL)
 				printf("\n");
                 }
-		else if((*temp)->tokenID == valueOfString)
-		{
+                else if((*temp)->tokenID == valueOfString)
+                {
                         IFJcode17_writeString(*temp);
                         *temp = (*temp)->next;
                         if((*temp) != NULL)
                                 printf("\n");
-		}
+                }
+                else if((*temp)->tokenID == valueOfInteger)
+                {
+			printf("int@%s", (*temp)->token->myString);
+                        *temp = (*temp)->next;
+                        if((*temp) != NULL)
+                                printf("\n");
+                }
+                else if((*temp)->tokenID == valueOfDouble)
+                {
+                        printf("float@%s", (*temp)->token->myString);
+                        *temp = (*temp)->next;
+                        if((*temp) != NULL)
+                                printf("\n");
+                }
                 else if((*temp)->tokenID == ID)
                 {
                         printf("LF@%s", (*temp)->token->myString);
@@ -942,6 +956,48 @@ void IFJcode17_write(tLinePtr *temp)
 		}
         }
 }
+
+// generovani inicializace promenne na 0
+void IFJcode17_varInit(tLinePtr *temp, BTNodePtr BTree)
+{
+	printf("DEFVAR LF@%s\n", (*temp)->next->token->myString);
+	BTItemPtr *item = fStackSearch(BTree, (*temp)->next->token->myString); // pokus o nelezeni id v aktualni funkci
+        if(item != NULL)
+        {
+		printf("MOVE LF@%s ", (*temp)->next->token->myString);
+                if(item->varData->type == var_integer)
+			printf("int@0\n");
+                else if(item->varData->type == var_double)
+			printf("float@0\n");
+		else if(item->varData->type == var_string)
+                        printf("string@\n");
+        }
+
+}
+
+// prirazeni vysledku funkce
+void IFJcode17_funcAssign(tLinePtr *temp)
+{
+	if((*temp)->next != NULL)
+		*temp = (*temp)->next;
+
+	while((*temp)->next != NULL)
+	{
+		if((*temp)->tokenID == ID)
+			printf("PUSHS LF@%s\n", (*temp)->token->myString);
+		else if((*temp)->tokenID == valueOfInteger)
+			printf("PUSHS int@%s\n", (*temp)->token->myString);
+                else if((*temp)->tokenID == valueOfDouble || (*temp)->tokenID == valueOfDoubleWithExp)
+                        printf("PUSHS float@%s\n", (*temp)->token->myString);
+                else if((*temp)->tokenID == valueOfString)
+                        printf("PUSHS string@%s\n", (*temp)->token->myString);
+			// TODO: correct string
+
+		*temp = (*temp)->next;
+	}
+}
+
+
 
 // generovani prirazeni do promenne
 void IFJcode17_varAssign(tLinePtr *temp, BTNodePtr BTree)
@@ -962,6 +1018,26 @@ void IFJcode17_varAssign(tLinePtr *temp, BTNodePtr BTree)
 		else if(item->varData->type == var_double)
        			assignType = valueOfDouble;
 	}
+	if(*temp != NULL)
+	{
+		if((*temp)->tokenID == ID)
+		{
+			item = BTSearch(BTree, (*temp)->token->myString);	// vyhledani prvniho operandu ve vyrazu (jestli je to funkce nebo promenna)
+			if(item != NULL)
+			{
+				if(item->itemType == item_type_function)
+				{
+					char *funcNameHolder = (*temp)->token->myString;
+					IFJcode17_funcAssign(temp);
+					printf("CALL %s\n", funcNameHolder);
+					printf("POPFRAME\n");
+					printf("POPS LF@%s ", varNameHolder);
+					return;
+				}
+			}
+		}
+	}
+
 	IFJcode17_evalExpr(temp, BTree, assignType);
 
 	printf("POPS LF@%s ", varNameHolder);
@@ -996,14 +1072,23 @@ void IFJcode17_functionParams(tLinePtr *temp)
 	if((*temp)->next != NULL)
 		*temp = (*temp)->next;
 
+	struct fStack paramStackS;
+	fStackPtr paramStack = &paramStackS;
+	paramStack->top = 0;
 	while((*temp) != NULL)
 	{
 		if((*temp)->tokenID == ID)
 		{
 			printf("DEFVAR LF@%s\n", (*temp)->token->myString);
-			printf("POPS LF@%s\n", (*temp)->token->myString);
+			fStackPush(paramStack, (*temp)->token->myString);
+		//	printf("POPS LF@%s\n", (*temp)->token->myString);
 		}
 		*temp = (*temp)->next;
+	}
+	while(paramStack->top != 0)
+	{
+		printf("POPS LF@%s\n", fStackTop(paramStack));
+		fStackPop(paramStack);
 	}
 }
 
@@ -1014,6 +1099,7 @@ void IFJcode17_function(tLinePtr *temp)
 	if((*temp)->next != NULL)
 		*temp = (*temp)->next;
 
+	fStackPush(funcStack, (*temp)->token->myString);
 	printf("LABEL %s\n", (*temp)->token->myString);
 	printf("CREATEFRAME\n");
 	printf("PUSHFRAME\n");
@@ -1030,6 +1116,7 @@ int generateLine(tLinePtr tInput, BTNodePtr BTree)
 		hVarOnce = 1;
 		output_init();
 		printf(".IFJcode17\n");
+		printf("CALL $Scope\n");
 		//output_new(".IFJcode17");
 		//output_print();
 		char *tempScope = (char *) malloc (sizeof(char) * strlen ("@Scope"));
@@ -1063,18 +1150,30 @@ int generateLine(tLinePtr tInput, BTNodePtr BTree)
 				}
 				else if(temp->next->tokenID == Function)
 				{
+                                        BTItemPtr *item = BTSearch(BTree, fStackTop(funcStack));
+                                        if(item != NULL)
+                                        {
+                                                if(item->returnType == var_integer)
+                                                        printf("PUSHS int@0\n");
+                                                if(item->returnType == var_double)
+							printf("PUSHS float@0\n");
+                                                if(item->returnType == var_string)
+							printf("PUSHS string@\n");
+					}
 					printf("RETURN");
+					fStackPop(funcStack);
 				}
 			    }
 			    if(temp->next != NULL)
 				temp = temp->next;
 			    break;
 			case Scope:
+			    printf("\n\nLABEL $Scope\n");
 			    printf("CREATEFRAME\n");
 			    printf("PUSHFRAME");
 			    break;
 			case Dim:
-			    printf("DEFVAR LF@%s", temp->next->token->myString);
+			    IFJcode17_varInit(&temp, BTree);
 			    break;
 			case As:
 				// TODO: inicializace "Dim promenna as Integer = 3"
@@ -1110,7 +1209,20 @@ int generateLine(tLinePtr tInput, BTNodePtr BTree)
 			    if(temp->next != NULL)
 			    {
 				temp = temp->next;
-				printf("PUSHS LF@%s\n", temp->token->myString);
+				if(temp != NULL)
+				{
+					BTItemPtr *item = BTSearch(BTree, fStackTop(funcStack));
+					if(item != NULL)
+					{
+						if(item->returnType == var_integer)
+							IFJcode17_evalExpr(&temp, BTree, valueOfInteger);
+						if(item->returnType == var_double)
+                                                	IFJcode17_evalExpr(&temp, BTree, valueOfDouble);
+                                                if(item->returnType == var_string)
+                                                	IFJcode17_evalExpr(&temp, BTree, valueOfString);
+					}
+				}
+				printf("RETURN\n");
 			    }
 			    break;
 			case Equal:
