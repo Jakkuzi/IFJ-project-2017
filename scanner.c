@@ -5,7 +5,6 @@ int getNextToken(TString *token) {
   
   int stateOfAutomat=0;
   char i;
-  //int aux;
   stringClean(token);
 
 
@@ -237,19 +236,18 @@ switch(stateOfAutomat) {
                   else {
                       int value[3];
                       int j;
-                      for(j=0; (j<=2) && isdigit(i);j++)
-                      {
-                          value[j]=(i);
+                      for (j = 0; (j <= 2) && isdigit(i); j++) {
+                          value[j] = (i - '0');
                           i=getchar();
                       }
+
                       int result;
-                      if((result>=001) && (result<=255)) {
-                          if (j == 3) result = value[0] * 100 + value[1] * 10 + value[2];
-                          addToString(token,result);
-                          addToString(token,i);
-                      }
-                      else
-                          return ErrorInLexicalAnalyzer;
+                      //if((result>=001) && (result<=255)) {
+                      if (j == 3)
+                          result = value[0] * 100 + value[1] * 10 + value[2];
+                     // else if (j==2) result=value[0]*10+ value [1];
+                      //else if (j==1) result=value[0];
+                      addToString(token, result);
                   }
               }
 
