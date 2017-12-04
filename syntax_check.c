@@ -471,6 +471,11 @@ int process_expr(int id_processed, tCodeList *C, int t, TString *token, tStack *
             }
         }
 
+        if(t == EndOfLine && sTop(s) == Semicolon){
+            free(token);
+            free(prec_str);
+            return 2;
+        }
         if (print_to_process && t == Semicolon)
             break;
         else if (!print_to_process && (t == EndOfLine || t == Semicolon || t == Then))
