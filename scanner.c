@@ -323,7 +323,7 @@ switch(stateOfAutomat) {
                     stateOfAutomat = 10;
                 } else {
                     ungetc(i, stdin);
-                    return valueOfDoubleWithExp;
+                    return valueOfDouble;
                 }
                 break;
 
