@@ -232,6 +232,8 @@ switch(stateOfAutomat) {
                       addToString(token, '\t');
                   else if (i == '\\')
                       addToString(token, '\\');
+                  else if (isprint(i))
+                        addToString(token,i);
               }
 
               else if (isprint(i))
