@@ -1,4 +1,5 @@
 #include "syntax_check.h"
+#include "strings.h"
 
 
 /* LL table converted to id of tokens */
@@ -140,6 +141,7 @@ int syntax_analysis(tCodeList *C) {
     stackInit(s);
     int t = 0; // token id
     int first_token = 1; // check start of code
+    int was_dim = 0;
 
     result = addBuiltInFunctions(symBTree);
     if (result != 0) {
@@ -208,7 +210,33 @@ int syntax_analysis(tCodeList *C) {
                 return t;
             }
         }
-
+        if(was_dim){
+            if(t == ID){
+                if(!(strcmp(token->myString, "chr"))){
+                    freeThisCycle(token, s);
+                    free(symBTree);
+                    return 2;
+                }
+                if(!(strcmp(token->myString, "length"))){
+                    freeThisCycle(token, s);
+                    free(symBTree);
+                    return 2;
+                }
+                if(!(strcmp(token->myString, "substr"))){
+                    freeThisCycle(token, s);
+                    free(symBTree);
+                    return 2;
+                }
+                if(!(strcmp(token->myString, "asc"))){
+                    freeThisCycle(token, s);
+                    free(symBTree);
+                    return 2;
+                }
+                was_dim = 0;
+            }
+        }
+        if(t == Dim || t == Function || t == Declare)
+            was_dim = 1;
 //TODO:return foo() nejede
         if (first_token) { // code must start with exact commands from set of 3 words
             while (t == EndOfLine) { // ignore empty lines on start
@@ -314,7 +342,8 @@ int syntax_analysis(tCodeList *C) {
         } else {
             if (t == EndOfLine) {
                 if (sTop(s) == Semicolon) {
-                    //TODO free
+                    free(s);
+                    free(symBTree);
                     return 2;
                 }
                 stringFree(token);

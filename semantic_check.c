@@ -8,6 +8,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
     int pom = 0, pom2 = 0;
     int result, i;
     int id = C->last->lineData->tokenID;
+    int parental = 0;
     char *name = NULL; // name of function or variable
     varDataType idReturnType;
     tLinePtr tmp = C->last->lineData; // iterator to get exact data
@@ -601,7 +602,6 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
             case If:
                 pom = 0; // 0 = int/double, 1 = string
                 tmp = tmp->next; // if x<--
-                pom2 = 0; // je to vyraz?
 
                 switch (tmp->tokenID){
                     case valueOfInteger:
@@ -651,22 +651,25 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                             else if(var->varData->type != var_string && pom == 1)
                                 return 4;
                             break;
+                        case LeftParenthes:
+                        case RightParenthes:
+                            parental++;
+                            break;
                         default:
                             if(tmp->tokenID >= Equal && tmp->tokenID <= GreaterOrEqual)
                                 pom2++;
                     }
                     tmp = tmp->next;
                 }
-                if(pom2 != 1){
-//                    if(pom2 > 1)
-//                        return 4;
-//                    else
-                        return 2;
-                }
+                if(parental > 2 && pom2 > 1)
+                    return 4;
+                if(pom2 == 0)
+                    return 4;
+                if(pom2 > 1)
+                    return 2;
                 break;
             case Do:
                 pom = 0; // 0 = int/double, 1 = string
-                pom2 = 0; // je to vyraz?
                 tmp = tmp->next->next; // do while x<--
 
                 switch (tmp->tokenID){
@@ -717,6 +720,10 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                             else if(var->varData->type != var_string && pom == 1)
                                 return 4;
                             break;
+                        case LeftParenthes:
+                        case RightParenthes:
+                            parental++;
+                            break;
                         default:
                             if(tmp->tokenID >= Equal && tmp->tokenID <= GreaterOrEqual)
                                 pom2++;
@@ -724,12 +731,12 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
 
                     tmp = tmp->next;
                 }
-                if(pom2 != 1){
-//                    if(pom2 > 1)
-//                        return 4;
-//                    else TODO co a jak s timhle??? stejne i if
-                        return 2;
-                }
+                if(parental > 2 && pom2 > 1)
+                    return 4;
+                if(pom2 == 0)
+                    return 4;
+                if(pom2 > 1)
+                    return 2;
                 break;
             default:
                 return 2;
