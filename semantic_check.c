@@ -117,10 +117,16 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                     tLinePtr counter = tmp;
                     while (counter->tokenID != RightParenthes) { // get count of parameters for allocation
                         params++;
-                        if (params == 1) // first token is already id
+                        if (params == 1) { // first token is already id
+                            if(actualFunction->parameterTypes[params-1] != counter->next->next->tokenID)
+                                return 3;
                             counter = counter->next->next->next;
-                        else
+                        }
+                        else{
+                            if(actualFunction->parameterTypes[params-1] != counter->next->next->next->tokenID)
+                                return 3;
                             counter = counter->next->next->next->next;
+                        }
                     }
                     if (params != actualFunction->paramCount)
                         return 3;
@@ -526,7 +532,9 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                                     return 4;
                                 break;
                             case ID:
-                                var = BTSearch(actualFunction->ParamRootPtr, tmp->token->myString);
+                                var = BTSearch(symBTree, tmp->token->myString);
+                                if(var->itemType != item_type_variable)
+                                    return 4;
                                 if(var == NULL)
                                     return 3;
 
@@ -607,11 +615,6 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                                 return 4;
                             break;
                         default:
-                            if(tmp->tokenID == Equal){
-                                pom++;
-                                if(pom2 > 1)
-                                    return 2;
-                            }
                             if(tmp->tokenID >= Equal && tmp->tokenID <= GreaterOrEqual)
                                 pom2++;
                     }
@@ -678,11 +681,6 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                                 return 4;
                             break;
                         default:
-                            if(tmp->tokenID == Equal){
-                                pom2++;
-                                if(pom2 > 1)
-                                    return 2;
-                            }
                             if(tmp->tokenID >= Equal && tmp->tokenID <= GreaterOrEqual)
                                 pom2++;
                     }
@@ -714,9 +712,6 @@ int addBuiltInFunctions(BTNodePtr symBTree) {
         return 99;
     }
     strcpy(f1, "length");
-    strcpy(f2, "substr");
-    strcpy(f3, "asc");
-    strcpy(f4, "chr");
 
     int result;
     BTItemPtr *actualF = NULL;
@@ -728,7 +723,7 @@ int addBuiltInFunctions(BTNodePtr symBTree) {
         return result;
     }
     actualF = BTSearch(symBTree, f1);
-    actualF->parameterTypes = (int *) malloc(sizeof(int) * 1);
+    actualF->parameterTypes = (int *) malloc(sizeof(int));
     if (actualF->parameterTypes == NULL) {
         multiFree(f1, f2, f3, f4);
         return 99;
@@ -739,12 +734,13 @@ int addBuiltInFunctions(BTNodePtr symBTree) {
     actualF->declared = 1;
 
     //f2
+    strcpy(f2, "substr");
     result = BTInsertFunc(symBTree, var_string, f2);
     if (result != 0) {
         multiFree(f1, f2, f3, f4);
         return result;
     }
-    actualF = BTSearch(symBTree, f1);
+    actualF = BTSearch(symBTree, f2);
     if (actualF == NULL) {
         multiFree(f1, f2, f3, f4);
         return 3; //TODO: asi trojka?
@@ -764,12 +760,13 @@ int addBuiltInFunctions(BTNodePtr symBTree) {
     actualF->declared = 1;
 
     //f3
+    strcpy(f3, "asc");
     result = BTInsertFunc(symBTree, var_integer, f3);
     if (result != 0) {
         multiFree(f1, f2, f3, f4);
         return result;
     }
-    actualF = BTSearch(symBTree, f1);
+    actualF = BTSearch(symBTree, f3);
     if (actualF == NULL) {
         multiFree(f1, f2, f3, f4);
         return 3; //TODO: asi trojka?
@@ -787,12 +784,13 @@ int addBuiltInFunctions(BTNodePtr symBTree) {
     actualF->declared = 1;
 
     //f4
+    strcpy(f4, "chr");
     result = BTInsertFunc(symBTree, var_string, f4);
     if (result != 0) {
         multiFree(f1, f2, f3, f4);
         return result;
     }
-    actualF = BTSearch(symBTree, f1);
+    actualF = BTSearch(symBTree, f4);
     if (actualF == NULL) {
         multiFree(f1, f2, f3, f4);
         return 3; //TODO: asi trojka?
