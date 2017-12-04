@@ -234,6 +234,23 @@ switch(stateOfAutomat) {
                       addToString(token, '\\');
                   else if (isdigit(i))
                         addToString(token,i);
+                  else {
+                      int value[3];
+                      int j;
+                      for(j=0; (j<=2) && isdigit(i);j++)
+                      {
+                          value[j]=(i);
+                          i=getchar();
+                      }
+                      int result;
+                      if((result>=001) && (result<=255)) {
+                          if (j == 3) result = value[0] * 100 + value[1] * 10 + value[2];
+                          addToString(token,result);
+                          addToString(token,i);
+                      }
+                      else
+                          return ErrorInLexicalAnalyzer;
+                  }
               }
 
               else if (isprint(i))
