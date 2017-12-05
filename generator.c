@@ -2,6 +2,91 @@
 
 #define IFJcode17_ID 0
 
+// struktura pro docasne ukladani vystupniho kodu
+typedef struct outputCode{
+	char* str;
+	struct outputCode *next;
+} *outputCodePtr;
+
+outputCodePtr IFJoutput;
+outputCodePtr IFJoutputFirst;
+
+void output_init()
+{
+	IFJoutput = (outputCodePtr) malloc (sizeof(struct outputCode));
+	//TODO: malloc fail
+	IFJoutput->next = NULL;
+	IFJoutputFirst = IFJoutput;
+}
+
+void output_new(char *newStr)
+{
+	IFJoutput->str = (char *) malloc (sizeof(char)*strlen(newStr));
+	strcpy(IFJoutput->str, newStr);
+        IFJoutput->next = (outputCodePtr) malloc (sizeof (struct outputCode));
+        //TODO: malloc fail
+        IFJoutput = IFJoutput->next;
+	IFJoutput->next = NULL;
+}
+void output_print()
+{
+	outputCodePtr assist = IFJoutputFirst;
+	outputCodePtr deleted = assist;
+	while(assist != NULL)
+	{
+		deleted = assist;
+		if(assist->str != NULL)
+			printf("%s\n", assist->str);
+		free(assist->str);
+
+		assist = assist->next;
+		if(deleted != NULL)
+			free(deleted);
+	}
+}
+
+
+// stack for fuctions identificators
+#define fStackMax 500
+typedef struct fStack{
+	char *array[fStackMax];
+	int top;
+} *fStackPtr;
+void fStackPush(fStackPtr stack, char *id)
+{
+	stack->top += 1;
+	stack->array[stack->top] = id;
+}
+char *fStackTop(fStackPtr stack)
+{
+	return stack->array[stack->top];
+}
+void fStackPop(fStackPtr stack)
+{
+	stack->top -= 1;
+}
+// globalni zasobnik identifikatoru funkci
+struct fStack funcStackS;
+fStackPtr funcStack = &funcStackS;
+// najde id promenne v aktualni funkci
+BTItemPtr *fStackSearch(BTNodePtr BTree, char* id)
+{
+        BTItemPtr *item = BTSearch(BTree, fStackTop(funcStack));
+        if(item == NULL)
+	{
+		return NULL;
+	}
+	if(item->itemType == item_type_function)
+        {
+                return BTSearch(item->ParamRootPtr, id);
+        }
+	return NULL;
+}
+
+
+
+// global variable for initial print
+int hVarOnce = 0;
 
 // sLabel beginning
 
@@ -116,11 +201,14 @@ void gListPrint(gListPtr list)
                                 case Int2Float: printf("I2F"); break;
                                 case Float2Int: printf("F2I"); break;
                                 case Float2Int2Float: printf("F2I2F"); break;
-                                default: fprintf(stderr, "neznamy token[%d]", list->tokenID); break;
+				case Float2IntOsek: printf("F2IOs"); break;
+				case NoDataConversion: printf("NOCONV"); break;
+				case StrConcate: printf("STRCON"); break;
+                                default: fprintf(stderr, "#neznamy token[%d]", list->tokenID); break;
                         }
                         printf(" ");
                 }
-                else
+                else if (list->tokenID != valueOfString)
                 {
                         printf("%s ", list->data);
                 }
@@ -215,6 +303,15 @@ void IFJcode17_exprOptimalizeExecute(gListPtr first, gListPtr second, int op)
 	if(op >= Equal && op <= GreaterOrEqual)	// relacni operator - neoptimalizuje se
 		return;
 
+	if(first->tokenID == valueOfInteger || first->tokenID == valueOfDouble);
+	else
+		return;
+
+        if(second->tokenID == valueOfInteger || second->tokenID == valueOfDouble);
+        else
+                return;
+
+
 	double oFirst;
 	double oSecond;
 	double result;
@@ -286,9 +383,10 @@ int IFJcode17_exprOptimalize(gListPtr *list)
 
 
 
-void IFJcode17_exprConvTypesExecute(gListPtr *list, int *array)
+void IFJcode17_exprConvTypesExecute(gListPtr *list, int *array, int finalType)
 {
 	gListPtr listAssist = *list;
+	gListPtr listAssistPrev = listAssist;
 
 	unsigned int counter = 0;
         while(listAssist != NULL)
@@ -327,12 +425,25 @@ void IFJcode17_exprConvTypesExecute(gListPtr *list, int *array)
                         }
 		}
 		counter += 1;
+		listAssistPrev = listAssist;
 		listAssist = listAssist->next;
+	}
+
+
+
+	if(finalType == Int2Float || Float2Int) // pretypovani vysledku pro ulozeni do promenne
+	{
+		gListPtr newValue = (gListPtr) malloc (sizeof(struct gList));
+        	// TODO: malloc fail
+                newValue->tokenID = finalType;
+                newValue->next = NULL;
+                newValue->isOp = 1;
+                listAssistPrev->next = newValue;
 	}
 }
 
 
-void IFJcode17_exprConvTypes(gListPtr *list, BTNodePtr BTree)
+void IFJcode17_exprConvTypes(gListPtr *list, BTNodePtr BTree, int assignType)
 {
 	typedef struct gListConv{
 		int order;
@@ -353,16 +464,19 @@ void IFJcode17_exprConvTypes(gListPtr *list, BTNodePtr BTree)
 		index += 1;
 		if(listAssist->tokenID == ID)	// zpracovava se identifikator promenne
 		{
-			searchResult = BTSearch(BTree, listAssist->data);
+			//searchResult = BTSearch(BTree, listAssist->data);
+			searchResult = fStackSearch(BTree, listAssist->data);
+
 			if(searchResult == NULL)
 			{
-				fprintf(stderr, "Chyba generatoru. identifikator [%s] nenalezen v tabulce symbolu.", listAssist->data);
+				fprintf(stderr, "Chyba generatoru. identifikator [%s] nenalezen v tabulce symbolu.\n", listAssist->data);
 				return; // TODO: error codes
 			}
 			switch(searchResult->varData->type)
 			{
 				case var_integer: convListAssist->dataType = valueOfInteger; break;
 				case var_double: convListAssist->dataType = valueOfDouble; break;
+				case var_string: convListAssist->dataType = valueOfString; break;
 				default: fprintf(stderr, "Chyba generatoru. Konverze datovych typu se nepovedla.\n");
 			}
 		}
@@ -420,8 +534,8 @@ void IFJcode17_exprConvTypes(gListPtr *list, BTNodePtr BTree)
 		secondPtr = convListAssist;
 
 
-		if((first == valueOfInteger || first == valueOfDouble) &&
-		(second == valueOfInteger || second == valueOfDouble) &&
+		if((first == valueOfInteger || first == valueOfDouble || first == valueOfString) &&
+		(second == valueOfInteger || second == valueOfDouble || second == valueOfString) &&
 		(op >= Plus && op <= GreaterOrEqual))	// lze vypocitat
 		{
 			converted = 1;
@@ -464,6 +578,11 @@ void IFJcode17_exprConvTypes(gListPtr *list, BTNodePtr BTree)
                                                 convListAssist4->dataType = valueOfDouble;
                                                 array[convListAssist4->order] = Int2Float;
                                         }
+                                        else if(op == Plus && (first == valueOfString && second == valueOfString))
+                                        {
+                                                array[convListAssist4->next->order] = StrConcate;
+                                        }
+
                                         else if(first == valueOfDouble && second == valueOfInteger)
                                         {
                                                 convListAssist4->dataType = valueOfDouble;
@@ -487,7 +606,7 @@ void IFJcode17_exprConvTypes(gListPtr *list, BTNodePtr BTree)
 			}
 			convListAssist4->order = convListAssist->order;
 			convListAssist4->next = convListAssist->next; // preklenuti
-			// TODO: preklenuti (ztrata 2 ukazatelu)
+			// TODO: uvolneni preklenuti (ztrata 2 ukazatelu)
 			break;	// TODO
 		}
 
@@ -495,12 +614,32 @@ void IFJcode17_exprConvTypes(gListPtr *list, BTNodePtr BTree)
 	}
 	}
 
-	IFJcode17_exprConvTypesExecute(list, array);
+	int finalDataType = convListFirst->dataType;
+
+	if(finalDataType != assignType)	// nesouhlasi datovy typ vysledku a promenne do ktere se zapise
+	{
+		if(finalDataType == valueOfDouble && assignType == valueOfInteger)
+		{
+			IFJcode17_exprConvTypesExecute(list, array, Float2IntOsek);
+		}
+		else if(finalDataType == valueOfInteger && assignType == valueOfDouble)
+		{
+			IFJcode17_exprConvTypesExecute(list, array, Int2Float);
+		}
+		else if(finalDataType == valueOfString)
+		{
+			IFJcode17_exprConvTypesExecute(list, array, NoDataConversion);
+		}
+	}
+	else
+	{
+		IFJcode17_exprConvTypesExecute(list, array, NoDataConversion);	// typy souhlasi
+	}
 }
 
 
 // prevede vyraz na postfixovou (polskou) notaci
-gListPtr IFJcode17_toPostfix(tLinePtr *temp, BTNodePtr BTree)
+gListPtr IFJcode17_toPostfix(tLinePtr *temp, BTNodePtr BTree, int assignType)
 {
 	struct gStack st;
 	gStackPtr stack = &st;
@@ -508,10 +647,14 @@ gListPtr IFJcode17_toPostfix(tLinePtr *temp, BTNodePtr BTree)
 
 	//struct gList list;
 	gListPtr gListFirst = (gListPtr) malloc (sizeof(struct gList));
+	// TODO: malloc fail
 	gListInit(gListFirst);
 
 	while((*temp) != NULL)
 	{
+		if((*temp)->tokenID == Semicolon) // kvuli [Print (5 + 2); 1-1;]
+			break;
+
 		if((*temp)->tokenID == ID || (*temp)->tokenID == valueOfDouble ||
 		(*temp)->tokenID == valueOfString || (*temp)->tokenID == valueOfInteger ||
 		(*temp)->tokenID == valueOfDoubleWithExp) // zpracovava se operand
@@ -568,7 +711,7 @@ gListPtr IFJcode17_toPostfix(tLinePtr *temp, BTNodePtr BTree)
 	printf("\n# Vyraz po optimalizaci (predpocitani konstant): ");
 	gListPrint(gListFirst);
 	printf("\n# Vyraz po implicitni konverzi datovych typu: ");
-	IFJcode17_exprConvTypes(&gListFirst, BTree);
+	IFJcode17_exprConvTypes(&gListFirst, BTree, assignType);
 	gListPrint(gListFirst);
 	printf("\n# -------- KONEC TESTU --------\n\n");
 
@@ -577,10 +720,10 @@ gListPtr IFJcode17_toPostfix(tLinePtr *temp, BTNodePtr BTree)
 
 
 // vyhodnoceni vyrazu bez pravdivostnich hodnot a relacnich opteratoru (true, false)
-void IFJcode17_evalExpr(tLinePtr *temp, BTNodePtr BTree)
+void IFJcode17_evalExpr(tLinePtr *temp, BTNodePtr BTree, int assignType)
 {
         gListPtr list, assistList;
-	list = IFJcode17_toPostfix(temp, BTree);	// ulozeni vytupniho seznamu vyrazu v postfixu
+	list = IFJcode17_toPostfix(temp, BTree, assignType);	// ulozeni vytupniho seznamu vyrazu v postfixu
 	assistList = list;
 	while(assistList != NULL)
 	{
@@ -588,6 +731,19 @@ void IFJcode17_evalExpr(tLinePtr *temp, BTNodePtr BTree)
 		{
 			switch(assistList->tokenID)
 			{
+				case StrConcate:
+							printf("PUSHFRAME\n");
+							printf("CREATEFRAME\n");
+							printf("DEFVAR TF@Concate1\n");
+                                                        printf("DEFVAR TF@Concate2\n");
+                                                        printf("POPS TF@Concate2\n");
+                                                        printf("POPS TF@Concate1\n");
+							printf("CONCAT TF@Concate1 TF@Concate1 TF@Concate2\n");
+							printf("PUSHS TF@Concate1\n");
+							printf("POPFRAME\n");
+							assistList = assistList->next; break;
+
+				case Float2IntOsek:	printf("FLOAT2R2EINTS\n"); break; // nakonec nejde o oseknuti (asi)
 				case Float2Int2Float: 	printf("FLOAT2R2EINTS\n");
 							printf("INT2FLOATS\n"); break;
 				case Int2Float: printf("INT2FLOATS\n"); break;
@@ -637,14 +793,19 @@ void IFJcode17_evalExpr(tLinePtr *temp, BTNodePtr BTree)
                         	{
                                 	case valueOfInteger: printf("int@"); break;
                                		case valueOfDouble: printf("float@"); break;
-                        		// TODO: relacni operatory
+                        		case valueOfString:
+								IFJcode17_writeString(assistList->data);
+								printf("\n");
+								break;
+					// TODO: relacni operatory
 				}
 			}
 			else
 			{
 				printf("LF@");
 			}
-			printf("%s\n", assistList->data);
+			if(assistList->tokenID != valueOfString)
+				printf("%s\n", assistList->data);
 		}
 		assistList = assistList->next;
 	}
@@ -660,7 +821,7 @@ void IFJcode17_if(tLinePtr *temp, BTNodePtr BTree)
 	if((*temp)->next != NULL)
 		*temp = (*temp)->next;
 	if((*temp)->tokenID != Then)
-		IFJcode17_evalExpr(temp, BTree);
+		IFJcode17_evalExpr(temp, BTree, 0);
 	printf("PUSHS bool@true\n");
 	printf("JUMPIFNEQS LABELIF%d", sLabelTop(sLabelIf));
 	while((*temp)->tokenID != Then)
@@ -706,7 +867,7 @@ void IFJcode17_dowhile(tLinePtr *temp, BTNodePtr BTree)
 	printf("LABEL LABELLOOP%d\n", sLabelTop(sLabelLoop));
 
 	if((*temp)->tokenID != While)
-		IFJcode17_evalExpr(temp, BTree);
+		IFJcode17_evalExpr(temp, BTree, 0);
 
 	printf("PUSHS bool@true\n");
 	printf("JUMPIFNEQS LABELLOOPEND%d", sLabelTop(sLabelLoop));
@@ -726,75 +887,81 @@ void IFJcode17_loop(tLinePtr *temp)
 
 // pomocna funkce pro generovani instrukce WRITE
 // vytiskne na stdout lomitko a za nim tricifernou ascii hodnotu jednoho znaku
-void IFJcode17_writechar(char character, int special)
+void IFJcode17_writechar(int character)
 {
+
+	if(character < 0)
+	{
+		character = 256 + character;
+	}
 	printf("\\");
-	if(special == 0) // zpracovani normalniho znaku
-	{
 		if(character < 100)
-		{
 			printf("0");
-		}
+		if(character < 10)
+			printf("0");
 		printf("%d", character);
-	}
-	else	// zpracovani specialniho znaku (\n, \t,...)
-	{
-		printf("0");
-		switch(character)
-		{
-			case 'n': printf("%d", '\n');	break;
-			case 't': printf("%d", '\t');	break;
-			case '\\': printf("%d", '\\');	break;
-			case 34: printf("%d", 34);	break; // uvozovky "
-			default: fprintf(stderr, "Chyba generatoru, neznama backslash sekvence v prikazu Print\n");
-		}
-	}
+
 }
 
 // vytisknuti retezce na stdout podle pravidel IFJcode17
-void IFJcode17_writeString(tLinePtr temp)
+void IFJcode17_writeString(char *myString)
 {
-	int special = 0; // udava jestli je znak specialni (\n, \t,...)
-
 	printf("string@");
-        for(int i = 0; temp->token->myString[i] != '\0'; i++)
+        for(int i = 0; myString[i] != '\0'; i++)
         {
-		if(temp->token->myString[i] == '\\')
-		{
-			special = 1;
-			continue;
-		}
-      		if(temp->token->myString[i] == '"') // ignorovani " na konci
-        	{
- 			if(temp->token->myString[i+1] != '\0')
-        		{
-        			IFJcode17_writechar(temp->token->myString[i], special);
-        		}
-        	}
-        	else
-        		IFJcode17_writechar(temp->token->myString[i], special);
-		special = 0;
+        	IFJcode17_writechar(myString[i]);
 	}
 }
 
 // generovani instrukce WRITE
-void IFJcode17_write(tLinePtr *temp)
+void IFJcode17_write(tLinePtr *temp,  BTNodePtr BTree)
 {
         *temp = (*temp)->next;
         while(*temp != NULL)
         {
-                if((*temp)->tokenID != Semicolon)
-                        printf("WRITE ");
+                //if((*temp)->tokenID != Semicolon)
+                //        printf("WRITE ");
 
                 if((*temp)->tokenID == Semicolon)
                         *temp = (*temp)->next;
                 else if((*temp)->tokenID == Exclamation)
                 {
                         *temp = (*temp)->next;
-			IFJcode17_writeString(*temp);
+			IFJcode17_writeString((*temp)->token->myString);
                         *temp = (*temp)->next;
                         if((*temp) != NULL)
 				printf("\n");
+                }
+
+		if(*temp != NULL)
+		{
+			IFJcode17_evalExpr(temp, BTree, 0);
+			printf("CREATEFRAME\n");
+			printf("DEFVAR TF@WriteHelp\n");
+			printf("POPS TF@WriteHelp\n");
+			printf("WRITE TF@WriteHelp\n");
+		}
+/*
+		else if((*temp)->tokenID == valueOfString)
+                {
+                        IFJcode17_writeString((*temp)->token->myString);
+                        *temp = (*temp)->next;
+                        if((*temp) != NULL)
+                                printf("\n");
+                }
+                else if((*temp)->tokenID == valueOfInteger)
+                {
+			printf("int@%s", (*temp)->token->myString);
+                        *temp = (*temp)->next;
+                        if((*temp) != NULL)
+                                printf("\n");
+                }
+                else if((*temp)->tokenID == valueOfDouble)
+                {
+                        printf("float@%s", (*temp)->token->myString);
+                        *temp = (*temp)->next;
+                        if((*temp) != NULL)
+                                printf("\n");
                 }
                 else if((*temp)->tokenID == ID)
                 {
@@ -803,31 +970,93 @@ void IFJcode17_write(tLinePtr *temp)
                 	if((*temp) != NULL)
 				printf("\n");
 		}
+*/
         }
+
 }
+
+// generovani inicializace promenne na 0
+void IFJcode17_varInit(tLinePtr *temp, BTNodePtr BTree)
+{
+	printf("DEFVAR LF@%s\n", (*temp)->next->token->myString);
+	BTItemPtr *item = fStackSearch(BTree, (*temp)->next->token->myString); // pokus o nelezeni id v aktualni funkci
+        if(item != NULL)
+        {
+		printf("MOVE LF@%s ", (*temp)->next->token->myString);
+                if(item->varData->type == var_integer)
+			printf("int@0\n");
+                else if(item->varData->type == var_double)
+			printf("float@0\n");
+		else if(item->varData->type == var_string)
+                        printf("string@\n");
+        }
+
+}
+
+// prirazeni vysledku funkce
+void IFJcode17_funcAssign(tLinePtr *temp)
+{
+	if((*temp)->next != NULL)
+		*temp = (*temp)->next;
+
+	while((*temp)->next != NULL)
+	{
+		if((*temp)->tokenID == ID)
+			printf("PUSHS LF@%s\n", (*temp)->token->myString);
+		else if((*temp)->tokenID == valueOfInteger)
+			printf("PUSHS int@%s\n", (*temp)->token->myString);
+                else if((*temp)->tokenID == valueOfDouble || (*temp)->tokenID == valueOfDoubleWithExp)
+                        printf("PUSHS float@%s\n", (*temp)->token->myString);
+                else if((*temp)->tokenID == valueOfString)
+                        printf("PUSHS string@%s\n", (*temp)->token->myString);
+			// TODO: correct string
+
+		*temp = (*temp)->next;
+	}
+}
+
+
 
 // generovani prirazeni do promenne
 void IFJcode17_varAssign(tLinePtr *temp, BTNodePtr BTree)
 {
 	char *varNameHolder = (*temp)->token->myString;
-	*temp = (*temp)->next->next;
-	/*switch((*temp)->tokenID)
+	while((*temp)->tokenID != Equal) // zbaveni se vsech tokenu az po Equal
+		*temp = (*temp)->next;
+	*temp = (*temp)->next;	// zbaveni se tokenu Equal (=) printf ("TU\n");
+
+
+	BTItemPtr *item = fStackSearch(BTree, varNameHolder); // pokus o nelezeni id v aktualni funkci
+	int assignType = 0;
+
+	if(item != NULL)
 	{
-		case valueOfInteger:
-			IFJcode17_evalExpr(temp);
-			//printf("int@%s", (*temp)->token->myString);
-			break;
-		case valueOfDouble:
-			printf("float@%s", (*temp)->token->myString);
-			break;
-		case valueOfDoubleWithExp:
-			// TODO: uprava Exp ?
-			break;
-		case valueOfString:
-			IFJcode17_writeString(*temp);
-			break;
-	}*/
-	IFJcode17_evalExpr(temp, BTree);
+		if(item->varData->type == var_integer)
+			assignType = valueOfInteger;
+		else if(item->varData->type == var_double)
+       			assignType = valueOfDouble;
+	}
+	if(*temp != NULL)
+	{
+		if((*temp)->tokenID == ID)
+		{
+			item = BTSearch(BTree, (*temp)->token->myString);	// vyhledani prvniho operandu ve vyrazu (jestli je to funkce nebo promenna)
+			if(item != NULL)
+			{
+				if(item->itemType == item_type_function)
+				{
+					char *funcNameHolder = (*temp)->token->myString;
+					IFJcode17_funcAssign(temp);
+					printf("CALL %s\n", funcNameHolder);
+					printf("POPFRAME\n");
+					printf("POPS LF@%s ", varNameHolder);
+					return;
+				}
+			}
+		}
+	}
+
+	IFJcode17_evalExpr(temp, BTree, assignType);
 
 	printf("POPS LF@%s ", varNameHolder);
 }
@@ -839,8 +1068,8 @@ void IFJcode17_input(tLinePtr *temp, BTNodePtr BTree)
 	if((*temp)->next != NULL)
 		*temp = (*temp)->next;
 	printf("READ LF@%s ", (*temp)->token->myString);
-
-	BTItemPtr *var_btPtr = BTSearch(BTree, (*temp)->token->myString);
+	//BTItemPtr *var_btPtr = BTSearch(BTree, (*temp)->token->myString);
+        BTItemPtr *var_btPtr = fStackSearch(BTree, (*temp)->token->myString);
 
 	if(var_btPtr->itemType == item_type_variable)
 	{
@@ -855,9 +1084,66 @@ void IFJcode17_input(tLinePtr *temp, BTNodePtr BTree)
 	}
 }
 
+// Zpracovani parametru funkce pri definici
+void IFJcode17_functionParams(tLinePtr *temp)
+{
+	if((*temp)->next != NULL)
+		*temp = (*temp)->next;
 
+	struct fStack paramStackS;
+	fStackPtr paramStack = &paramStackS;
+	paramStack->top = 0;
+	while((*temp) != NULL)
+	{
+		if((*temp)->tokenID == ID)
+		{
+			printf("DEFVAR LF@%s\n", (*temp)->token->myString);
+			fStackPush(paramStack, (*temp)->token->myString);
+		//	printf("POPS LF@%s\n", (*temp)->token->myString);
+		}
+		*temp = (*temp)->next;
+	}
+	while(paramStack->top != 0)
+	{
+		printf("POPS LF@%s\n", fStackTop(paramStack));
+		fStackPop(paramStack);
+	}
+}
+
+
+// Zpracovani definice funkce
+void IFJcode17_function(tLinePtr *temp)
+{
+	if((*temp)->next != NULL)
+		*temp = (*temp)->next;
+
+	fStackPush(funcStack, (*temp)->token->myString);
+	printf("LABEL %s\n", (*temp)->token->myString);
+	printf("CREATEFRAME\n");
+	printf("PUSHFRAME\n");
+	IFJcode17_functionParams(temp);
+}
+
+
+
+// Generovani jednoho radku vstupniho kodu
 int generateLine(tLinePtr tInput, BTNodePtr BTree)
 {
+	if(hVarOnce == 0) // probehne jednou na zacatku
+	{
+		hVarOnce = 1;
+		output_init();
+		printf(".IFJcode17\n");
+		printf("CALL $Scope\n");
+		//output_new(".IFJcode17");
+		//output_print();
+		char *tempScope = (char *) malloc (sizeof(char) * strlen ("@Scope"));
+		// TODO: malloc fail + uvolnit
+		strcpy(tempScope, "@Scope");
+		fStackPush(funcStack, tempScope);
+		IFJcode17_embeddedFunctions();	// vypise na zacatek 4 vestavene funkce ze zadani
+	}
+
 	tLinePtr temp = tInput;
 	do
 	{
@@ -880,16 +1166,33 @@ int generateLine(tLinePtr tInput, BTNodePtr BTree)
 				{
 					IFJcode_ifend(&temp);
 				}
+				else if(temp->next->tokenID == Function)
+				{
+                                        BTItemPtr *item = BTSearch(BTree, fStackTop(funcStack));
+                                        if(item != NULL)
+                                        {
+                                                if(item->returnType == var_integer)
+                                                        printf("PUSHS int@0\n");
+                                                if(item->returnType == var_double)
+							printf("PUSHS float@0\n");
+                                                if(item->returnType == var_string)
+							printf("PUSHS string@\n");
+					}
+					printf("RETURN");
+					fStackPop(funcStack);
+				}
 			    }
 			    if(temp->next != NULL)
 				temp = temp->next;
 			    break;
 			case Scope:
+			    printf("\n\nLABEL $Scope\n");
 			    printf("CREATEFRAME\n");
-			    printf("PUSHFRAME");
-			    break;
+			    printf("PUSHFRAME\n");
+			    printf("CREATEFRAME");
+    			    break;
 			case Dim:
-			    printf("DEFVAR ");
+			    IFJcode17_varInit(&temp, BTree);
 			    break;
 			case As:
 				// TODO: inicializace "Dim promenna as Integer = 3"
@@ -899,19 +1202,54 @@ int generateLine(tLinePtr tInput, BTNodePtr BTree)
 			    {
 				    if(temp->next->tokenID == Equal)
 			    		IFJcode17_varAssign(&temp, BTree);
-				    else
-					printf("LF@%s", temp->token->myString);
+				    else if(temp->next->tokenID == As)
+				    {
+				        if(temp->next->next != NULL)
+					{
+						if(temp->next->next->next != NULL)
+						 if(temp->next->next->next->tokenID == Equal)
+							IFJcode17_varAssign(&temp, BTree);
+					}
+				    }
 			    }
 			    else
 				printf("LF@%s", temp->token->myString);
 			    break;
+			case Function:
+			    IFJcode17_function(&temp);
+			    break;
+			case Declare:
+			    while(temp->next != NULL)
+			    {
+				temp = temp->next;
+			    }
+			    break;
+			case Return:
+			    if(temp->next != NULL)
+			    {
+				temp = temp->next;
+				if(temp != NULL)
+				{
+					BTItemPtr *item = BTSearch(BTree, fStackTop(funcStack));
+					if(item != NULL)
+					{
+						if(item->returnType == var_integer)
+							IFJcode17_evalExpr(&temp, BTree, valueOfInteger);
+						if(item->returnType == var_double)
+                                                	IFJcode17_evalExpr(&temp, BTree, valueOfDouble);
+                                                if(item->returnType == var_string)
+                                                	IFJcode17_evalExpr(&temp, BTree, valueOfString);
+					}
+				}
+				printf("RETURN\n");
+			    }
+			    break;
 			case Equal:
 			    break;
 			case Print:
-			    IFJcode17_write(&temp);
+			    IFJcode17_write(&temp, BTree);
 			    break;
 			case valueOfString:
-			    //IFJcode17_write(temp);
 			    break;
 			case Input:
 			    IFJcode17_input(&temp, BTree);
@@ -936,6 +1274,18 @@ int generateLine(tLinePtr tInput, BTNodePtr BTree)
 	printf("\n");
 	return 1;
 }
+
+
+// vypsani vestavenych funkci prekladace
+void IFJcode17_embeddedFunctions()
+{
+
+
+
+
+}
+
+
 
 /*
 // pomocna funkce pro main

@@ -5,12 +5,13 @@
 #include "parser.h"
 #include "scanner.h"
 #include "semantic_check.h"
+#include "generator.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
 #define MAX_STACK       10000000
-#define STRING_SIZE     20
+#define STRING_SIZE     50
 
 /* definitions of LL non-terminals */
 #define S                    0     // 201    index in ll array
