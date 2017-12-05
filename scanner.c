@@ -102,7 +102,8 @@ int getNextToken(TString *token) {
                         stateOfAutomat = 0;
                     else {
                         ungetc(i, stdin);
-                        return EndOfLine;
+                        //return EndOfLine;
+                        return ErrorInLexicalAnalyzer;
                     }
                 } else if (i == EOF)
                     return ErrorInLexicalAnalyzer;
