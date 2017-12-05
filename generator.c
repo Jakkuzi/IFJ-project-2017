@@ -321,33 +321,60 @@ void IFJcode17_exprOptimalizeExecute(gListPtr first, gListPtr second, int op)
 	switch(op)
 	{
 		case Plus:
-			result = oFirst + oSecond;
-			if(first->tokenID == valueOfDouble || second->tokenID == valueOfDouble)
+			if(first->tokenID == valueOfInteger && second->tokenID == valueOfInteger)
+			{
+				int result = oFirst + oSecond;
+				sprintf(first->data, "%d", result);
+			}
+			else if(first->tokenID == valueOfDouble || second->tokenID == valueOfDouble)
+			{
+				result = oFirst + oSecond;
 				first->tokenID = valueOfDouble;
+			}
 			break;
 		case Minus:
-			result = oFirst - oSecond;
-                        if(first->tokenID == valueOfDouble || second->tokenID == valueOfDouble)
+                        if(first->tokenID == valueOfInteger && second->tokenID == valueOfInteger)
+                        {
+                                int result = oFirst - oSecond;
+                                sprintf(first->data, "%d", result);
+                        }
+                        else if(first->tokenID == valueOfDouble || second->tokenID == valueOfDouble)
+                        {
+                                result = oFirst - oSecond;
                                 first->tokenID = valueOfDouble;
+                        }
 			break;
 		case Mul:
-			result = oFirst * oSecond;
-                        if(first->tokenID == valueOfDouble || second->tokenID == valueOfDouble)
+                        if(first->tokenID == valueOfInteger && second->tokenID == valueOfInteger)
+                        {
+                                int result = oFirst * oSecond;
+                                sprintf(first->data, "%d", result);
+                        }
+                        else if(first->tokenID == valueOfDouble || second->tokenID == valueOfDouble)
+                        {
+                                result = oFirst * oSecond;
                                 first->tokenID = valueOfDouble;
+                        }
 			break;
 		case Div:
 			result = oFirst / oSecond;
 			first->tokenID = valueOfDouble;
 			break;
 		case IntDiv:
+			{
+			int result; 	// rozsah integer
 			result = IFJcode17_exprDouble2Int(oFirst) / IFJcode17_exprDouble2Int(oSecond);
-			result = (int) result;
+			//result = (int) result2;
+			sprintf(first->data, "%d", result);
 			first->tokenID = valueOfInteger;
 			break;
+			}
 
 		default: fprintf(stderr, "Optimalizator - neznamy operand\n");
 	}
-	sprintf(first->data, "%g", result);
+	if(op == IntDiv || ((first->tokenID == valueOfInteger && second->tokenID == valueOfInteger) && (op == Plus || op == Minus || op == Mul)))
+	;else
+		sprintf(first->data, "%g", result);
 	first->isOp = 0;
 	first->isConst = 1;
 }
@@ -393,7 +420,7 @@ void IFJcode17_exprConvTypesExecute(gListPtr *list, int *array, int finalType)
         {
 		if(array[counter] != 0)
 		{
-			if(listAssist->tokenID == ID || (listAssist->tokenID >= Plus && listAssist->tokenID <= IntDiv)) // ID nebo operand
+			if(listAssist->tokenID == valueOfString || listAssist->tokenID == ID || (listAssist->tokenID >= Plus && listAssist->tokenID <= IntDiv)) // ID nebo operand
 			{
 				gListPtr newValue = (gListPtr) malloc (sizeof(struct gList));
 				// TODO: malloc fail
@@ -431,15 +458,15 @@ void IFJcode17_exprConvTypesExecute(gListPtr *list, int *array, int finalType)
 
 
 
-	if(finalType == Int2Float || Float2Int) // pretypovani vysledku pro ulozeni do promenne
-	{
+//	if(finalType == Int2Float || Float2Int) // pretypovani vysledku pro ulozeni do promenne
+//	{
 		gListPtr newValue = (gListPtr) malloc (sizeof(struct gList));
         	// TODO: malloc fail
                 newValue->tokenID = finalType;
                 newValue->next = NULL;
                 newValue->isOp = 1;
                 listAssistPrev->next = newValue;
-	}
+//	}
 }
 
 
@@ -615,7 +642,6 @@ void IFJcode17_exprConvTypes(gListPtr *list, BTNodePtr BTree, int assignType)
 	}
 
 	int finalDataType = convListFirst->dataType;
-
 	if(finalDataType != assignType)	// nesouhlasi datovy typ vysledku a promenne do ktere se zapise
 	{
 		if(finalDataType == valueOfDouble && assignType == valueOfInteger)
@@ -626,7 +652,7 @@ void IFJcode17_exprConvTypes(gListPtr *list, BTNodePtr BTree, int assignType)
 		{
 			IFJcode17_exprConvTypesExecute(list, array, Int2Float);
 		}
-		else if(finalDataType == valueOfString)
+		else// if(finalDataType == valueOfString)
 		{
 			IFJcode17_exprConvTypesExecute(list, array, NoDataConversion);
 		}
