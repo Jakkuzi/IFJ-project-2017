@@ -12,7 +12,8 @@ int getNextToken(TString *token) {
     while (1) {
 
         i = getchar();
-        i = tolower(i);
+        if (stateOfAutomat != 5)
+            i = tolower(i);
 
         switch (stateOfAutomat) {
 
@@ -201,6 +202,7 @@ int getNextToken(TString *token) {
             case 4:          //riadkovy komentar
                 if (i == '\n') {
                     stateOfAutomat = 0;
+                    ungetc(i, stdin);
                     return EndOfLine;
                 }
                 break;
