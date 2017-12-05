@@ -11,6 +11,7 @@ int getNextToken(TString *token) {
     while (1) {
 
         i = getchar();
+        if(stateOfAutomat!=5)
         i = tolower(i);
 
 switch(stateOfAutomat) {
@@ -234,7 +235,7 @@ switch(stateOfAutomat) {
                  else if (isdigit(i))
                      addToString(token, i);
                  else {
-                     int value[3];
+                     int value[4];
                      int j;
                      for (j = 0; (j <= 2) && isdigit(i); j++) {
                          value[j] = i - '0';
