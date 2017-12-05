@@ -414,6 +414,8 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                                 var = BTSearch(actualFunction->ParamRootPtr, tmp->token->myString);
                                 if(var == NULL)
                                     return 3;
+                                if(var->itemType != item_type_variable)
+                                    return 3;
 
                                 switch(var->varData->type){ // kontrola typu
                                     case var_string:
@@ -577,9 +579,9 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                                 break;
                             case ID:
                                 var = BTSearch(symBTree, tmp->token->myString);
-                                if(var->itemType != item_type_variable)
-                                    return 4;
                                 if(var == NULL)
+                                    return 3;
+                                if(var->itemType != item_type_variable)
                                     return 3;
 
                                 switch(var->varData->type){ // kontrola typu
