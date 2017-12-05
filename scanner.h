@@ -11,7 +11,7 @@
 #define ID                      11
 #define valueOfInteger          12
 #define valueOfDouble           13
-//#define valueOfDoubleWithExp    14
+#define valueOfDoubleWithExp    14
 #define valueOfString           15
 // klucove slova
 
