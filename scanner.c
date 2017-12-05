@@ -232,7 +232,7 @@ switch(stateOfAutomat) {
                   else if (i == '\\')
                       addToString(token, '\\');
                   else {
-                      int value[3];
+                      int value[4];
                       int j;
                       for(j=0; (j<=2) && isdigit(i);j++)
                       {
