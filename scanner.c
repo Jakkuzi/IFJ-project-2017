@@ -3,146 +3,132 @@
 int getNextToken(TString *token) {
 
 
-  int stateOfAutomat=0;
-  int i;
-  //int aux;
-  stringClean(token);
+    int stateOfAutomat = 0;
+    int i;
+    //int aux;
+    stringClean(token);
 
 
     while (1) {
 
         i = getchar();
         i = tolower(i);
-switch(stateOfAutomat) {
+        switch (stateOfAutomat) {
 
-        case 0:
-          if (i==EOL)
-            return EndOfLine;
-          if (isspace(i)) // zistuje biele znaky
-              stateOfAutomat=0;
-          else if (i=='/'){  // komentar alebo delenie
-                stateOfAutomat=1;
-          }
-          else if (isalpha(i) || (i=='_')) {// identifikator,klucove slovo alebo rezervovane klucove slovo
-               addToString(token,i);
-               stateOfAutomat=3;
-          }
-           else if (i == '0') {
-                        i=getchar();
-                        if (!isdigit(i)) {
-                        addToString(token,'0');
+            case 0:
+                if (i == EOL)
+                    return EndOfLine;
+                if (isspace(i)) // zistuje biele znaky
+                    stateOfAutomat = 0;
+                else if (i == '/') {  // komentar alebo delenie
+                    stateOfAutomat = 1;
+                } else if (isalpha(i) || (i == '_')) {// identifikator,klucove slovo alebo rezervovane klucove slovo
+                    addToString(token, i);
+                    stateOfAutomat = 3;
+                } else if (i == '0') {
+                    i = getchar();
+                    if (!isdigit(i)) {
+                        addToString(token, '0');
                         stateOfAutomat = 6;
-                      }
-                      ungetc(i,stdin);
-                     }
-          else if (isdigit(i)){         //cislo
-                 addToString(token,i);
-                 stateOfAutomat=6;
-          }
-          else if (i=='!'){             //retazcovy literal
-                 i = getchar();
-                 if(i != '"')
-                 return ErrorInLexicalAnalyzer;
-                 stateOfAutomat = 5;
-                 }
-          else if (i=='<'){
-                 addToString(token,i);
-                 stateOfAutomat=11;}
-          else if (i=='\''){           //jednoriadkovy komentar
-                 //addToString(token,i);
-                 stateOfAutomat=4;}
-          else if (i=='>') {
-              addToString(token, i);
-              stateOfAutomat = 12;
-          }
-          else if (i=='+') {
-          addToString(token, i);
-          return Plus;
-      }
-          else if (i=='-') {
-          addToString(token, i);
-          return Minus;
-      }
-          else if (i=='*')  {
-          addToString(token,i);
-          return Mul;
-      }
-/**/      else if (i=='\\') {
-          addToString(token, i);
-          return IntDiv;
-      }
-          else if (i=='=') {
-          addToString(token, i);
-          return Equal;
-      }
-          else if (i=='(') {
-          addToString(token, i);
-          return LeftParenthes;
-      }
-          else if (i==')') {
-          addToString(token, i);
-          return RightParenthes;
-      }
-          else if (i=='{') {
-          addToString(token, i);
-          return LeftBrace;
-      }
-          else if (i=='}') {
-          addToString(token, i);
-          return RightBrace;
-      }
-          else if (i==',') {
-          addToString(token, i);
-          return Comma;
-      }
-          else if (i==';') {
-          addToString(token, i);
-          return Semicolon;
-      }
-          else if (i==EOF)
-                  return EndOfFile;
-          else
-                  return ErrorInLexicalAnalyzer;
-        break;
+                    }
+                    ungetc(i, stdin);
+                } else if (isdigit(i)) {         //cislo
+                    addToString(token, i);
+                    stateOfAutomat = 6;
+                } else if (i == '!') {             //retazcovy literal
+                    i = getchar();
+                    if (i != '"')
+                        return ErrorInLexicalAnalyzer;
+                    stateOfAutomat = 5;
+                } else if (i == '<') {
+                    addToString(token, i);
+                    stateOfAutomat = 11;
+                } else if (i == '\'') {           //jednoriadkovy komentar
+                    //addToString(token,i);
+                    stateOfAutomat = 4;
+                } else if (i == '>') {
+                    addToString(token, i);
+                    stateOfAutomat = 12;
+                } else if (i == '+') {
+                    addToString(token, i);
+                    return Plus;
+                } else if (i == '-') {
+                    addToString(token, i);
+                    return Minus;
+                } else if (i == '*') {
+                    addToString(token, i);
+                    return Mul;
+                }
+/**/      else if (i == '\\') {
+                    addToString(token, i);
+                    return IntDiv;
+                } else if (i == '=') {
+                    addToString(token, i);
+                    return Equal;
+                } else if (i == '(') {
+                    addToString(token, i);
+                    return LeftParenthes;
+                } else if (i == ')') {
+                    addToString(token, i);
+                    return RightParenthes;
+                } else if (i == '{') {
+                    addToString(token, i);
+                    return LeftBrace;
+                } else if (i == '}') {
+                    addToString(token, i);
+                    return RightBrace;
+                } else if (i == ',') {
+                    addToString(token, i);
+                    return Comma;
+                } else if (i == ';') {
+                    addToString(token, i);
+                    return Semicolon;
+                } else if (i == EOF)
+                    return EndOfFile;
+                else
+                    return ErrorInLexicalAnalyzer;
+                break;
 
-        case 1:
-          if(i=='\'')
-            stateOfAutomat=2;
-          else{
-            ungetc(i,stdin);
-            addToString(token, '/');
-            return Div;
-          }
-         break;
+            case 1:
+                if (i == '\'')
+                    stateOfAutomat = 2;
+                else {
+                    ungetc(i, stdin);
+                    addToString(token, '/');
+                    return Div;
+                }
+                break;
 
-        case 2:           //blokovy komentar
-          if (i=='\''){
-            i=getchar();
-            if (i=='/')
-              stateOfAutomat=0;
-            else{
-              ungetc(i,stdin);
-              return EndOfLine;
-            }
-           }
-          else if (i==EOF)
-            return ErrorInLexicalAnalyzer;
-        break;
+            case 2:           //blokovy komentar
+                if (i == '\'') {
+                    i = getchar();
+                    if (i == '/')
+                        stateOfAutomat = 0;
+                    else {
+                        ungetc(i, stdin);
+                        return EndOfLine;
+                    }
+                } else if (i == EOF)
+                    return ErrorInLexicalAnalyzer;
+                break;
 
-        
 
             case 3:
                 if (isalnum(i) || (i == '_')) //identifikator
                     addToString(token, i);
-                else if (compareStringAndString(token, "asc") == 0)
+                else if (compareStringAndString(token, "asc") == 0) {
+                    ungetc(i, stdin);
                     return ID;
-                else if (compareStringAndString(token, "chr") == 0)
+                } else if (compareStringAndString(token, "chr") == 0) {
+                    ungetc(i, stdin);
                     return ID;
-                else if (compareStringAndString(token, "length") == 0)
+                } else if (compareStringAndString(token, "length") == 0) {
+                    ungetc(i, stdin);
                     return ID;
-                else if (compareStringAndString(token, "substr") == 0)
+                } else if (compareStringAndString(token, "substr") == 0) {
+                    ungetc(i, stdin);
                     return ID;
-                else {
+                } else {
                     ungetc(i, stdin);
                     if (compareStringAndString(token, "as") == 0)  //rezervovane slova
                         return As;
@@ -210,81 +196,69 @@ switch(stateOfAutomat) {
                         return ID;
 
                 }
-
+                break;
             case 4:          //riadkovy komentar
-                if (i == '\n'){
+                if (i == '\n') {
                     stateOfAutomat = 0;
                     return EndOfLine;
                 }
                 break;
 
 
-         case 5:
-    
-	    if (i== '\\'){
-                  i = getchar();
-                  if (i == '"')
-                      addToString(token, '"');
-                  else if (i == 'n')
-                      addToString(token, '\n');
-                  else if (i == 't')
-                      addToString(token, '\t');
-                  else if (i == '\\')
-                      addToString(token, '\\');
-                  else {
-                      int value[4];
-                      int j;
-                      for(j=0; (j<=2) && isdigit(i);j++)
-                      {
-                          value[j]=i - '0';
-			  if(j+1 <= 2)
-                          i=getchar();
-                      }
-                      int result;
-                          if (j == 3) result = value[0] * 100 + value[1] * 10 + value[2];
-		if((result>=001) && (result<=255))
-                         {
-			   addToString(token, (int)result);
-			 }
-			else
-			{
-                          return ErrorInLexicalAnalyzer;
-                	}
-		}
-              }
+            case 5:
 
-              else if (isprint(i))
-              {
+                if (i == '\\') {
+                    i = getchar();
+                    if (i == '"')
+                        addToString(token, '"');
+                    else if (i == 'n')
+                        addToString(token, '\n');
+                    else if (i == 't')
+                        addToString(token, '\t');
+                    else if (i == '\\')
+                        addToString(token, '\\');
+                    else {
+                        int value[4];
+                        int j;
+                        for (j = 0; (j <= 2) && isdigit(i); j++) {
+                            value[j] = i - '0';
+                            if (j + 1 <= 2)
+                                i = getchar();
+                        }
+                        int result;
+                        if (j == 3) result = value[0] * 100 + value[1] * 10 + value[2];
+                        if ((result >= 001) && (result <= 255)) {
+                            addToString(token, (int) result);
+                        } else {
+                            return ErrorInLexicalAnalyzer;
+                        }
+                    }
+                } else if (isprint(i)) {
 
-                  if(i == '"')
-                      return valueOfString;
-                  addToString(token,i);
-              }
+                    if (i == '"')
+                        return valueOfString;
+                    addToString(token, i);
+                } else {
+                    ungetc(i, stdin);
+                    return ErrorInLexicalAnalyzer;
+                }
+                break;
 
-              else{
-                  ungetc(i,stdin);
-                  return ErrorInLexicalAnalyzer;
-              }
-              break;
-         
-         case 6:
-           if (isdigit(i)){
-              addToString(token,i);
-              stateOfAutomat=6;
-           }
-           else if (i=='.'){
-                    addToString(token,i);
-                    stateOfAutomat=7;
-           }
-           else if ((i=='E') || (i=='e')){
-                   addToString(token,i);
-                   stateOfAutomat=13;
-           }
-           else{
-                ungetc(i,stdin);
-                return valueOfInteger;
-           }
-        break;
+            case 6:
+                if (isdigit(i)) {
+                    addToString(token, i);
+                    stateOfAutomat = 6;
+                } else if (i == '.') {
+                    addToString(token, i);
+                    stateOfAutomat = 7;
+                } else if ((i == 'E') || (i == 'e')) {
+                    addToString(token, i);
+                    stateOfAutomat = 13;
+                } else {
+                    ungetc(i, stdin);
+                    return valueOfInteger;
+                }
+                break;
 
             case 7:
                 if (isdigit(i)) {
@@ -313,28 +287,27 @@ switch(stateOfAutomat) {
                 if ((i == '+') || (i == '-')) {
                     addToString(token, i);
                     stateOfAutomat = 10;
-                }
-                else if (i == '0') {
-                    i=getchar();
+                } else if (i == '0') {
+                    i = getchar();
                     if (!isdigit(i)) {
                         addToString(token, '0');
-                        stateOfAutomat = 10;}
-                }
-                else if (isdigit(i)) {
+                        stateOfAutomat = 10;
+                    }
+                } else if (isdigit(i)) {
                     addToString(token, i);
                     stateOfAutomat = 10;
-                }
-                else
+                } else
                     return ErrorInLexicalAnalyzer;
                 break;
 
             case 10:
                 if (i == '0') {
-                    i=getchar();
+                    i = getchar();
                     if (!isdigit(i)) {
                         addToString(token, '0');
-                        stateOfAutomat = 10;}}
-                else if (isdigit(i)) {
+                        stateOfAutomat = 10;
+                    }
+                } else if (isdigit(i)) {
                     addToString(token, i);
                     stateOfAutomat = 10;
                 } else {
@@ -352,8 +325,6 @@ switch(stateOfAutomat) {
                     ungetc(i, stdin);
                     return Lower;
                 }
-                break;
-
             case 12:
                 if (i == '=')
                     return GreaterOrEqual;
@@ -361,14 +332,13 @@ switch(stateOfAutomat) {
                     ungetc(i, stdin);
                     return Greater;
                 }
-                break;
-
             case 13:
                 if (i == '0') {
-                    i=getchar();
+                    i = getchar();
                     if (!isdigit(i)) {
                         addToString(token, '0');
-                        stateOfAutomat = 10;}
+                        stateOfAutomat = 10;
+                    }
                 } else if (isdigit(i)) {
                     addToString(token, i);
                     stateOfAutomat = 10;
@@ -378,7 +348,7 @@ switch(stateOfAutomat) {
                 } else
                     return ErrorInLexicalAnalyzer;
 
-        break;
+                break;
         }
     }
 }
