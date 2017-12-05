@@ -73,8 +73,6 @@
 
 #define LeftParenthes           100 // (
 #define RightParenthes          101 // )
-#define LeftBrace               102 // {
-#define RightBrace              103 // }
 #define Semicolon               104 // ;
 #define Comma                   105 // ,
 #define Exclamation             106 // !

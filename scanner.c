@@ -73,12 +73,6 @@ int getNextToken(TString *token) {
                 } else if (i == ')') {
                     addToString(token, i);
                     return RightParenthes;
-                } else if (i == '{') {
-                    addToString(token, i);
-                    return LeftBrace;
-                } else if (i == '}') {
-                    addToString(token, i);
-                    return RightBrace;
                 } else if (i == ',') {
                     addToString(token, i);
                     return Comma;
