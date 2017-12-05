@@ -215,6 +215,7 @@ switch(stateOfAutomat) {
             case 4:          //riadkovy komentar
                 if (i == '\n'){
                     stateOfAutomat = 0;
+                    ungetc(i,stdin);
                     return EndOfLine;
                 }
                 break;
