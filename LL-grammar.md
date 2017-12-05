@@ -109,10 +109,9 @@
 89. __Print_param__			→	eol
 90. __Print_param__			→	297 ; __Print_param__
 
-*	výrazy se pohlcují až po _then_, _eol_ a _;_
-*	(eol) - nepushuje se na stack
-*   296		→	funkce před precedenční analýzou, if, THEN - nedává na stack
-*   297		→	funkce před precedenční analýzou, print, ;
-*   298		→	funkce před precedenční analýzou, id již bylo uloženo do struktury, EOL
-*   299		→	funkce před precedenční analýzou, id je na vstupu, EOL
+91. __Speciální funkce__
+*	297, 296, 298, 299
+	*   298		→	id je ve struktuře kódu
+*	výrazy se pohlcují až po oddělovače _then_, _eol_ a _;_
+*   Celý výraz se sjednotí, upraví do speciální formy (i+i...) a pošle se precedenční analýze
 
