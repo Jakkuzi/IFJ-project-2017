@@ -1057,8 +1057,10 @@ void IFJcode17_funcAssign(tLinePtr *temp, int *parameterTypes, BTNodePtr BTree)
 		}
 		else if((*temp)->tokenID == valueOfString)
                 {
-		        printf("PUSHS string@%s\n", (*temp)->token->myString);
-			// TODO: correct string
+		        //printf("PUSHS string@%s\n", (*temp)->token->myString);
+			printf("PUSHS ");
+			IFJcode17_writeString((*temp)->token->myString);
+			printf("\n");
 			counter++;
 		}
 
@@ -1308,6 +1310,7 @@ int generateLine(tLinePtr tInput, BTNodePtr BTree)
 			case valueOfString:
 			    break;
 			case Input:
+			    printf("WRITE string@?\\032\n");
 			    IFJcode17_input(&temp, BTree);
 			    break;
 			case If:
@@ -1379,7 +1382,7 @@ printf("PUSHS LF@AscResult\n");
 printf("RETURN\n");
 printf("\n");
 printf("\n");
-printf("LABEL asczero\n");
+printf("LABEL AscZero\n");
 printf("PUSHS int@0\n");
 printf("RETURN\n");
 printf("\n");
