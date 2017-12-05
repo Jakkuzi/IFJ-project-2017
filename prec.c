@@ -1,12 +1,8 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "prec.h"
 
 #define T_OK 0		//navratova hodnota, kdyz je vse v poradku
 #define T_SYN 2		//navr. hodnota chyby v syntakticke analyze
-#define T_ELSE 99	//ostatní chyby
+#define T_ELSE 99	//ostatnï¿½ chyby
 
 /*dvojrozmerne pole se znamenky pro praci s prioritami znamenek*/
 char prec[11][11]={\

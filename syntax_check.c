@@ -1,6 +1,4 @@
 #include "syntax_check.h"
-#include "strings.h"
-
 
 /* LL table converted to id of tokens */
 int ll[21][8][8] = {
