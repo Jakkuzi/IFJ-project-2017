@@ -423,6 +423,9 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                                         break;
                                 }
                                 break;
+                            case LeftParenthes:
+                            case RightParenthes:
+                                break;
                             default:
                                 if(idReturnType == var_string && tmp->tokenID != Plus)
                                     return 6; // operace nad stringem
@@ -586,6 +589,9 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                                             return 4;
                                         break;
                                 }
+                                break;
+                            case LeftParenthes:
+                            case RightParenthes:
                                 break;
                             default:
                                 if(idReturnType == var_string && tmp->tokenID != Plus)
