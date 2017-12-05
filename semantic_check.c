@@ -660,7 +660,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                     }
                     tmp = tmp->next;
                 }
-                if(parental > 2 && pom2 > 1)
+                if(parental >= 2 && pom2 > 1)
                     return 4;
                 if(pom2 == 0)
                     return 4;
@@ -730,7 +730,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
 
                     tmp = tmp->next;
                 }
-                if(parental > 2 && pom2 > 1)
+                if(parental >= 2 && pom2 > 1)
                     return 4;
                 if(pom2 == 0)
                     return 4;

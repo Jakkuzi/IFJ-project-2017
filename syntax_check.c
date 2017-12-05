@@ -427,7 +427,7 @@ int process_expr(int id_processed, tCodeList *C, int t, TString *token, tStack *
             len++;
         } else { // everything else should be operators {+, -, ...}
             len += last->token->length;
-            while (len > STRING_SIZE * allocated) {
+            while (len >= STRING_SIZE * allocated) {
                 allocated++;
                 prec_str = (char *) realloc(prec_str, STRING_SIZE * allocated * sizeof(char));
                 if (prec_str == NULL)
@@ -448,7 +448,7 @@ int process_expr(int id_processed, tCodeList *C, int t, TString *token, tStack *
     else if (print_to_process && t == Semicolon)
         skip = 1;
     len += token->length;
-    while (len > STRING_SIZE * allocated) {
+    while (len >= STRING_SIZE * allocated) {
         allocated++;
         prec_str = (char *) realloc(prec_str, STRING_SIZE * allocated * sizeof(char));
         if (prec_str == NULL)
@@ -520,7 +520,7 @@ int process_expr(int id_processed, tCodeList *C, int t, TString *token, tStack *
             len++;
         } else { // everything else should be operators {+, -, ...}
             len += token->length;
-            while (len >= STRING_SIZE * allocated) {
+            while (len >= (STRING_SIZE * allocated)-10) {// prec nereallokuje, proto -10
                 allocated++;
                 prec_str = (char *) realloc(prec_str, STRING_SIZE * allocated * sizeof(char));
                 if (prec_str == NULL) {
