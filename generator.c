@@ -203,6 +203,7 @@ void gListPrint(gListPtr list)
                                 case Float2Int2Float: printf("F2I2F"); break;
 				case Float2IntOsek: printf("F2IOs"); break;
 				case NoDataConversion: printf("NOCONV"); break;
+				case StrConcate: printf("STRCON"); break;
                                 default: fprintf(stderr, "#neznamy token[%d]", list->tokenID); break;
                         }
                         printf(" ");
@@ -475,6 +476,7 @@ void IFJcode17_exprConvTypes(gListPtr *list, BTNodePtr BTree, int assignType)
 			{
 				case var_integer: convListAssist->dataType = valueOfInteger; break;
 				case var_double: convListAssist->dataType = valueOfDouble; break;
+				case var_string: convListAssist->dataType = valueOfString; break;
 				default: fprintf(stderr, "Chyba generatoru. Konverze datovych typu se nepovedla.\n");
 			}
 		}
@@ -532,8 +534,8 @@ void IFJcode17_exprConvTypes(gListPtr *list, BTNodePtr BTree, int assignType)
 		secondPtr = convListAssist;
 
 
-		if((first == valueOfInteger || first == valueOfDouble) &&
-		(second == valueOfInteger || second == valueOfDouble) &&
+		if((first == valueOfInteger || first == valueOfDouble || first == valueOfString) &&
+		(second == valueOfInteger || second == valueOfDouble || second == valueOfString) &&
 		(op >= Plus && op <= GreaterOrEqual))	// lze vypocitat
 		{
 			converted = 1;
@@ -576,6 +578,11 @@ void IFJcode17_exprConvTypes(gListPtr *list, BTNodePtr BTree, int assignType)
                                                 convListAssist4->dataType = valueOfDouble;
                                                 array[convListAssist4->order] = Int2Float;
                                         }
+                                        else if(op == Plus && (first == valueOfString && second == valueOfString))
+                                        {
+                                                array[convListAssist4->next->order] = StrConcate;
+                                        }
+
                                         else if(first == valueOfDouble && second == valueOfInteger)
                                         {
                                                 convListAssist4->dataType = valueOfDouble;
@@ -618,6 +625,10 @@ void IFJcode17_exprConvTypes(gListPtr *list, BTNodePtr BTree, int assignType)
 		else if(finalDataType == valueOfInteger && assignType == valueOfDouble)
 		{
 			IFJcode17_exprConvTypesExecute(list, array, Int2Float);
+		}
+		else if(finalDataType == valueOfString)
+		{
+			IFJcode17_exprConvTypesExecute(list, array, NoDataConversion);
 		}
 	}
 	else
@@ -720,6 +731,18 @@ void IFJcode17_evalExpr(tLinePtr *temp, BTNodePtr BTree, int assignType)
 		{
 			switch(assistList->tokenID)
 			{
+				case StrConcate:
+							printf("PUSHFRAME\n");
+							printf("CREATEFRAME\n");
+							printf("DEFVAR TF@Concate1\n");
+                                                        printf("DEFVAR TF@Concate2\n");
+                                                        printf("POPS TF@Concate2\n");
+                                                        printf("POPS TF@Concate1\n");
+							printf("CONCAT TF@Concate1 TF@Concate1 TF@Concate2\n");
+							printf("PUSHS TF@Concate1\n");
+							printf("POPFRAME\n");
+							assistList = assistList->next; break;
+
 				case Float2IntOsek:	printf("FLOAT2R2EINTS\n"); break; // nakonec nejde o oseknuti (asi)
 				case Float2Int2Float: 	printf("FLOAT2R2EINTS\n");
 							printf("INT2FLOATS\n"); break;
@@ -1165,8 +1188,9 @@ int generateLine(tLinePtr tInput, BTNodePtr BTree)
 			case Scope:
 			    printf("\n\nLABEL $Scope\n");
 			    printf("CREATEFRAME\n");
-			    printf("PUSHFRAME");
-			    break;
+			    printf("PUSHFRAME\n");
+			    printf("CREATEFRAME");
+    			    break;
 			case Dim:
 			    IFJcode17_varInit(&temp, BTree);
 			    break;
