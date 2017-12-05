@@ -13,6 +13,7 @@ int getNextToken(TString *token) {
 
         i = getchar();
         i = tolower(i);
+
         switch (stateOfAutomat) {
 
             case 0:

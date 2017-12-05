@@ -607,6 +607,10 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
             case If:
                 pom = 0; // 0 = int/double, 1 = string
                 tmp = tmp->next; // if x<--
+                while(tmp->tokenID == LeftParenthes){
+                    parental++;
+                    tmp = tmp->next;
+                }
 
                 switch (tmp->tokenID){
                     case valueOfInteger:
@@ -676,6 +680,10 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
             case Do:
                 pom = 0; // 0 = int/double, 1 = string
                 tmp = tmp->next->next; // do while x<--
+                while(tmp->tokenID == LeftParenthes){
+                    parental++;
+                    tmp = tmp->next;
+                }
 
                 switch (tmp->tokenID){
                     case valueOfInteger:
@@ -700,7 +708,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                         break;
                 }
 
-                pom2 = 0; // count of =
+                pom2 = 0; // pocet relacnich operatoru
                 while(tmp != NULL){
                     switch(tmp->tokenID){
                         case valueOfInteger:
