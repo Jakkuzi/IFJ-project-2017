@@ -289,7 +289,7 @@ int getNextToken(TString *token) {
             case 9:
                 if ((i == '+') || (i == '-')) {
                     addToString(token, i);
-                    stateOfAutomat = 10;
+                    stateOfAutomat = 14;
                 } else if (i == '0') {
                     i = getchar();
                     if (!isdigit(i)) {
@@ -347,8 +347,18 @@ int getNextToken(TString *token) {
                     stateOfAutomat = 10;
                 } else if ((i == '+') || (i == '-')) {
                     addToString(token, i);
-                    stateOfAutomat = 10;
+                    stateOfAutomat = 14;
                 } else
+                    return ErrorInLexicalAnalyzer;
+
+                break;
+
+            case 14:
+                if (isdigit(i)) {
+                    addToString(token, i);
+                    stateOfAutomat = 10;
+                }
+                else
                     return ErrorInLexicalAnalyzer;
 
                 break;
