@@ -314,7 +314,7 @@ int syntax_analysis(tCodeList *C) {
                     }
                     skip_insert = 1;
                     sPop(s);
-                    if (result == 2 || result == 99 || result == 3 || result == 4 || result == 6) {
+                    if (result == 1 || result == 2 || result == 99 || result == 3 || result == 4 || result == 6) {
                         free(s);
                         BTDispose(symBTree);
                         return result;
