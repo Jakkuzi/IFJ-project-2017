@@ -1,8 +1,12 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "prec.h"
 
 #define T_OK 0		//navratova hodnota, kdyz je vse v poradku
 #define T_SYN 2		//navr. hodnota chyby v syntakticke analyze
-#define T_ELSE 99	//ostatn� chyby
+#define T_ELSE 99	//ostatn? chyby
 
 /*dvojrozmerne pole se znamenky pro praci s prioritami znamenek*/
 char prec[11][11]={\
@@ -95,57 +99,56 @@ char convert(char c, char d)
 
 char cmp_string(char* string)
 {
-	int compare;
 	char c;
-	if((compare = strcmp(string, "[i]")) == 0)
+	if((strcmp(string, "[i]")) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, "[E+E]")) == 0)
+	else if((strcmp(string, "[E+E]")) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, "[E-E]")) == 0)
+	else if((strcmp(string, "[E-E]")) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, "[E*E]")) == 0)
+	else if((strcmp(string, "[E*E]")) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, "[E/E]")) == 0)
+	else if((strcmp(string, "[E/E]")) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, "[E\\E]")) == 0)
+	else if((strcmp(string, "[E\\E]")) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, "[E<E]")) == 0)
+	else if((strcmp(string, "[E<E]")) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, "[E>E]")) == 0)
+	else if((strcmp(string, "[E>E]")) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, "[ElE]")) == 0)
+	else if((strcmp(string, "[ElE]")) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, "[EmE]")) == 0)
+	else if((strcmp(string, "[EmE]")) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, "[E!E]")) == 0)
+	else if((strcmp(string, "[E!E]")) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, "[E=E]")) == 0)
+	else if((strcmp(string, "[E=E]")) == 0)
 	{
 		c = 'E';
 	}
-	else if((compare = strcmp(string, "[(E)]")) == 0)
+	else if((strcmp(string, "[(E)]")) == 0)
 	{
 		c = 'E';
 	}
@@ -164,7 +167,7 @@ int precedencni(char* input)
 /*inicializace potrebnych promennych*/
 	int ret = -1;		//navratova hodnota
 	int pom = 0;		//pomocna promenna pro pole
-	int pomst [15] = {-1};	//pomocne pole pro indexy
+	int pomst [500] = {-1};	//pomocne pole pro indexy
 	char pomch [6];		//pomocny retezec pro praci se zasobnikem
 
 /*	input = (char*) malloc (sizeof(char)*len);
@@ -430,7 +433,7 @@ int precedencni(char* input)
 ///****Testovaci funkce*****************************************************/
 //int main()
 //{
-//	char input [50] = "i=i+i\\i";
+//	char input [500] = "(((((((((((((((((((((((((((((((i))))))))))))))))*(((((((((((((((((((((((((((((((i)*i)))))))))))))))))*(((((((((((((((((((((((((((((((i)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*(((((((((((((((((((((((((((((((i)))))))))))))))))))))))))))))))";
 //	int ret;
 //	ret = precedencni(input);
 //	printf("%d\n", ret);
