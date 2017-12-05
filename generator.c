@@ -994,22 +994,48 @@ void IFJcode17_varInit(tLinePtr *temp, BTNodePtr BTree)
 }
 
 // prirazeni vysledku funkce
-void IFJcode17_funcAssign(tLinePtr *temp)
+void IFJcode17_funcAssign(tLinePtr *temp, int *parameterTypes, BTNodePtr BTree)
 {
 	if((*temp)->next != NULL)
 		*temp = (*temp)->next;
 
+	int counter = 0;
 	while((*temp)->next != NULL)
 	{
 		if((*temp)->tokenID == ID)
+		{
 			printf("PUSHS LF@%s\n", (*temp)->token->myString);
+			BTItemPtr *item = fStackSearch(BTree, (*temp)->token->myString);
+			if(item != NULL)
+			{
+				if(item->varData->type == var_integer && parameterTypes[counter] == Double)
+					printf("INT2FLOATS\n");
+				else if(item->varData->type == var_double && parameterTypes[counter] == Integer)
+					printf("FLOAT2R2EINTS\n");
+			}
+			counter++;
+		}
 		else if((*temp)->tokenID == valueOfInteger)
+		{
 			printf("PUSHS int@%s\n", (*temp)->token->myString);
-                else if((*temp)->tokenID == valueOfDouble || (*temp)->tokenID == valueOfDoubleWithExp)
-                        printf("PUSHS float@%s\n", (*temp)->token->myString);
-                else if((*temp)->tokenID == valueOfString)
-                        printf("PUSHS string@%s\n", (*temp)->token->myString);
+                        if(parameterTypes[counter] == Double)
+				printf("INT2FLOATS\n");
+			counter++;
+                }
+		else if((*temp)->tokenID == valueOfDouble || (*temp)->tokenID == valueOfDoubleWithExp)
+                {
+		        printf("PUSHS float@%s\n", (*temp)->token->myString);
+                	if(parameterTypes[counter] == Integer)
+				printf("FLOAT2R2EINTS\n");
+			counter++;
+		}
+		else if((*temp)->tokenID == valueOfString)
+                {
+		        printf("PUSHS string@%s\n", (*temp)->token->myString);
 			// TODO: correct string
+			counter++;
+		}
+
 
 		*temp = (*temp)->next;
 	}
@@ -1046,9 +1072,13 @@ void IFJcode17_varAssign(tLinePtr *temp, BTNodePtr BTree)
 				if(item->itemType == item_type_function)
 				{
 					char *funcNameHolder = (*temp)->token->myString;
-					IFJcode17_funcAssign(temp);
+					IFJcode17_funcAssign(temp, item->parameterTypes, BTree);
 					printf("CALL %s\n", funcNameHolder);
 					printf("POPFRAME\n");
+					if(assignType == valueOfInteger && item->returnType == var_double)
+						printf("FLOAT2R2EINTS\n");
+					else if(assignType == valueOfDouble && item->returnType == var_integer)
+						printf("INT2FLOATS\n");
 					printf("POPS LF@%s ", varNameHolder);
 					return;
 				}
@@ -1237,7 +1267,7 @@ int generateLine(tLinePtr tInput, BTNodePtr BTree)
 							IFJcode17_evalExpr(&temp, BTree, valueOfInteger);
 						if(item->returnType == var_double)
                                                 	IFJcode17_evalExpr(&temp, BTree, valueOfDouble);
-                                                if(item->returnType == var_string)
+						if(item->returnType == var_string)
                                                 	IFJcode17_evalExpr(&temp, BTree, valueOfString);
 					}
 				}
@@ -1279,12 +1309,124 @@ int generateLine(tLinePtr tInput, BTNodePtr BTree)
 // vypsani vestavenych funkci prekladace
 void IFJcode17_embeddedFunctions()
 {
+printf("##################### Length ####################\n");
+printf("\n");
+printf("LABEL length\n");
+printf("CREATEFRAME\n");
+printf("PUSHFRAME\n");
+printf("DEFVAR LF@Assist\n");
+printf("DEFVAR LF@AString\n");
+printf("POPS LF@AString\n");
+printf("STRLEN LF@Assist LF@AString\n");
+printf("PUSHS LF@Assist\n");
+printf("RETURN\n");
+printf("\n");
+printf("\n");
+printf("\n");
+printf("###################### Asc ######################\n");
+printf("\n");
+printf("LABEL asc\n");
+printf("CREATEFRAME\n");
+printf("PUSHFRAME\n");
+printf("DEFVAR LF@AscS\n");
+printf("DEFVAR LF@AscI\n");
+printf("POPS LF@AscI\n");
+printf("POPS LF@AscS\n");
+printf("SUB LF@AscI LF@AscI int@1\n");
+printf("\n");
+printf("DEFVAR LF@AscHelp\n");
+printf("LT LF@AscHelp LF@AscI int@0\n");
+printf("JUMPIFEQ AscZero LF@AscHelp bool@true\n");
+printf("\n");
+printf("PUSHS LF@AscI\n");
+printf("PUSHS LF@AscS\n");
+printf("CALL length\n");
+printf("POPFRAME\n");
+printf("\n");
+printf("GTS\n");
+printf("PUSHS bool@true\n");
+printf("JUMPIFEQS AscZero\n");
+printf("\n");
+printf("DEFVAR LF@AscResult\n");
+printf("STRI2INT LF@AscResult LF@AscS LF@AscI\n");
+printf("PUSHS LF@AscResult\n");
+printf("RETURN\n");
+printf("\n");
+printf("\n");
+printf("LABEL asczero\n");
+printf("PUSHS int@0\n");
+printf("RETURN\n");
+printf("\n");
+printf("\n");
+printf("#################### Chr ########################\n");
+printf("\n");
+printf("LABEL chr\n");
+printf("CREATEFRAME\n");
+printf("PUSHFRAME\n");
+printf("DEFVAR LF@ChrHelp\n");
+printf("DEFVAR LF@ChrResult\n");
+printf("POPS LF@ChrHelp\n");
+printf("\n");
+printf("INT2CHAR LF@ChrResult LF@ChrHelp\n");
+printf("PUSHS LF@ChrResult\n");
+printf("\n");
+printf("RETURN\n");
+printf("\n");
+printf("\n");
+printf("#################### SubStr #####################\n");
+printf("\n");
+printf("\n");
+printf("LABEL substr\n");
+printf("CREATEFRAME\n");
+printf("PUSHFRAME\n");
+printf("DEFVAR LF@SubStrN\n");
+printf("DEFVAR LF@SubStrI\n");
+printf("DEFVAR LF@SubStrS\n");
+printf("POPS LF@SubStrN\n");
+printf("POPS LF@SubStrI\n");
+printf("POPS LF@SubStrS\n");
+printf("\n");
+printf("DEFVAR LF@SubStrHelp\n");
+printf("EQ LF@SubStrHelp LF@SubStrS string@\n");
+printf("JUMPIFEQ SubStrZero LF@SubStrHelp bool@true\n");
+printf("LT LF@SubStrHelp LF@SubStrI int@1\n");
+printf("JUMPIFEQ SubStrZero LF@SubStrHelp bool@true\n");
+printf("EQ LF@SubStrHelp LF@SubStrN int@0\n");
+printf("JUMPIFEQ SubStrZero LF@SubStrHelp bool@true\n");
+printf("\n");
+printf("\n");
+printf("SUB LF@SubStrI LF@SubStrI int@1\n");
+printf("DEFVAR LF@SubStrResult\n");
+printf("MOVE LF@SubStrResult string@\n");
+printf("DEFVAR LF@SubStrResultChar\n");
+printf("DEFVAR LF@SubStrLen\n");
+printf("PUSHS LF@SubStrS\n");
+printf("CALL length\n");
+printf("POPFRAME\n");
+printf("POPS LF@SubStrLen\n");
+printf("SUB LF@SubStrLen LF@SubStrLen int@1\n");
+printf("\n");
+printf("LABEL SubStrLoop\n");
+printf("GETCHAR LF@SubStrResultChar LF@SubStrS LF@SubStrI\n");
+printf("CONCAT LF@SubStrResult LF@SubStrResult LF@SubStrResultChar\n");
+printf("ADD LF@SubStrI LF@SubStrI int@1\n");
+printf("SUB LF@SubStrN LF@SubStrN int@1\n");
+printf("GT LF@SubStrHelp LF@SubStrI LF@SubStrLen\n");
+printf("JUMPIFEQ SubStrEnd LF@SubStrHelp bool@true\n");
+printf("EQ LF@SubStrHelp LF@SubStrN int@0\n");
+printf("JUMPIFEQ SubStrEnd LF@SubStrHelp bool@true\n");
+printf("JUMP SubStrLoop\n");
+printf("\n");
+printf("LABEL SubStrEnd\n");
+printf("PUSHS LF@SubStrResult\n");
+printf("RETURN\n");
+printf("\n");
+printf("LABEL SubStrZero\n");
+printf("PUSHS string@\n");
+printf("RETURN\n");
 
-
-
-
+printf("\n\n\n");
 }
-
 
 
 /*
