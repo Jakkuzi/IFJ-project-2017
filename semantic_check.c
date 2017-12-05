@@ -197,6 +197,9 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
             free(tokenArr);
 
     } else if (id == Scope) {
+        result = check_func_for_definition(symBTree);
+        if (result != 0)
+            return result;
         result = BTInsertFunc(symBTree, var_integer, "@Scope");
         if(result != 0)
             return result;
@@ -213,11 +216,6 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                     actualFunction->ParamRootPtr = NULL;
                     free(actualFunction->ParamRootPtr);
                     actualFunction->varData = NULL;
-                }
-                else if(C->last->lineData->next->tokenID == Scope){
-                    result = check_func_for_definition(symBTree);
-                    if (result != 0)
-                        return result;
                 }
                 break;
             case Else:

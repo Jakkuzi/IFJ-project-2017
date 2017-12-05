@@ -5,11 +5,11 @@
 /* LL table converted to id of tokens */
 int ll[21][8][8] = {
         //S
-        {{Declare,  Function,  202, EndOfLine, 201, 0,   0, 0},     // declare
-        {Function,  202, EndOfLine, 205, Function,  EndOfLine, 201, 0},     // function
-        {Scope,  EndOfLine, 209, Scope,  0,   0,   0,   0},},   // scope
+        {{Declare,  Function,   202,       EndOfLine, 201, 0,   0, 0},     // declare
+        {Function,  202,        EndOfLine, 205,       Function,  EndOfLine, 201, 0},     // function
+        {Scope,     EndOfLine,  209,       Scope,     0,   0,   0,   0},},   // scope
         //Head
-        {{ID,  LeftParenthes, 203, 21,  220, 0,   0, 0},},
+        {{ID,       LeftParenthes, 203, As,  220, 0,   0, 0},},
         //Parameters
         {{ID,  As,  220, 204, 0,   0,   0, 0},
         {RightParenthes, 0,   0,   0,   0,   0,   0,   0},},
@@ -118,7 +118,7 @@ int ll[21][8][8] = {
         {Double,  0,   0,   0,   0,   0,   0,   0},},
         //PrintP
         {{EndOfLine, 0,   0,   0,   0,   0,   0, 0},
-        {297, 104, 221, 0,   0,   0,   0,   0},},
+        {297, Semicolon, 221, 0,   0,   0,   0,   0},},
 };
 
 /* syntax analysis top down */
