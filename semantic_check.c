@@ -1,4 +1,5 @@
 #include "semantic_check.h"
+#include "strings.h"
 
 static BTItemPtr *actualFunction;
 static BTItemPtr *actualFunction2;
@@ -98,6 +99,9 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                 actualFunction->parameterTypes[i] = tmp->next->next->tokenID;
                 i++;
                 actualFunction->paramCount = i;
+                if((var = BTSearch(symBTree, tmp->token->myString)) != NULL)
+                    if(var->itemType == item_type_function)
+                        return 3;
                 if (i > 1) {
                     for (int j = 0; j < i - 1; j++)
                         if (strcmp(tokenArr[j]->myString, tmp->token->myString) == 0) {
@@ -288,7 +292,7 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                                         return 3;
                                     if (actualFunction->returnType == var_string && var->varData->type != var_string)
                                         return 4;
-                                    else if (var->varData->type == var_string)
+                                    else if (var->varData->type == var_string && actualFunction->returnType != var_string)
                                         return 4;
                                     break;
                                 case valueOfString:
