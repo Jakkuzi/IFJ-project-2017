@@ -1,3 +1,8 @@
+/*
+ * Implementace prekladace imperativního jazyka IFJ17.
+ * xhudec30 - Patricia Hudedova
+ */
+
 #ifndef scanner_h
 #define scanner_h
 

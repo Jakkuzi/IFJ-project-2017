@@ -1,3 +1,9 @@
+/*
+ * Implementace prekladace imperativního jazyka IFJ17.
+ * xhudec30 - Patricia Hudedova
+ */
+
+
 #include "scanner.h"
 
 int getNextToken(TString *token) {

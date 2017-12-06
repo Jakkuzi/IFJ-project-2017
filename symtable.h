@@ -1,9 +1,8 @@
-/************************************************************************/
-/*      Toto je header pro soubor symtable.c	 	                  	*/
-/*      Zde budou includovany knihovny, definice datovych typu	    	*/
-/*	    a prototypy funkci pro praci s binarnimi vyhledavacimi 	       	*/
-/*	    stromy.					                		            	*/
-/************************************************************************/
+/*
+ * Implementace prekladace imperativního jazyka IFJ17.
+ * xwilla00 - Tomas Willaschek
+ * xmarek67 - Ondrej Marek
+ */
 
 #ifndef SYMTABLE_H
 #define SYMTABLE_H
@@ -41,13 +40,6 @@ typedef struct varData {
     varDataType type;       // datovy typ promenne
     void* data;             // efektivni (uzitecna) data, pretypovani ukazatele podle datoveho typu promenne
 } *varDataPtr;
-
-// struktura popisujici data funkce
-//typedef struct funcData {
-//    varDataType returnType; // datovy typ navratove hodnoty promenne
-//    int *parameterTypes;
-//    BTNode *ParamRootPtr;	// ukazatel  na koren binarniho stromu parametru funkce
-//} *funcDataPtr;
 
 // struktura popisujici jednu promennou
 typedef struct BTItem {

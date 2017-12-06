@@ -1,6 +1,9 @@
+/*
+ * Implementace prekladace imperativního jazyka IFJ17.
+ * xwilla00 - Tomas Willaschek
+ */
+
 #include "syntax_check.h"
-#include "strings.h"
-#include "parser.h"
 
 /* LL table converted to id of tokens */
 int ll[21][8][8] = {
