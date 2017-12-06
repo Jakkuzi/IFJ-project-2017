@@ -1,0 +1,39 @@
+\documentclass[11pt, a4paper]{article}
+\usepackage[utf8]{inputenc} 
+\usepackage[left=2cm,text={17cm, 24cm},top=3cm]{geometry}
+\usepackage[czech]{babel}
+
+\begin{document}
+	\begin{titlepage}
+		\begin{center}
+			 \textsc{{\Huge Vysoké učení technické v Brně}\\ 
+			 \vspace{8.5pt}{\huge Fakulta informačních technologií}}\\
+			\vspace{\stretch{0.382}}
+			{\LARGE Formální jazyky a překladače\\}
+				\vspace{5pt}{\Huge Dokumentace ke skupinovému projektu}\\
+				\vspace{2pt}{\Large Tým 47, varianta I}
+			\vspace{\stretch{0.618}}\\
+		\end{center}
+		{\small Jakub Zich (vedoucí) - 25\% \emph{xzichj00} \hfill \\
+		Patrícia Hudecová - 25\% \emph{xhudec30} \hfill \\
+		Ondřej Marek - 25\% \emph{xmarek67} \hfill\\
+		Tomáš Willaschek - 25\% \emph{xwilla00} \hfill }
+	
+	\end{titlepage}	
+	\section{Struktura projektu}
+	
+	\subsection{Lexikální analyzátor}
+	\subsection{Syntaktický analyzátor}
+	Syntaktický analyzátor získává tokeny voláním lexikálního analyzátoru.
+	\subsection{Precedenční analýza}
+	Precedenční analýza je volaná ze syntaktické. Pokud syntaktická analýza najde v kódu výraz, zavolá precedenční, která ho zkontroluje a vrátí syntaktické příslušnou návratovou hodnotu podle toho, zda je výraz syntakticky správně, nebo ne.
+	Naše verze precedenční analýzy nepracuje s jednotlivými tokeny, které posílá lexikální analyzátor, ale pouze s textovým řetězcem. Všechny identifikátory, ať už se v kódu jmenují jakkoli, jsou poslány precedenčnímu analyzátoru jako i. Tedy syntaktický analyzátor, který má přístup k tokenům, a pozná, kde je začátek a konec výrazu, načte příslušné tokeny, vytvoří z nich string, kde změní jména proměnných na i, a pošle string ke kontrole precedenčnímu. Precedenční vrátí pouze 0, 2 nebo 99, podle toho, zda se někde vyskytne chyba, nebo ne, a syntaktický pak pracuje dále s tokeny, které má už načtené.
+	Výrazy jsou kontrolovány pomocí precedenční tabulky. V naší verzi precedenčního analyzátoru jsou použity tabulky dvě, jedna hlavní, která kontroluje, jestli po určitém znaku může přijít v pořadí další, a druhá, která porovnává operátory podle priority, či asociativity. Také je použita pomocná datová struktura Zásobník. Obě tabulky by se daly spojit do jedné, v podstatě se stejným výsledkem, ale tato možnost také funguje. Zde přiložená tabulka je jen jedna, spojená dohromady, pro větší přehlednost.
+	\subsection{Sémantický analyzátor}
+	Sémantický analyzátor je podmnožinou syntaktického. Pracuje s jednotlivými řádky vstupního kódu, které jsou poskládány z tokenů předávaných lexikálním analyzátorem. Řádek může začínat slovy Declare, Function, Scope, End, Else, Loop, Return, Dim, Print, Input, If, Do, nebo ID některé proměnné, a končí znakem EOL.
+	Sémantický analyzátor přečte první token každého načteného řádku. Syntaktická kontrola řádků je prováděna před sémantickou, takže vychází z předpokladu, že jsou řádky syntakticky správně, tedy ví přesně, v jakém pořadí v řádku přicházejí další tokeny (proto stačí znát jen ten první). Pokud je vše tak, jak má být, vkládá na příslušných místech proměnné a funkce do tabulky symbolů. Pokud je některé proměnné přiřazena hodnota, pracuje s ní však generátor. Sémantický analyzátor ji do tabulky nevkládá.
+	Tabulka symbolů je tvořena následujícím způsobem: v hlavním binárním vyhledávacím stromě jsou vloženy všechny definované funkce. Scope je také vkládána pod jménem "@Scope". Před tím, než začneme sémantickou kontrolu, je nutno vložit do stromu ještě vestavěné funkce Lenght, SubStr, Asc a Chr. Každá funkce má svůj vlastní podstrom, kam se vkládají proměnné, definované v příslušné funkci. Pokud řádek začíná tokenem End, je podstrom příslušné funkce uvolněn. Po kontrole každého řádku vrací sémantický analyzátor náležitou hodnotu zpět syntaktickému, který dále načte další řádek atd.
+	\subsection{Generátor kódu}
+
+
+\end{document}
