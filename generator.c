@@ -237,7 +237,8 @@ void gListPrint(gListPtr list)
 						char *oHelp = (char *) malloc (sizeof(char) * (snprintf(NULL, 0, "#neznamy token[%d]", list->tokenID) + 1));
 						sprintf(oHelp, "#neznamy token[%d]", list->tokenID);
 						output_err(oHelp);
-						if(oHelp != NULL)free(oHelp);break;
+						if(oHelp != NULL)free(oHelp);
+						break;
 					}
                         }
                         output_new(" ");
