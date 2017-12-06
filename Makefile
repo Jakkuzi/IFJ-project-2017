@@ -9,7 +9,7 @@ all:
 	$(CC) $(CFLAGS) $(SOURCES) -o $(PRJ)
 
 pack: doc
-	tar cvfz $(NAME).tgz ./*.c ./*.h Makefile $(FILENAME).pdf rozdeleni
+	tar cvfz $(NAME).tgz Makefile *.c *.h $(FILENAME).pdf rozdeleni
 	mkdir test-odevzdani
 	echo "\n\n\nLOG z is_it_ok.sh\n"
 	./is_it_ok.sh $(NAME).tgz test-odevzdani
@@ -17,6 +17,9 @@ pack: doc
 
 clean:
 	rm -f $(NAME).tgz $(FILENAME).log $(FILENAME).aux $(FILENAME).ps $(FILENAME).dvi 
+
+clean-all:
+	rm -rf *
  
 test:
 	python3 tests.py $(PRJ)
