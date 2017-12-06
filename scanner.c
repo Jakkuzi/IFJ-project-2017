@@ -100,7 +100,7 @@ int getNextToken(TString *token) {
                     i = getchar();
                     if (i == '/') {
                         stateOfAutomat = 0;
-                        return EndOfLine;
+                        break;
                     }
                     else if(i == EOF)
                         return ErrorInLexicalAnalyzer;
@@ -309,6 +309,7 @@ int getNextToken(TString *token) {
                     i = getchar();
                     if (!isdigit(i)) {
                         addToString(token, '0');
+                        ungetc(i, stdin);
                         stateOfAutomat = 10;
                     }
                 } else if (isdigit(i)) {

@@ -482,6 +482,8 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                             pom = 0;
                             break;
                         default:// operator
+                            if(pom2 == 0 && tmp->tokenID != Plus)
+                                return 4;
                             if(tmp->tokenID >= Equal && tmp->tokenID <= GreaterOrEqual)
                                 pom++;
                     }
