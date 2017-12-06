@@ -126,6 +126,7 @@ const int ll[21][8][8] = {
 };
 
 /* syntax analysis top down */
+//TODO: free mystring from token on fail
 int syntax_analysis(tCodeList *C) {
     tStack *s;
     s = (tStack *) malloc(sizeof(tStack));
@@ -408,7 +409,6 @@ int syntax_analysis(tCodeList *C) {
     } while (t == EndOfLine);
     freeThisCycle(token, s);
     BTDispose(symBTree);
-    symBTree = NULL;
 
     if (t != EndOfFile)
         return 2;
