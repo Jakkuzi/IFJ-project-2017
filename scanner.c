@@ -102,10 +102,12 @@ int getNextToken(TString *token) {
                         stateOfAutomat = 0;
                         return EndOfLine;
                     }
+                    else if(i == EOF)
+                        return ErrorInLexicalAnalyzer;
                     else {
                         ungetc(i, stdin);
                         //return EndOfLine;
-                        return ErrorInLexicalAnalyzer;
+//                        return ErrorInLexicalAnalyzer;
                     }
                 } else if (i == EOF)
                     return ErrorInLexicalAnalyzer;
@@ -200,9 +202,10 @@ int getNextToken(TString *token) {
             case 4:          //riadkovy komentar
                 if (i == '\n') {
                     stateOfAutomat = 0;
-                    ungetc(i, stdin);
                     return EndOfLine;
                 }
+                if(i == EOF)
+                    return EndOfFile;
                 break;
 
 
