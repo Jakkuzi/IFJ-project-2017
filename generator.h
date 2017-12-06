@@ -1,3 +1,8 @@
+/*
+ * Implementace prekladace imperativního jazyka IFJ17.
+ * xmarek67 - Ondrej Marek
+ */
+
 #ifndef generator_h
 #define generator_h
 

@@ -1,3 +1,9 @@
+/*
+ * Implementace prekladace imperativního jazyka IFJ17.
+ * xzichj00 - Jakub Zich
+ */
+
+
 #ifndef prec_h
 #define prec_h
 

@@ -1,6 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+/*
+ * Implementace prekladace imperativního jazyka IFJ17.
+ * xzichj - Jakub Zich
+ */
 
 #include "prec.h"
 

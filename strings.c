@@ -1,3 +1,8 @@
+/*
+ * Implementace prekladace imperativního jazyka IFJ17.
+ * xhudec30 - Patricia Hudedova
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

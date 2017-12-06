@@ -1,3 +1,8 @@
+/*
+ * Implementace prekladace imperativního jazyka IFJ17.
+ * xwilla00 - Tomas Willaschek
+ */
+
 #include "parser.h"
 
 int main(){
@@ -100,21 +105,4 @@ void tCodeDispose(tCodeList *sCode)
         tmp = NULL;
     }
     sCode->last = NULL;
-
-//    tCodeList *tmp = sCode;
-//    while(tmp->first != NULL)
-//	{
-//		tLinePtr tmpLine = tmp->first->lineData;
-//		while(tmpLine != NULL)
-//		{
-//			free(tmpLine->token->myString);
-//			tLinePtr deleteLine = tmpLine;
-//			tmpLine = tmpLine->next;
-//			free(deleteLine);
-//		}
-//
-//		tCodePtr deleteList = tmp->first;
-//		tmp->first = tmp->first->next;
-//		free(deleteList);
-//	}
 }

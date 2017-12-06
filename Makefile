@@ -1,3 +1,9 @@
+#
+# Makefile
+# Implementace prekladace imperativniho jazyka IFJ17
+# xwilla00 - Tomas Willaschek
+#
+
 CC=gcc
 CFLAGS= -std=c99 -Wall -Wextra -pedantic -Werror
 PRJ=IFJ-2017
