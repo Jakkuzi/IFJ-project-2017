@@ -29,3 +29,4 @@ $(FILENAME).ps: $(FILENAME).dvi
 
 $(FILENAME).dvi: $(FILENAME).tex
 	latex $(FILENAME).tex
+	latex $(FILENAME).tex
