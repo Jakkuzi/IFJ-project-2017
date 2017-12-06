@@ -1,4 +1,6 @@
 #include "syntax_check.h"
+#include "strings.h"
+#include "parser.h"
 
 /* LL table converted to id of tokens */
 int ll[21][8][8] = {
@@ -233,7 +235,12 @@ int syntax_analysis(tCodeList *C) {
         }
         if(t == Dim || t == Function || t == Declare)
             was_dim = 1;
-//TODO:return foo() nejede
+        if(sTop(s) == Equal && C->last->lineData->tokenID == ID)
+            if(BTSearch(symBTree, C->last->lineData->token->myString) == NULL){
+                free(symBTree);
+                freeThisCycle(token, s);
+                return 3;
+            }
         if (first_token) { // code must start with exact commands from set of 3 words
             while (t == EndOfLine) { // ignore empty lines on start
                 stringFree(token);
@@ -481,6 +488,14 @@ int process_expr(int id_processed, tCodeList *C, int t, TString *token, tStack *
                 return result;
             }
         } else {
+            result = precedencni(prec_str);
+            if(result != 0){
+                free(prec_str);
+                free(token);
+                return result;
+            }
+            if(t == EndOfLine && C->last->lineData->tokenID == If)
+                return 2;
             result = semantic_check(C, symBTree);
             if (result != 0) {
                 free(prec_str);
