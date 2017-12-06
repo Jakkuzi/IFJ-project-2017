@@ -6,7 +6,7 @@
 #include "syntax_check.h"
 
 /* LL table converted to id of tokens */
-int ll[21][8][8] = {
+const int ll[21][8][8] = {
         //S
         {{Declare,  Function,   202,       EndOfLine, 201, 0,   0, 0},     // declare
         {Function,  202,        EndOfLine, 205,       Function,  EndOfLine, 201, 0},     // function

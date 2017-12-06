@@ -316,6 +316,8 @@ int semantic_check(tCodeList *C, BTNodePtr symBTree) {
                                         return 4;
                                     break;
                                 default:
+                                    if(tmp->tokenID < Plus || tmp->tokenID > IntDiv)
+                                        return 4;
                                     break;
                             }
                             break;
