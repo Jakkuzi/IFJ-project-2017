@@ -411,14 +411,9 @@ int precedencni(char* input)
 
 		}
 
-		else if(prec_pom [t_type(stack -> stBody[(stack->top)-1])] [t_type(input[k])] == ' ')	//chybny vstup
-		{
-			ret = T_SYN;
-		}
-
 		else
 		{
-			ret = T_ELSE;
+			ret = T_SYN;
 		}
 	}
 
@@ -433,7 +428,7 @@ int precedencni(char* input)
 ///****Testovaci funkce*****************************************************/
 //int main()
 //{
-//	char input [500] = "(((((((((((((((((((((((((((((((i))))))))))))))))*(((((((((((((((((((((((((((((((i)*i)))))))))))))))))*(((((((((((((((((((((((((((((((i)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*(((((((((((((((((((((((((((((((i)))))))))))))))))))))))))))))))";
+//	char input [500] = "((i+i)";
 //	int ret;
 //	ret = precedencni(input);
 //	printf("%d\n", ret);
