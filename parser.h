@@ -1,3 +1,8 @@
+/*
+ * Implementace prekladace imperativního jazyka IFJ17.
+ * xwilla00 - Tomas Willaschek
+ */
+
 #ifndef parser_h
 #define parser_h
 

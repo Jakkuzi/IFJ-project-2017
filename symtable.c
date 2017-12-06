@@ -1,12 +1,8 @@
-/************************************************************************/
-/*	V tomto souboru se nachazi implementace tabulky symbolu		*/
-/*	pomoci binarniho vyhledavaciho stromu a vsech funkci		*/
-/*	potrebnych k manipulaci s timto stromem.			*/
-/*									*/
-/*	V souboru symtable.h jsou definice datovych typu		*/
-/*	a prototypy funkci pouzivanych v tomto souboru.			*/
-/************************************************************************/
-
+/*
+ * Implementace prekladace imperativního jazyka IFJ17.
+ * xwilla00 - Tomas Willaschek
+ * xmarek67 - Ondrej Marek
+ */
 
 #include "symtable.h"
 

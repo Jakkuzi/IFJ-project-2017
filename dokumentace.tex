@@ -37,12 +37,13 @@
 		Tato konkrétní SA musí rozpoznávat, zda je daný výraz funkce, či skutečný výraz. Proto je objem praviděl poněkud rozsáhlejší. 
 		
 		Kdykoli, když mý být zpracován výraz, volá se spaciální funkce obsažaná přímo v SA, která konvertuje jednotlivé tokeny na dohodnutý string, který následně pošle precedenční analýze ke skontrolování. 
+		Kód se ukládá token po tokenu do struktury, která následně slouží pro kontrolu sémantiky a generování kódu. Při získání tokenu EOL se zkontroluje sémantika aktuálního řádku, a pokud je správná, spustí se generování kódu.
 		\begin{figure}
 			\includegraphics[width=0.999\textwidth]{img/ll.eps}
 			\caption{LL-gramatika}
 			\label{ll}
 		\end{figure}
-		\begin{table}[H]
+		\begin{table}[h]
 			\centering
 			{\scriptsize {\renewcommand{\arraystretch}{1.2}
 			\addtolength{\tabcolsep}{-1.1pt}

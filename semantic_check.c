@@ -1,3 +1,10 @@
+/*
+ * Implementace prekladace imperativního jazyka IFJ17.
+ * xwilla00 - Tomas Willaschek
+ * xzichj00 - Jakub Zich
+ */
+
+
 #include "semantic_check.h"
 
 static BTItemPtr *actualFunction;
