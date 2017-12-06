@@ -98,8 +98,10 @@ int getNextToken(TString *token) {
             case 2:           //blokovy komentar
                 if (i == '\'') {
                     i = getchar();
-                    if (i == '/')
+                    if (i == '/') {
                         stateOfAutomat = 0;
+                        return EndOfLine;
+                    }
                     else {
                         ungetc(i, stdin);
                         //return EndOfLine;
@@ -194,6 +196,7 @@ int getNextToken(TString *token) {
 
                 }
                 break;
+
             case 4:          //riadkovy komentar
                 if (i == '\n') {
                     stateOfAutomat = 0;
