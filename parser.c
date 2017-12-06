@@ -16,6 +16,9 @@ int main(){
         tCodeDispose(&sCode);
         return syntax;
     }
+    else{
+        output_print();   
+    }
     tCodeDispose(&sCode);
 
     return 0;

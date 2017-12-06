@@ -19,6 +19,11 @@
 #define NoDataConversion 250 // netreba implicitni datova konverze
 #define StrConcate 251	// konkaternace stringu
 
+
+#define mallocErr 99    // chyba alokace pameti
+
+
+void output_print();
 void IFJcode17_embeddedFunctions();	// vypise 4 vestavene funkce do vysledneho kodu
 int generateLine(tLinePtr, BTNodePtr);
 void IFJcode17_writeString(char *myString);

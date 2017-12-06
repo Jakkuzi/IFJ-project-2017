@@ -4,9 +4,10 @@
  */
 
 #include "syntax_check.h"
+#include "strings.h"
 
 /* LL table converted to id of tokens */
-int ll[21][8][8] = {
+const int ll[21][8][8] = {
         //S
         {{Declare,  Function,   202,       EndOfLine, 201, 0,   0, 0},     // declare
         {Function,  202,        EndOfLine, 205,       Function,  EndOfLine, 201, 0},     // function
@@ -125,6 +126,7 @@ int ll[21][8][8] = {
 };
 
 /* syntax analysis top down */
+//TODO: free mystring from token on fail
 int syntax_analysis(tCodeList *C) {
     tStack *s;
     s = (tStack *) malloc(sizeof(tStack));
@@ -151,7 +153,7 @@ int syntax_analysis(tCodeList *C) {
         return result;
     }
 
-    do {
+    do { // get and process token
         TString *token = (TString *) malloc(sizeof(TString));
         if (token == NULL) {
             free(s);
@@ -167,7 +169,10 @@ int syntax_analysis(tCodeList *C) {
         if (t == EndOfLine) { // last token was EOL
             t = getNextToken(token);
             if (t == 99 || t == 1) {
-                freeThisCycle(token, s);
+                if(t == 99)
+                    free(token);
+                else
+                    freeThisCycle(token, s);
                 BTDispose(symBTree);
                 return t;
             }
@@ -328,6 +333,7 @@ int syntax_analysis(tCodeList *C) {
                     if ((t = result) == sTop(s))
                         sPop(s);
                 } else {
+                    stringFree(token);
                     freeThisCycle(token, s);
                     BTDispose(symBTree);
                     return 2;
@@ -337,6 +343,7 @@ int syntax_analysis(tCodeList *C) {
                 if (sTop(s) == t)
                     sPop(s);
                 else {
+                    stringFree(token);
                     freeThisCycle(token, s);
                     BTDispose(symBTree);
                     return 2;
@@ -402,7 +409,6 @@ int syntax_analysis(tCodeList *C) {
     } while (t == EndOfLine);
     freeThisCycle(token, s);
     BTDispose(symBTree);
-    symBTree = NULL;
 
     if (t != EndOfFile)
         return 2;
@@ -465,7 +471,7 @@ int process_expr(int id_processed, tCodeList *C, int t, TString *token, tStack *
     else
         strcat(prec_str, token->myString);
 
-    while (!skip) {
+    while (!skip) {// eat whole expression until separator
         token = (TString *) malloc(sizeof(TString));
         if (token == NULL) {
             free(prec_str);
